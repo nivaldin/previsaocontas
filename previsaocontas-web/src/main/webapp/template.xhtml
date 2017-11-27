@@ -1,0 +1,172 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+
+<h:head>
+
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+	<link rel="shortcut icon"
+		href="#{facesContext.externalContext.requestContextPath}/resources/img/favicon.ico"
+		type="image/x-icon" />
+
+	<meta name="viewport"
+		content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+
+	<meta http-equiv="cache-control"
+		content="no-store, no-cache, must-revalidate, Post-Check=0, Pre-Check=0" />
+	<meta http-equiv="Pragma" content="no-cache" />
+	<meta http-equiv="Expires" content="-1" />
+	<meta http-equiv="Refresh"
+		content="240;URL=#{facesContext.externalContext.requestContextPath}/contas/inicial.xhtml" />
+
+	<title>Previsão de Contas</title>
+
+
+	<link rel="stylesheet"
+		href="#{facesContext.externalContext.requestContextPath}/resources/css/style.css"
+		type="text/css" />
+	<link rel="stylesheet"
+		href="#{facesContext.externalContext.requestContextPath}/resources/css/bootstrap.min.css"
+		type="text/css" />
+	<link rel="stylesheet"
+		href="#{facesContext.externalContext.requestContextPath}/resources/css/bootstrap-theme.min.css"
+		type="text/css" />
+	<script type="text/javascript"
+		src="#{facesContext.externalContext.requestContextPath}/resources/js/bootstrap.min.js"></script>
+
+	<script type="text/javascript"
+		src="#{facesContext.externalContext.requestContextPath}/resources/js/jquery.maskMoney.min.js"></script>
+
+	<script>
+		PrimeFaces.locales['pt'] = {
+			closeText : 'Fechar',
+			prevText : 'Anterior',
+			nextText : 'Próximo',
+			currentText : 'Começo',
+			monthNames : [ 'Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio',
+					'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro',
+					'Novembro', 'Dezembro' ],
+			monthNamesShort : [ 'Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun',
+					'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez' ],
+			dayNames : [ 'Domingo', 'Segunda', 'Terça', 'Quarta', 'Quinta',
+					'Sexta', 'Sábado' ],
+			dayNamesShort : [ 'Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb' ],
+			dayNamesMin : [ 'D', 'S', 'T', 'Q', 'Q', 'S', 'S' ],
+			weekHeader : 'Semana',
+			firstDay : 0,
+			isRTL : false,
+			showMonthAfterYear : false,
+			yearSuffix : '',
+			timeOnlyTitle : 'Só Horas',
+			timeText : 'Tempo',
+			hourText : 'Hora',
+			minuteText : 'Minuto',
+			secondText : 'Segundo',
+			ampm : false,
+			month : 'Mês',
+			week : 'Semana',
+			day : 'Dia',
+			allDayText : 'Todo o Dia'
+		};
+
+		jQuery(document).ready(function() {
+			definirMascara();
+		});
+
+		function definirMascara() {
+			jQuery('.money').maskMoney({
+				thousands : '.',
+				decimal : ',',
+				showSymbol : false,
+				allowZero : true,
+				defaultZero : true
+			});
+		};
+	</script>
+	<style type="text/css">
+/* .ui-growl { */
+/* 	left: 40%; */
+/* 	top: 50%; */
+/* 	/*width: 600px;*/
+* /
+	/* 	/*opacity: 0%;*/ * /
+	/* } */
+	/* .ui-dialog { */
+	/* 	position: absolute !important; */
+	/* } */
+	/* .ui-growl-image { */
+	/* 	margin: 4px; */
+	/* } */
+	/* .ui-growl-title { */
+	/* 	font: 22px "Lucida Console", Monaco, monospace; */
+	/* 	text-align: left; */
+	/* 	vertical-align: middle; */
+	/* 	width: auto; */
+	/* 	padding-top: 4px; */
+	/* } */
+	/* .ui-growl-item { */
+	/* 	padding: 1px 4px; */
+	/* } */
+	/* .ui-growl-message { */
+	/* 	width: 545px; */
+	/*     padding-top: 11px; */
+	/* } */
+	/* .ui-growl-item-container { */
+	/* 	opacity: 1; */
+	/* } */
+	/* .ui-messages-info, .ui-messages-warn, .ui-messages-error, */
+	/* 	.ui-messages-fatal { */
+	/* 	font-size: 22px; */
+	/* } */
+	/* .ui-messages-info-icon, .ui-messages-warn-icon, .ui-messages-error-icon, */
+	/* 	.ui-messages-fatal-icon { */
+	/* 	margin-top: 3px; */
+	/* } */ 
+.coluna-menu {
+	border-width: 1px !important;
+}
+</style>
+
+</h:head>
+
+<h:body>
+
+	<h:form id="formTemplate">
+		<p:growl id="growl" life="5000" showDetail="true" />
+		<!-- <p:messages id="growl" showDetail="false" autoUpdate="true" closable="true" /> -->
+
+		<p:dialog widgetVar="statusDialog" modal="true" draggable="false"
+			header="Processando..." closable="false" resizable="false"
+			showHeader="true" hideEffect="fade" position="center center"
+			positionType="fixed|absolute">
+			<img
+				src="#{facesContext.externalContext.requestContextPath}/resources/img/ajaxloadingbar.gif" />
+		</p:dialog>
+
+		<p:ajaxStatus onstart="PF('statusDialog').show();"
+			oncomplete="definirMascara(); PF('statusDialog').hide(); " />
+
+		<p:confirmDialog global="true">
+			<p:commandButton value="Sim" type="button"
+				styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+			<p:commandButton value="Não" type="button"
+				styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+		</p:confirmDialog>
+	</h:form>
+
+
+
+	<div>
+
+		<ui:insert name="conteudo" />
+
+	</div>
+
+
+
+</h:body>
+
+</html>

@@ -1,0 +1,48 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:f="http://java.sun.com/jsf/core" xmlns:h="http://java.sun.com/jsf/html" xmlns:p="http://primefaces.org/ui">
+
+    <h:form id="formLogin" >
+
+        <p:panelGrid columns="2">
+
+            <div class="col-md-2">
+                <p:row>
+
+                    <p:column>
+                        <p:outputLabel value="Usuário: " />
+                    </p:column>
+
+                    <p:column>
+                        <p:inputText styleClass="form-control" id="username" disabled="#{loginControler.usuario.id gt 0}" value="#{loginControler.usuario.login}" />
+                    </p:column>
+
+                </p:row>
+            </div>
+
+            <div class="col-md-2">
+                <p:row>
+
+                    <p:column>
+                        <p:outputLabel value="Senha: " />
+                    </p:column>
+
+                    <p:column>
+                        <h:inputSecret styleClass="form-control" id="password" disabled="#{loginControler.usuario.id gt 0}" value="#{loginControler.usuario.senha}"></h:inputSecret>
+                    </p:column>
+
+                </p:row>
+            </div>
+
+            <div class="col-md-2">
+                <p:row>
+                    <p:column colspan="2">
+                        <p:commandButton styleClass="btn btn-default" disabled="#{loginControler.usuario.id gt 0}" actionListener="#{loginControler.validaLogin}" action="#{contaControlador.validaEntrada()}" value="Entrar" update="@all" ></p:commandButton>
+                    </p:column>
+                </p:row>
+            </div>
+
+
+        </p:panelGrid>
+
+    </h:form>
+
+</ui:composition>

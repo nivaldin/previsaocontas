@@ -1,0 +1,114 @@
+* {
+  font-family: calibri !important;
+  font-size: 17px !important;
+}
+
+.ui-tabmenu {
+    margin: auto !important;
+}
+
+.navbar-default {
+    margin: auto !important;
+}
+
+.ui-tabmenu .ui-tabmenu-nav .ui-tabmenuitem.ui-state-default {
+    padding: 0px 0px 0px 0px;
+    font-weight: normal;
+}
+
+.ui-state-active, .ui-widget-content .ui-state-active, .ui-widget-header .ui-state-active {
+	
+	 font-weight: bold!important;
+	 
+}
+.ui-button-text-only .ui-button-text {
+	padding: 0px 12px !important;
+}
+
+.modal-backdrop {
+	z-index: 0 !important;
+}
+
+.hasDatepicker {
+	width: 100% !important;
+	height: 34px !important;
+}
+
+body {
+	padding-top: 10px;
+	padding-bottom: 10px;
+	
+}
+
+.acoesSemBorda tbody td {
+	border: none !important;
+	padding: 0px 0px 0px 0px !important;
+}
+
+.ui-selectonemenu .ui-selectonemenu-trigger {
+	width: 22px !important;
+}
+
+.ui-panelgrid .ui-panelgrid-cell {
+	border-width: 0px;
+	border-style: solid;
+	border-color: inherit;
+	padding: 3px 3px 3px 3px;
+	vertical-align: top;
+}
+
+.ui-widget-content {
+	border: none;
+}
+
+table thead th, tbody td, tfoot td {
+	border-color: lightgray !important;
+}
+
+.rowDespesa {
+	color: red!important;
+}
+
+.rowReceita {
+	color: #00B300 !important;
+}
+
+.rowBaixadoD {
+	color: #DCBCB9 !important;
+}
+
+.rowBaixadoR {
+	color: #C2D8C2 !important;
+}
+
+.colVencido {
+	background-color: #c6e2ff !important;
+}
+
+.rowParciaisD {
+	color: #A94442!important;
+}
+.rowParciaisR {
+	color: #3D803E!important;
+}
+
+.colDespesa {
+	background-color: red!important;
+}
+.colReceita {
+	background-color: green!important;
+}
+.colFlagComum {
+	background-color: yellow!important;
+}
+
+.ui-growl {
+	z-index: 3000 !important;
+}
+
+
+.itemNaoSalvo {
+	
+	color: lightgray !important;
+	
+}

@@ -1,0 +1,312 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui">
+
+	<h:form id="formSalvar">
+
+		<p:panelGrid>
+			<p:row>
+				<p:column colspan="4">
+					<p:panelGrid>
+						<p:row>
+
+							<p:column>
+								<p:commandButton icon="ui-icon-file" value="Incluir"
+									action="#{contaControlador.preparaInclusao()}"
+									update="formSalvar" />
+							</p:column>
+							<p:column>
+								<p:commandButton icon="ui-icon-disk" value="Salvar"
+									action="#{contaControlador.salvar()}" ajax="true"
+									update=":formSalvar, :formTemplate:growl, :formInicial"></p:commandButton>
+							</p:column>
+							<p:column>
+								<p:commandButton icon="ui-icon-disk"
+									disabled="#{contaControlador.conta.qtde_parcelas le 1 or contaControlador.conta.qtde_parcelas eq null}"
+									value="S. Todos" title="Salva Todas as parcelas não baixadas"
+									action="#{contaControlador.salvarTodos()}" ajax="true"
+									update=":formSalvar, :formTemplate:growl, :formInicial">
+
+								</p:commandButton>
+							</p:column>
+							<p:column>
+								<p:commandButton icon="ui-icon-trash"
+									disabled="#{contaControlador.conta.qtde_parcelas le 1 or contaControlador.conta.qtde_parcelas eq null}"
+									action="#{contaControlador.excluirTodos()}" value="E. Todos"
+									title="Exclui todas as parcelas não baixadas!" ajax="true"
+									update=":formSalvar, :formTemplate:growl, :formInicial">
+									<p:confirm header="Confirmação"
+										message="Deseja realmente excluir todos?" icon="ui-icon-alert" />
+								</p:commandButton>
+							</p:column>
+						</p:row>
+
+					</p:panelGrid>
+				</p:column>
+			</p:row>
+			<p:row style="border: 1px solid lightgray;">
+
+				<p:column>
+					<h3 style="font-weight: bold;">Detalhes Conta</h3>
+					<hr style="border-top: 1px solid black !important" />
+					<p:panelGrid>
+						<p:row>
+							<p:column>
+								<p:outputLabel id="descricao" value="Descrição"></p:outputLabel>
+							</p:column>
+							<p:column>
+								<p:inputText styleClass="form-control"
+									value="#{contaControlador.conta.descricao}"></p:inputText>
+							</p:column>
+						</p:row>
+						<p:row>
+							<p:column>
+								<p:outputLabel value="Tipo"></p:outputLabel>
+							</p:column>
+							<p:column>
+								<p:selectOneMenu disabled="#{contaControlador.conta.id gt 0}"
+									value="#{contaControlador.conta.tipo}" style="width:100%">
+									<f:selectItems value="#{contaControlador.listaTipo}" var="e"
+										itemValue="#{e}" itemLabel="#{e.valor}" />
+								</p:selectOneMenu>
+							</p:column>
+						</p:row>
+						<p:row>
+							<p:column>
+								<p:outputLabel value="Data" />
+							</p:column>
+							<p:column>
+								<p:calendar styleClass="form-input" pattern="dd/MM/yyyy HH:mm"
+									mask="true" locale="br" navigator="true"
+									value="#{contaControlador.conta.data_mes}" />
+							</p:column>
+						</p:row>
+						<p:row>
+							<p:column>
+								<p:outputLabel value="Valor"></p:outputLabel>
+							</p:column>
+							<p:column>
+								<p:inputText styleClass="form-control money"
+									converter="moneyConverter" id="valorConta"
+									value="#{contaControlador.conta.valor}">
+								</p:inputText>
+							</p:column>
+						</p:row>
+						<p:row>
+							<p:column>
+								<p:outputLabel value="Comum"></p:outputLabel>
+							</p:column>
+							<p:column>
+								<p:selectOneMenu value="#{contaControlador.conta.flag_comum}"
+									style="width:100%">
+									<f:selectItems value="#{contaControlador.listaFlagComum}"
+										var="e" itemValue="#{e}" itemLabel="#{e.valor}" />
+								</p:selectOneMenu>
+							</p:column>
+						</p:row>
+						<p:row>
+							<p:column>
+								<p:outputLabel value="Vencimento"></p:outputLabel>
+							</p:column>
+							<p:column>
+								<p:inputText styleClass="form-control"
+									value="#{contaControlador.conta.dia_vencimento}"></p:inputText>
+							</p:column>
+						</p:row>
+						<p:row>
+							<p:column>
+								<p:outputLabel value="Parcela"></p:outputLabel>
+							</p:column>
+							<p:column>
+								<p:inputText styleClass="form-control" disabled="true"
+									value="#{contaControlador.conta.numr_parcela}"></p:inputText>
+							</p:column>
+						</p:row>
+						<p:row>
+							<p:column>
+								<p:outputLabel value="Parcelas"></p:outputLabel>
+							</p:column>
+							<p:column>
+								<p:inputText styleClass="form-control"
+									disabled="#{contaControlador.conta.id gt 0}"
+									value="#{contaControlador.conta.qtde_parcelas}"></p:inputText>
+							</p:column>
+						</p:row>
+
+					</p:panelGrid>
+
+				</p:column>
+				<p:column rendered="#{contaControlador.conta.id ne null}">
+					<h3 style="font-weight: bold;">Contas Filhas</h3>
+					<hr style="border-top: 1px solid black !important" />
+					<p:panelGrid>
+
+						<p:row>
+							<p:column>
+								<p:outputLabel value="Descrição " />
+							</p:column>
+							<p:column>
+								<p:inputText styleClass="form-control"
+									value="#{contaControlador.contaFilha.descricao}"></p:inputText>
+							</p:column>
+						</p:row>
+						<p:row>
+							<p:column>
+								<p:outputLabel value="Valor " />
+							</p:column>
+							<p:column>
+								<p:inputText styleClass="form-control money"
+									converter="moneyConverter"
+									value="#{contaControlador.contaFilha.valor}"></p:inputText>
+							</p:column>
+						</p:row>
+						<p:row>
+							<p:column>
+								<p:outputLabel value="Data " />
+							</p:column>
+							<p:column>
+								<p:calendar styleClass="form-input" pattern="dd/MM/yyyy HH:mm"
+									mask="true" locale="br" navigator="true"
+									value="#{contaControlador.contaFilha.data_registro}" />
+							</p:column>
+							<p:column>
+								<p:commandButton icon="ui-icon-disk" value="Incuir"
+									action="#{contaControlador.incluirParcial}" ajax="true"
+									update=":formSalvar, :formTemplate:growl"></p:commandButton>
+							</p:column>
+						</p:row>
+
+					</p:panelGrid>
+
+					<p:panelGrid>
+
+						<p:row>
+							<p:column>
+								<p:dataTable style="width: 600px;" id="tabelaParciais"
+									var="entidade" value="#{contaControlador.buscaContasFilhas()}"
+									rowStyleClass="#{contaControlador.contaStyleClass(entidade)}">
+
+									<p:column headerText="" width="70">
+
+										<p:commandLink action="#{contaControlador.removerParcial()}"
+											update=":formSalvar, :formTemplate:growl, :formInicial">
+
+											<h:graphicImage value="/resources/img/lixo.png" />
+
+											<f:setPropertyActionListener
+												target="#{contaControlador.contaFilha}" value="#{entidade}" />
+
+											<p:confirm header="Confirmação"
+												message="Deseja realmente excluir?" icon="ui-icon-alert" />
+										</p:commandLink>
+
+										<p:commandLink rendered="#{entidade.status eq 'A'}"
+											action="#{contaControlador.baixarContaFilha}" ajax="true"
+											update=":formSalvar, formTemplate:growl, :formInicial">
+
+											<p:graphicImage value="/resources/img/aberto.png" />
+
+											<f:setPropertyActionListener
+												target="#{contaControlador.contaFilha}" value="#{entidade}" />
+
+										</p:commandLink>
+
+										<p:commandLink rendered="#{entidade.status eq 'B'}"
+											action="#{contaControlador.abrirContaFilha}" ajax="true"
+											update=":formSalvar, formTemplate:growl, :formInicial">
+
+											<p:graphicImage value="/resources/img/baixado.png" />
+
+											<f:setPropertyActionListener
+												target="#{contaControlador.contaFilha}" value="#{entidade}" />
+
+										</p:commandLink>
+
+									</p:column>
+
+									<p:column headerText="Valor" width="90"
+										style="text-align: right;">
+
+										<h:outputText value="#{entidade.valor}">
+
+											<f:convertNumber locale="pt_BR" pattern="#,##0.00" />
+
+										</h:outputText>
+
+									</p:column>
+
+									<p:column headerText="Data" width="180"
+										style="text-align: center;">
+
+										<h:outputText value="#{entidade.data_registro}">
+											<f:convertDateTime locale="pt_BR" timeZone="GMT-03:00"
+												pattern="dd/MM/yyyy HH:mm" />
+										</h:outputText>
+
+									</p:column>
+
+									<p:column headerText="Descrição" style="text-align: left;">
+
+										<h:outputText value="#{entidade.descricao}" />
+
+									</p:column>
+
+
+								</p:dataTable>
+
+							</p:column>
+
+						</p:row>
+
+					</p:panelGrid>
+
+				</p:column>
+			</p:row>
+
+
+		</p:panelGrid>
+
+	</h:form>
+
+	<h:form>
+
+		<ui:include src="/dialog.xhtml">
+
+			<ui:param name="idModal" value="modalConfirmacaoExcluirParcial" />
+
+			<ui:param name="titulo" value="Confirmação de exclusão" />
+
+			<ui:param name="controller" value="#{contaControlador}" />
+
+			<ui:param name="funcao" value="removerParcial" />
+
+			<ui:param name="mensagem"
+				value="Deseja realmente excluir o registro?" />
+
+			<ui:param name="update" value=":formSalvar, formTemplate:growl, formInicial" />
+
+		</ui:include>
+
+		<ui:include src="/dialog.xhtml">
+
+			<ui:param name="idModal" value="modalConfirmacaoExcluirTodos" />
+
+			<ui:param name="titulo" value="Confirmação de exclusão" />
+
+			<ui:param name="controller" value="#{contaControlador}" />
+
+			<ui:param name="funcao" value="excluirTodos" />
+
+			<ui:param name="mensagem"
+				value="Deseja realmente excluir todas as Parcelas não Pagas?" />
+
+			<ui:param name="update" value=" :formSalvar, formTemplate:growl, formInicial" />
+
+		</ui:include>
+	</h:form>
+
+</ui:composition>
+
+
