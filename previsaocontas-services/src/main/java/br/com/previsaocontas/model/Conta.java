@@ -1,21 +1,19 @@
 package br.com.previsaocontas.model;
 
 import java.util.Date;
-import java.util.List;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
-import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
 import javax.persistence.PrePersist;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.persistence.Transient;
 
 import br.com.previsaocontas.arquitetura.Entidade;
 import br.com.previsaocontas.enums.EnumSimNao;
@@ -69,6 +67,9 @@ public class Conta extends Entidade {
 	@ManyToOne
 	@JoinColumn(name = "id_conta")
 	private Conta contaPai;
+	
+	@Transient
+	private Double valorParciais;
 	
 //	@OneToMany(mappedBy = "contaPai", fetch = FetchType.EAGER ,cascade = CascadeType.ALL)
 //	private List<Conta> contasFilhas;
@@ -188,6 +189,7 @@ public class Conta extends Entidade {
 	    this.contaPai = contaPai;
 	}
 
+	
 //	public List<Conta> getContasFilhas() {
 //	    return contasFilhas;
 //	}
@@ -195,6 +197,14 @@ public class Conta extends Entidade {
 //	public void setContasFilhas(List<Conta> contasFilhas) {
 //	    this.contasFilhas = contasFilhas;
 //	}
+
+	public Double getValorParciais() {
+		return valorParciais;
+	}
+
+	public void setValorParciais(Double valorParciais) {
+		this.valorParciais = valorParciais;
+	}
 
 	@Override
 	public int hashCode() {

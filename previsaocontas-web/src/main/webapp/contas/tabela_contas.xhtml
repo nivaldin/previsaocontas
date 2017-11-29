@@ -66,7 +66,7 @@
 		</p:column>
 
 		<p:column headerText="Parciais" style="text-align: right;" width="60">
-			<h:outputText value="#{contaControlador.somaParciais(entidade)}">
+			<h:outputText value="#{entidade.valorParciais}">
 				<f:convertNumber locale="pt_BR" pattern="#,##0.00" />
 			</h:outputText>
 		</p:column>

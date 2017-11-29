@@ -12,11 +12,22 @@
 
 	app.controller('myappcontroller', function($scope, $http) {
 
+		$scope.listaAnos = []
+		$scope.ano = 0
+		$scope.mes = 0
 		$scope.usuarioLogado = false
 		$scope.tiposConta = []
 		$scope.conta = {
+			id : "",
+			data_registro : null,
 			descricao : "",
 			valor : 0,
+			dia_vencimento : 0,
+			numr_agrupador : 0,
+			qtde_parcelas : 0,
+			numr_parcela : 0,
+			usuario : null,
+			contaPai : null,
 			tipo : "",
 			data_mes : new Date(),
 			flag_comum : "N"
@@ -28,9 +39,10 @@
 			senha : ""
 		};
 
+		$scope.ano = (new Date()).getFullYear();
+		$scope.mes = (new Date()).getMonth() + 1;
+		$scope.conta.tipo = "D";
 		login();
-		tiposConta();
-		$scope.listarContas;
 
 		$scope.salvar = function() {
 			$http({
@@ -43,6 +55,7 @@
 			}).then(function successCallback(response) {
 				$scope.msg = response.data.mensagem;
 				$scope.listarContas();
+				limpaFormulario();
 			}, function errorCallback(response) {
 				$scope.msg = response.data.mensagem;
 			});
@@ -51,12 +64,24 @@
 		$scope.listarContas = function() {
 			$http({
 				method : 'GET',
-				url : 'rest/contas/11/2017'
+				url : 'rest/contas/' + $scope.mes + '/' + $scope.ano
 			}).then(function successCallback(response) {
 				$scope.contas = response.data;
 			}, function errorCallback(response) {
 				$scope.contas = [];
 				$scope.msg = response.data.mensagem;
+			});
+		}
+
+		function listaAnos() {
+			$http({
+				method : 'GET',
+				url : 'rest/anos',
+			}).then(function successCallback(response) {
+				$scope.listaAnos = response.data.listaAnos;
+			}, function errorCallback(response) {
+				$scope.listaAnos = [];
+				$scope.msg = "Erro ao buscar Lista de Anos";
 			});
 		}
 
@@ -69,6 +94,8 @@
 				$scope.userform.usuario = response.data.login;
 				disableLogin();
 				$scope.usuarioLogado = true;
+				listaAnos();
+				tiposConta();
 			}, function errorCallback(response) {
 				$scope.contas = [];
 				$scope.msg = response.data.mensagem;
@@ -81,7 +108,6 @@
 				url : 'rest/tiposConta',
 			}).then(function successCallback(response) {
 				$scope.tiposConta = response.data.tiposConta;
-				$scope.conta.tipo = $scope.tiposConta[0].valor;
 			}, function errorCallback(response) {
 				$scope.tiposConta = [];
 				$scope.msg = "Erro ao buscar Tipos de Conta";
@@ -100,6 +126,8 @@
 				disableLogin();
 				$scope.userform.senha = '';
 				$scope.usuarioLogado = true;
+				listaAnos();
+				tiposConta();
 			}, function errorCallback(response) {
 				$scope.contas = [];
 				$scope.msg = response.data.mensagem;
@@ -110,7 +138,7 @@
 		$scope.logout = function() {
 			$http({
 				method : 'GET',
-				url : 'rest/logout'
+				url : 'rest/login/logout'
 			}).then(function successCallback(response) {
 				$scope.contas = [];
 				enableLogin();
@@ -135,80 +163,117 @@
 			document.getElementById("submit").disabled = false;
 		}
 
+		function limpaFormulario() {
+			$scope.conta = {
+				descricao : "",
+				valor : 0,
+				tipo : "",
+				data_mes : new Date(),
+				flag_comum : "N"
+			}
+			$scope.conta.tipo = $scope.tiposConta[0].valor;
+		}
+		
+		$scope.editarConta = function(c) {
+			$scope.conta = c;
+			$scope.conta.data_mes = new Date(c.data_mes);
+		}
+		
 	});
 </script>
-<!-- <link rel="stylesheet" -->
-<!-- 	href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css" /> -->
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 </head>
 <body ng-app="myapp" ng-controller="myappcontroller">
-	<form>
-		<div>
-			<h5>{{msg}}</h5>
-			<table cellpadding="3">
-				<tr>
-					<td>Usuário</td>
-					<td><input type="text" id="usuario" ng-model="userform.usuario" size="10" /></td>
-					<td>Senha</td>
-					<td><input type="password" id="senha" ng-model="userform.senha" size="10" /></td>
-					<td><input id="submit" type="submit" ng-click="validaLogin()" value="Entrar" /></td>
-					<td><input type="submit" ng-click="logout()" value="Sair" /></td>
-				</tr>
-			</table>
-		</div>
+	<div class="container">
+		{{msg}}
+		<form class="form-inline" style="line-height: 0.7 !important">
+			<div class="form-group">
+				<label for="usuario">Usuário:</label> <input type="text" class="form-control input-sm" id="usuario" ng-model="userform.usuario">
+			</div>
+			<div class="form-group">
+				<label for="senha">Senha:</label> <input type="password" class="form-control input-sm" id="senha" ng-model="userform.senha">
+			</div>
+			<button id="submit" type="submit" class="btn btn-default btn-sm" ng-click="validaLogin()">Entrar</button>
+			<button id="sair" type="submit" class="btn btn-default btn-sm" ng-click="logout()">Sair</button>
+		</form>
+		<hr>
 		<div ng-hide="usuarioLogado == false">
-			<hr>
-			<div>
-				<table style="width: 600px">
-					<tr>
-						<th>Descrição</th>
-						<th>Valor</th>
-						<th>Vcto</th>
-						<th>Parcela</th>
-					</tr>
-					<tr ng-repeat="c in contas">
-						<td>{{ c.descricao }}</td>
-						<td>{{ c.valor | currency:"":2 }}</td>
-						<td>{{ c.dia_vencimento }}</td>
-						<td>{{ c.numr_parcela }} - {{ c.qtde_parcelas }}</td>
-					</tr>
+			<nav class="navbar navbar-default">
+				<div class="container-fluid">
+					<div class="navbar-header">
+						<a class="navbar-brand" href="#"><select id="ano" ng-options="ano for ano in listaAnos" ng-model="ano"></select></a>
+					</div>
+					<ul class="nav navbar-nav">
+						<li><a ng-click="mes = 1; listarContas();" href="#">Jan</a></li>
+						<li><a ng-click="mes = 2; listarContas();" href="#">Fev</a></li>
+						<li><a ng-click="mes = 3; listarContas();" href="#">Mar</a></li>
+						<li><a ng-click="mes = 4; listarContas();" href="#">Abr</a></li>
+						<li><a ng-click="mes = 5; listarContas();" href="#">Mai</a></li>
+						<li><a ng-click="mes = 6; listarContas();" href="#">Jun</a></li>
+						<li><a ng-click="mes = 7; listarContas();" href="#">Jul</a></li>
+						<li><a ng-click="mes = 8; listarContas();" href="#">Ago</a></li>
+						<li><a ng-click="mes = 9; listarContas();" href="#">Set</a></li>
+						<li><a ng-click="mes = 10; listarContas();" href="#">Out</a></li>
+						<li><a ng-click="mes = 11; listarContas();" href="#">Nov</a></li>
+						<li><a ng-click="mes = 12; listarContas();" href="#">Dez</a></li>
+					</ul>
+				</div>
+			</nav>
+
+			<div class="table-responsive">
+				<table class="table table-hover table-striped table-bordered table-condensed">
+					<thead>
+						<tr>
+							<th width="5"></th>
+							<th width="5"></th>
+							<th>Descrição</th>
+							<th>Valor</th>
+							<th>Parciais</th>
+							<th>Vcto</th>
+							<th>Parcela</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr ng-repeat="c in contas">
+							<td style="background-color: {{c.flag_comum== 'S'? 'yellow': 'inherit'}}"></td>
+							<td style="background-color: {{c.tipo== 'D'? 'red !important':'green'}}"></td>
+							<td style="cursor: pointer; color: {{c.tipo== 'D'? 'red !important':'green'}}" ng-click="editarConta(c)">{{ c.descricao }}</td>
+							<td style="cursor: pointer; color: {{c.tipo== 'D'? 'red !important':'green'}}" ng-click="editarConta(c)">{{ c.valor | currency:"":2 }}</td>
+							<td style="cursor: pointer; color: {{c.tipo== 'D'? 'red !important':'green'}}" ng-click="editarConta(c)">{{ c.valorParciais | currency:"":2 }}</td>
+							<td style="cursor: pointer; color: {{c.tipo== 'D'? 'red !important':'green'}}" ng-click="editarConta(c)">{{ c.dia_vencimento }}</td>
+							<td style="cursor: pointer; color: {{c.tipo== 'D'? 'red !important':'green'}}" ng-click="editarConta(c)">{{ c.numr_parcela }} - {{ c.qtde_parcelas }}</td>
+						</tr>
+					</tbody>
 				</table>
 			</div>
 			<hr>
-			<div>
-				<table>
-					<tr>
-						<td><input type="radio" ng-model="conta.tipo" value="D" /></td>
-						<td style="color: red;">Despesa</td>
-						<td><input type="radio" ng-model="conta.tipo" value="R" /></td>
-						<td style="color: green;">Receita</td>
-					</tr>
-				</table>
-				<table>
-					<tr>
-						<td>Descrição</td>
-						<td><input type="text" id="descricao" ng-model="conta.descricao" size="30" /></td>
-						<td>Valor</td>
-						<td><input type="text" id="valor" ng-model="conta.valor" size="10" money-mask /></td>
-						<td><input title="Conta Comun a todos os meses" type="checkbox" id="flagComun" ng-model="conta.flag_comum" size="30" ng-true-value="'S'" ng-false-value="'N'" />Conta Comun</td>
+			<div id="editarConta">
+				<div class="container">
+					<form>
+						<div class="form-group">
+							<input id="despesa" type="radio" ng-model="conta.tipo" value="D"><label style="color: red;" for="despesa">Despesa</label> <input id="receita" type="radio" ng-model="conta.tipo" value="R"><label style="color: green;" for="receita">Receita</label>
+						</div>
+						<div class="form-group">
+							<label for="descricao">Descrição</label><input type="text" id="descricao" ng-model="conta.descricao" size="30" class="form-control">
+						</div>
+						<div class="form-group">
+							<label for="valor">Valor</label><input type="text" id="valor" ng-model="conta.valor" size="10" money-mask class="form-control">
+						</div>
+						<div class="form-group">
+							<input title="Conta Comun a todos os meses" type="checkbox" id="flagComun" ng-model="conta.flag_comum" size="30" ng-true-value="'S'" ng-false-value="'N'"><label for="flagComun">Conta Comun</label>
+						</div>
+						<div class="form-group">
+							<label for=Data>Data</label><input type="date" id="data" name="data" ng-model="conta.data_mes" class="form-control" />
+						</div>
 
-						<!-- 					<td>Tipo</td> -->
-						<!-- 					<td><select id="selectTipo" -->
-						<!-- 						ng-options="tipo.valor as tipo.descricao for tipo in tiposConta" -->
-						<!-- 						ng-model="conta.tipo" ></select></td> -->
-					</tr>
-				</table>
+						<button ng-click="salvar();" type="submit" class="btn btn-default">Salvar</button>
 
-				<table>
-					<tr>
-						<td>Data</td>
-						<td><input type="date" id="data" name="data" ng-model="conta.data_mes"></input></td>
-					</tr>
-					<tr>
-						<td colspan="2"><input id="submit" type="submit" ng-click="salvar(); " value="Salvar"/></td>
-					</tr>
-				</table>
+					</form>
+				</div>
 			</div>
 		</div>
-	</form>
+	</div>
 </body>
 </html>

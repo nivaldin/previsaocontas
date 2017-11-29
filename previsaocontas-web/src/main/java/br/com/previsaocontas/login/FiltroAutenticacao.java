@@ -21,68 +21,70 @@ import br.com.previsaocontas.model.Usuario;
 @WebFilter("/*")
 public class FiltroAutenticacao implements Filter {
 
-    /**
-     * Default constructor.
-     */
-    public FiltroAutenticacao() {
-	// TODO Auto-generated constructor stub
-    }
+	/**
+	 * Default constructor.
+	 */
+	public FiltroAutenticacao() {
+		// TODO Auto-generated constructor stub
+	}
 
-    /**
-     * @see Filter#destroy()
-     */
-    public void destroy() {
-	// TODO Auto-generated method stub
-    }
+	/**
+	 * @see Filter#destroy()
+	 */
+	public void destroy() {
+		// TODO Auto-generated method stub
+	}
 
-    /**
-     * @see Filter#doFilter(ServletRequest, ServletResponse, FilterChain)
-     */
-    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
+	/**
+	 * @see Filter#doFilter(ServletRequest, ServletResponse, FilterChain)
+	 */
+	public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
+			throws IOException, ServletException {
 
-	HttpServletRequest req = (HttpServletRequest) request;
-	HttpServletResponse resp = (HttpServletResponse) response;
-	
-        HttpSession session = req.getSession();
+		HttpServletRequest req = (HttpServletRequest) request;
+		HttpServletResponse resp = (HttpServletResponse) response;
 
-	Usuario usuario = (Usuario) session.getAttribute("usuario");
+		HttpSession session = req.getSession();
 
-	String reqURI = ((HttpServletRequest) req).getRequestURI();
-	
-	if (reqURI.contains("login.xhtml") || reqURI.contains("/rest/") || reqURI.contains("contas-angularjs.html")) {
-	    
-	    chain.doFilter(req, resp);
-	    
-	}else if (reqURI.contains("resources") || reqURI.contains("javax.faces.resource")) {
+		Usuario usuario = (Usuario) session.getAttribute("usuario");
 
-	    chain.doFilter(req, resp);
-	
-	} else {
+		String reqURI = ((HttpServletRequest) req).getRequestURI();
 
-	    if (usuario == null) {
+		if (reqURI.contains("login.xhtml") || reqURI.contains("contas-angularjs.html") || reqURI.contains("rest/login")) {
 
-//		req.getRequestDispatcher("/login.xhtml?faces-redirect=true").forward(req, resp);
-		req.getRequestDispatcher("/contas/inicial.xhtml?faces-redirect=true").forward(req, resp);
+			chain.doFilter(req, resp);
 
-	    } else if (reqURI.equals("/previsaocontas-web/")) {	
-		
-		req.getRequestDispatcher("/contas/inicial.xhtml?faces-redirect=true").forward(req, resp);
-		
-	    } else {
+		}else if (reqURI.contains("resources") || reqURI.contains("javax.faces.resource")) {
 
-		 chain.doFilter(req, resp);
+		    chain.doFilter(req, resp);
+		    
+		} else {
 
-	    }
+			if (usuario == null) {
+
+				// req.getRequestDispatcher("/login.xhtml?faces-redirect=true").forward(req,
+				// resp);
+				req.getRequestDispatcher("/contas/inicial.xhtml?faces-redirect=true").forward(req, resp);
+
+			} else if (reqURI.equals("/previsaocontas-web/")) {
+
+				req.getRequestDispatcher("/contas/inicial.xhtml?faces-redirect=true").forward(req, resp);
+
+			} else {
+
+				chain.doFilter(req, resp);
+
+			}
+
+		}
 
 	}
 
-    }
-
-    /**
-     * @see Filter#init(FilterConfig)
-     */
-    public void init(FilterConfig fConfig) throws ServletException {
-	// TODO Auto-generated method stub
-    }
+	/**
+	 * @see Filter#init(FilterConfig)
+	 */
+	public void init(FilterConfig fConfig) throws ServletException {
+		// TODO Auto-generated method stub
+	}
 
 }
