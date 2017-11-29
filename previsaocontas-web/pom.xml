@@ -18,21 +18,32 @@
 			<url>https://maven.java.net/content/repositories/snapshots/</url>
 		</repository>
 
-<!-- 		<repository> -->
+		<!-- <repository> -->
 
-<!-- 			<id>prime-repo</id> -->
+		<!-- <id>prime-repo</id> -->
 
-<!-- 			<name>PrimeFaces Maven Repository</name> -->
+		<!-- <name>PrimeFaces Maven Repository</name> -->
 
-<!-- 			<url>http://repository.primefaces.org</url> -->
+		<!-- <url>http://repository.primefaces.org</url> -->
 
-<!-- 			<layout>default</layout> -->
+		<!-- <layout>default</layout> -->
 
-<!-- 		</repository> -->
+		<!-- </repository> -->
 
 	</repositories>
 
 	<dependencies>
+
+		<dependency>
+			<groupId>com.fasterxml.jackson.core</groupId>
+			<artifactId>jackson-databind</artifactId>
+			<version>2.9.2</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-webmvc</artifactId>
+		</dependency>
 
 		<dependency>
 			<groupId>javax.servlet</groupId>
@@ -52,11 +63,11 @@
 			<version>6.0</version>
 		</dependency>
 
-<!-- 		<dependency> -->
-<!-- 			<groupId>org.primefaces.themes</groupId> -->
-<!-- 			<artifactId>all-themes</artifactId> -->
-<!-- 			<version>1.0.10</version> -->
-<!-- 		</dependency> -->
+		<!-- <dependency> -->
+		<!-- <groupId>org.primefaces.themes</groupId> -->
+		<!-- <artifactId>all-themes</artifactId> -->
+		<!-- <version>1.0.10</version> -->
+		<!-- </dependency> -->
 
 		<dependency>
 			<groupId>br.com.previsaocontas</groupId>

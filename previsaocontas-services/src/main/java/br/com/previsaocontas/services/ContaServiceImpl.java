@@ -35,8 +35,12 @@ public class ContaServiceImpl {
 		throw new WarningException("Conta já Baixada, verifique!");
 	    }
 	}
+	
+	if (contaPai.getFlag_comum() == null || contaPai.getFlag_comum().equals("")) {
+	    throw new WarningException("Informar se a conta é Comun!");
+	}
 
-	if (contaPai.getValor() == 0) {
+	if (contaPai.getValor() == null || contaPai.getValor() == 0) {
 	    throw new WarningException("Informar um Valor para a Conta!");
 	}
 
@@ -162,54 +166,52 @@ public class ContaServiceImpl {
 	return contaDAOImpl.buscaContasAcumuladoAberto(mesSelecionado, anoSelecionado, usuario);
     }
 
-    public void baixarConta(Conta conta) throws ErrorException {
-	try {
-	    if (conta.getStatus().equals(EnumStatusConta.A)) {
+    public void baixarConta(Conta conta) throws WarningException, ErrorException {
+	
+	if (conta.getStatus().equals(EnumStatusConta.A)) {
 
-		conta.setStatus(EnumStatusConta.B);
+	    conta.setStatus(EnumStatusConta.B);
+	    Double totalParciais = 0.0;
 
-		// Altera Valor da conta para o valor das parciais (caso
-		// parciais maior que conta)
-		Double totalParciais = somaParciais(conta.getContaPai(), false);
-		if ((totalParciais) > conta.getContaPai().getValor()) {
-		    conta.getContaPai().setValor(totalParciais);
+	    if (conta.getContaPai() == null) {
+		// Atualiza Saldo
+		totalParciais = somaParciais(conta);
+		if (totalParciais != conta.getValor()) {
+		    if (conta.getTipo().equals(EnumTipoConta.D)) {
+			conta.getUsuario().setSaldo(conta.getUsuario().getSaldo() - (conta.getValor() - totalParciais));
+		    }
+		    if (conta.getTipo().equals(EnumTipoConta.R)) {
+			conta.getUsuario().setSaldo(conta.getUsuario().getSaldo() + (conta.getValor() - totalParciais));
+		    }
+		}else {
+		    // Altera Valor da conta para o valor das parciais (caso
+		    // parciais maior que conta)
+		    totalParciais = somaParciais(conta.getContaPai(), false);
+		    if ((totalParciais) > conta.getContaPai().getValor()) {
+			conta.getContaPai().setValor(totalParciais);
+		    }
 		}
 
-		if (conta.getContaPai() == null) {
-		    // Atualiza Saldo
-		    totalParciais = somaParciais(conta);
-		    if (totalParciais != conta.getValor()) {
-			if (conta.getTipo().equals(EnumTipoConta.D)) {
-			    conta.getUsuario().setSaldo(conta.getUsuario().getSaldo() - (conta.getValor() - totalParciais));
-			}
-			if (conta.getTipo().equals(EnumTipoConta.R)) {
-			    conta.getUsuario().setSaldo(conta.getUsuario().getSaldo() + (conta.getValor() - totalParciais));
-			}
-		    }
+		contaDAOImpl.salvar(conta);
 
-		    contaDAOImpl.salvar(conta);
+	    } else {
 
-		} else {
-
-		    // Conta Filha
-		    if (conta.getContaPai().getStatus().equals(EnumStatusConta.B)) {
-			throw new WarningException("Conta Pai já baixada, verifique!");
-		    }
-
-		    if (conta.getContaPai().getTipo().equals(EnumTipoConta.D)) {
-			conta.getContaPai().getUsuario().setSaldo(conta.getContaPai().getUsuario().getSaldo() - (conta.getValor()));
-		    }
-		    if (conta.getContaPai().getTipo().equals(EnumTipoConta.R)) {
-			conta.getContaPai().getUsuario().setSaldo(conta.getContaPai().getUsuario().getSaldo() + (conta.getValor()));
-		    }
-
-		    contaDAOImpl.salvar(conta.getContaPai());
-
+		// Conta Filha
+		if (conta.getContaPai().getStatus().equals(EnumStatusConta.B)) {
+		    throw new WarningException("Conta Pai já baixada, verifique!");
 		}
+
+		if (conta.getContaPai().getTipo().equals(EnumTipoConta.D)) {
+		    conta.getContaPai().getUsuario().setSaldo(conta.getContaPai().getUsuario().getSaldo() - (conta.getValor()));
+		}
+		if (conta.getContaPai().getTipo().equals(EnumTipoConta.R)) {
+		    conta.getContaPai().getUsuario().setSaldo(conta.getContaPai().getUsuario().getSaldo() + (conta.getValor()));
+		}
+
+		contaDAOImpl.salvar(conta.getContaPai());
 
 	    }
-	} catch (Exception e) {
-	    throw new ErrorException(e.getMessage());
+
 	}
     }
 

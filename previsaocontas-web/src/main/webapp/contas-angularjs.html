@@ -1,83 +1,213 @@
 <!DOCTYPE html>
 <html>
 <head>
-<meta charset="UTF-8"/>
+<meta charset="UTF-8" />
 <title>Contas</title>
-<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.4/angular.min.js"></script>
+<script type="text/javascript" src="./resources/js/angular.min.js"></script>
+<script type="text/javascript" src="./resources/js/angular-locale_pt-br.js"></script>
+<script type="text/javascript" src="./resources/js/rw-money-mask.js"></script>
+
 <script type="text/javascript">
-	var app = angular.module('myapp', []);
+	var app = angular.module('myapp', [ 'rw.moneymask' ]);
 
 	app.controller('myappcontroller', function($scope, $http) {
+
+		$scope.usuarioLogado = false
+		$scope.tiposConta = []
+		$scope.conta = {
+			descricao : "",
+			valor : 0,
+			tipo : "",
+			data_mes : new Date(),
+			flag_comum : "N"
+		}
+		$scope.msg = ""
 		$scope.contas = []
 		$scope.userform = {
 			usuario : "",
 			senha : ""
 		};
 
-		$scope.listarContas = function () {
+		login();
+		tiposConta();
+		$scope.listarContas;
+
+		$scope.salvar = function() {
+			$http({
+				method : 'POST',
+				url : 'rest/contas/salvar/',
+				data : angular.toJson($scope.conta),
+				headers : {
+					'Content-Type' : 'application/json'
+				}
+			}).then(function successCallback(response) {
+				$scope.msg = response.data.mensagem;
+				$scope.listarContas();
+			}, function errorCallback(response) {
+				$scope.msg = response.data.mensagem;
+			});
+		}
+
+		$scope.listarContas = function() {
 			$http({
 				method : 'GET',
 				url : 'rest/contas/11/2017'
 			}).then(function successCallback(response) {
 				$scope.contas = response.data;
 			}, function errorCallback(response) {
-				console.log(response.data);
 				$scope.contas = [];
-				alert(response.data);
+				$scope.msg = response.data.mensagem;
 			});
 		}
-		
-		$scope.login = function() {
+
+		function login() {
 			$http({
 				method : 'GET',
-				url : 'rest/login/' + $scope.userform.usuario + '/' + $scope.userform.senha
+				url : 'rest/login',
 			}).then(function successCallback(response) {
 				$scope.listarContas();
+				$scope.userform.usuario = response.data.login;
+				disableLogin();
+				$scope.usuarioLogado = true;
 			}, function errorCallback(response) {
-					console.log(response.data);
-					$scope.contas = [];
-					alert(response.data);
-				}
-			);
+				$scope.contas = [];
+				$scope.msg = response.data.mensagem;
+			});
 		}
-		
+
+		function tiposConta() {
+			$http({
+				method : 'GET',
+				url : 'rest/tiposConta',
+			}).then(function successCallback(response) {
+				$scope.tiposConta = response.data.tiposConta;
+				$scope.conta.tipo = $scope.tiposConta[0].valor;
+			}, function errorCallback(response) {
+				$scope.tiposConta = [];
+				$scope.msg = "Erro ao buscar Tipos de Conta";
+			});
+		}
+
+		$scope.validaLogin = function() {
+			$http(
+					{
+						method : 'GET',
+						url : 'rest/login/' + $scope.userform.usuario + '/'
+								+ $scope.userform.senha,
+					}).then(function successCallback(response) {
+				$scope.msg = response.data.mensagem;
+				$scope.listarContas();
+				disableLogin();
+				$scope.userform.senha = '';
+				$scope.usuarioLogado = true;
+			}, function errorCallback(response) {
+				$scope.contas = [];
+				$scope.msg = response.data.mensagem;
+				$scope.usuarioLogado = false;
+			});
+		}
+
 		$scope.logout = function() {
 			$http({
 				method : 'GET',
-				url : 'logout'
+				url : 'rest/logout'
 			}).then(function successCallback(response) {
 				$scope.contas = [];
+				enableLogin();
+				$scope.msg = response.data.mensagem;
+				$scope.userform.senha = '';
+				$scope.usuarioLogado = false;
 			}, function errorCallback(response) {
-					console.log(response.statusText);
-				}
-			);
+				console.log(response.data.resultado);
+				$scope.msg = response.data.mensagem;
+			});
 		}
 
-		function disableName() {
-			document.getElementById("name").disabled = true;
+		function disableLogin() {
+			document.getElementById("usuario").disabled = true;
+			document.getElementById("senha").disabled = true;
+			document.getElementById("submit").disabled = true;
 		}
+
+		function enableLogin() {
+			document.getElementById("usuario").disabled = false;
+			document.getElementById("senha").disabled = false;
+			document.getElementById("submit").disabled = false;
+		}
+
 	});
 </script>
-<link rel="stylesheet"
-	href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css"/>
+<!-- <link rel="stylesheet" -->
+<!-- 	href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css" /> -->
 </head>
 <body ng-app="myapp" ng-controller="myappcontroller">
-	<form ng-submit="processUserDetails()">
-		<div class="table-responsive">
-			<table class="table table-bordered" style="width: 600px">
+	<form>
+		<div>
+			<h5>{{msg}}</h5>
+			<table cellpadding="3">
 				<tr>
 					<td>Usuário</td>
-					<td><input type="text" id="usuario"
-						ng-model="userform.usuario" size="30" /></td>
+					<td><input type="text" id="usuario" ng-model="userform.usuario" size="10" /></td>
 					<td>Senha</td>
-					<td><input type="password" id="senha"
-						ng-model="userform.senha" size="30" /></td>
-					<td><input type="submit" class="btn btn-primary btn-sm"
-						ng-click="login()" value="Entrar" /></td>
-					<td><input type="submit" class="btn btn-primary btn-sm"
-						ng-click="logout()" value="Sair" /></td>
+					<td><input type="password" id="senha" ng-model="userform.senha" size="10" /></td>
+					<td><input id="submit" type="submit" ng-click="validaLogin()" value="Entrar" /></td>
+					<td><input type="submit" ng-click="logout()" value="Sair" /></td>
 				</tr>
 			</table>
+		</div>
+		<div ng-hide="usuarioLogado == false">
+			<hr>
+			<div>
+				<table style="width: 600px">
+					<tr>
+						<th>Descrição</th>
+						<th>Valor</th>
+						<th>Vcto</th>
+						<th>Parcela</th>
+					</tr>
+					<tr ng-repeat="c in contas">
+						<td>{{ c.descricao }}</td>
+						<td>{{ c.valor | currency:"":2 }}</td>
+						<td>{{ c.dia_vencimento }}</td>
+						<td>{{ c.numr_parcela }} - {{ c.qtde_parcelas }}</td>
+					</tr>
+				</table>
+			</div>
+			<hr>
+			<div>
+				<table>
+					<tr>
+						<td><input type="radio" ng-model="conta.tipo" value="D" /></td>
+						<td style="color: red;">Despesa</td>
+						<td><input type="radio" ng-model="conta.tipo" value="R" /></td>
+						<td style="color: green;">Receita</td>
+					</tr>
+				</table>
+				<table>
+					<tr>
+						<td>Descrição</td>
+						<td><input type="text" id="descricao" ng-model="conta.descricao" size="30" /></td>
+						<td>Valor</td>
+						<td><input type="text" id="valor" ng-model="conta.valor" size="10" money-mask /></td>
+						<td><input title="Conta Comun a todos os meses" type="checkbox" id="flagComun" ng-model="conta.flag_comum" size="30" ng-true-value="'S'" ng-false-value="'N'" />Conta Comun</td>
+
+						<!-- 					<td>Tipo</td> -->
+						<!-- 					<td><select id="selectTipo" -->
+						<!-- 						ng-options="tipo.valor as tipo.descricao for tipo in tiposConta" -->
+						<!-- 						ng-model="conta.tipo" ></select></td> -->
+					</tr>
+				</table>
+
+				<table>
+					<tr>
+						<td>Data</td>
+						<td><input type="date" id="data" name="data" ng-model="conta.data_mes"></input></td>
+					</tr>
+					<tr>
+						<td colspan="2"><input id="submit" type="submit" ng-click="salvar(); " value="Salvar"/></td>
+					</tr>
+				</table>
+			</div>
 		</div>
 	</form>
 </body>
