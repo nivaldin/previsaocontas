@@ -549,7 +549,7 @@ public class ContaControlador extends SuperController implements Serializable {
 
     public List<Conta> buscaContasFilhas() {
 	try {
-	    return this.getContaServiceImpl().buscaContasFilhas(this.getConta());
+	    return this.getContaServiceImpl().buscaContasFilhas(this.getConta().getId());
 	} catch (Exception e) {
 	    adicionaMensagem(e.getMessage(), FacesMessage.SEVERITY_FATAL);
 	    return null;

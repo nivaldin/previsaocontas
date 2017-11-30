@@ -60,20 +60,21 @@ public class Conta extends Entidade {
 	@Column
 	private Integer numr_parcela;
 
-	@ManyToOne(cascade=CascadeType.MERGE)
+	@ManyToOne(cascade = CascadeType.MERGE)
 	@JoinColumn(name = "id_usuario", nullable = false)
 	private Usuario usuario;
 
 	@ManyToOne
 	@JoinColumn(name = "id_conta")
 	private Conta contaPai;
-	
+
 	@Transient
 	private Double valorParciais;
-	
-//	@OneToMany(mappedBy = "contaPai", fetch = FetchType.EAGER ,cascade = CascadeType.ALL)
-//	private List<Conta> contasFilhas;
-	
+
+	// @OneToMany(mappedBy = "contaPai", fetch = FetchType.EAGER ,cascade =
+	// CascadeType.ALL)
+	// private List<Conta> contasFilhas;
+
 	@PrePersist
 	public void onCreateConta() {
 		this.setStatus(EnumStatusConta.A);
@@ -182,21 +183,20 @@ public class Conta extends Entidade {
 	}
 
 	public Conta getContaPai() {
-	    return contaPai;
+		return contaPai;
 	}
 
 	public void setContaPai(Conta contaPai) {
-	    this.contaPai = contaPai;
+		this.contaPai = contaPai;
 	}
 
-	
-//	public List<Conta> getContasFilhas() {
-//	    return contasFilhas;
-//	}
-//
-//	public void setContasFilhas(List<Conta> contasFilhas) {
-//	    this.contasFilhas = contasFilhas;
-//	}
+	// public List<Conta> getContasFilhas() {
+	// return contasFilhas;
+	// }
+	//
+	// public void setContasFilhas(List<Conta> contasFilhas) {
+	// this.contasFilhas = contasFilhas;
+	// }
 
 	public Double getValorParciais() {
 		return valorParciais;
@@ -208,29 +208,27 @@ public class Conta extends Entidade {
 
 	@Override
 	public int hashCode() {
-	    final int prime = 31;
-	    int result = super.hashCode();
-	    result = prime * result + ((this.getId() == null) ? 0 : this.getId().hashCode());
-	    return result;
+		final int prime = 31;
+		int result = super.hashCode();
+		result = prime * result + ((this.getId() == null) ? 0 : this.getId().hashCode());
+		return result;
 	}
 
 	@Override
 	public boolean equals(Object obj) {
-	    if (this == obj)
+		if (this == obj)
+			return true;
+		if (!super.equals(obj))
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Conta other = (Conta) obj;
+		if (this.getId() == null) {
+			if (other.getId() != null)
+				return false;
+		} else if (!this.getId().equals(other.getId()))
+			return false;
 		return true;
-	    if (!super.equals(obj))
-		return false;
-	    if (getClass() != obj.getClass())
-		return false;
-	    Conta other = (Conta) obj;
-	    if (this.getId() == null) {
-		if (other.getId() != null)
-		    return false;
-	    } else if (!this.getId().equals(other.getId()))
-		return false;
-	    return true;
 	}
-	
-	
 
 }
