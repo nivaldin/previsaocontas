@@ -8,7 +8,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import br.com.previsaocontas.dao.UsuarioDAOImpl;
-import br.com.previsaocontas.exception.ErrorException;
 import br.com.previsaocontas.exception.WarningException;
 import br.com.previsaocontas.model.Usuario;
 
@@ -19,31 +18,23 @@ public class UsuarioServiceImpl {
 	@Autowired
 	private UsuarioDAOImpl usuarioDAOImpl;
 
-	public void salvar(Usuario usuario) throws ErrorException {
-		try {
-			usuarioDAOImpl.salvar(usuario);
-		} catch (Exception e) {
-			throw new ErrorException(e.getMessage());
-		}
+	public void salvar(Usuario usuario) {
+		usuarioDAOImpl.salvar(usuario);
 	}
 
-	public Usuario buscaUsuario(String usuario, String senha) throws WarningException, ErrorException {
+	public Usuario buscaUsuario(String usuario, String senha) throws WarningException {
 
 		try {
 			return usuarioDAOImpl.buscaUsuario(usuario, senha);
 		} catch (NonUniqueResultException e) {
-			throw new WarningException("Mais de um usuário encontrado, verifique!");
+			throw new WarningException("Mais de um usuário encontrado!");
 		} catch (NoResultException e) {
-			throw new WarningException("Usuário ou senha inválidos, verifique!");
+			throw new WarningException("Usuário ou senha inválidos!");
 		}
 	}
 
-	public Usuario obter(Long id) throws ErrorException {
-		try {
-			return usuarioDAOImpl.obter(id);
-		} catch (Exception e) {
-			throw new ErrorException(e.getMessage());
-		}
+	public Usuario obter(Long id) {
+		return usuarioDAOImpl.obter(id);
 	}
 
 }

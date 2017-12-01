@@ -10,7 +10,6 @@ import javax.faces.bean.ViewScoped;
 import javax.servlet.http.HttpSession;
 
 import br.com.previsaocontas.controladores.SuperController;
-import br.com.previsaocontas.exception.ErrorException;
 import br.com.previsaocontas.exception.WarningException;
 import br.com.previsaocontas.model.Usuario;
 import br.com.previsaocontas.services.UsuarioServiceImpl;
@@ -66,7 +65,7 @@ public class LoginControler extends SuperController implements Serializable {
 	} catch (WarningException e) {
 	    adicionaMensagem(e.getMessage(), FacesMessage.SEVERITY_WARN);
 	    return;
-	} catch (ErrorException e) {
+	} catch (Exception e) {
 	    adicionaMensagem(e.getMessage(), FacesMessage.SEVERITY_ERROR);
 	    return;
 	}

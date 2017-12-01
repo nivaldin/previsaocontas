@@ -50,7 +50,7 @@ public class FiltroAutenticacao implements Filter {
 
 		String reqURI = ((HttpServletRequest) req).getRequestURI();
 
-		if (reqURI.contains("login.xhtml") || reqURI.contains("contas-angularjs.html") || reqURI.contains("rest/login")) {
+		if (reqURI.contains("login.xhtml") || reqURI.contains("contas-angularjs.html") || reqURI.contains("rest/login/")) {
 
 			chain.doFilter(req, resp);
 

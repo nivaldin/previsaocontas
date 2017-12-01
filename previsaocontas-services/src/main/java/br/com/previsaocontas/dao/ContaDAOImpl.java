@@ -56,6 +56,9 @@ public class ContaDAOImpl extends HibernateDAO<Conta> {
 
 		dataF.add(Calendar.MONTH, 1);
 		dataF.add(Calendar.DAY_OF_MONTH, -1);
+		
+		dataI.set(Calendar.MILLISECOND, 0);
+		dataF.set(Calendar.MILLISECOND, 0);
 
 		String jpql = "";
 		jpql += "select distinct(c) from Conta c";

@@ -12,7 +12,6 @@ import br.com.previsaocontas.dao.ContaDAOImpl;
 import br.com.previsaocontas.dao.UsuarioDAOImpl;
 import br.com.previsaocontas.enums.EnumStatusConta;
 import br.com.previsaocontas.enums.EnumTipoConta;
-import br.com.previsaocontas.exception.ErrorException;
 import br.com.previsaocontas.exception.WarningException;
 import br.com.previsaocontas.model.Conta;
 import br.com.previsaocontas.model.Usuario;
@@ -28,34 +27,34 @@ public class ContaServiceImpl {
 	@Autowired
 	private UsuarioDAOImpl usuarioDAOImpl;
 
-	public void salvar(Conta conta) throws WarningException, ErrorException {
+	public void salvar(Conta conta) throws WarningException {
 
 		if (conta == null) {
-			throw new WarningException("Conta inválida, verifique!");
+			throw new WarningException("Conta inválida!");
 		}
 		if (conta.getId() != null) {
 			if (conta.getStatus().equals(EnumStatusConta.B)) {
-				throw new WarningException("Conta já Baixada, verifique!");
+				throw new WarningException("Conta já Baixada!");
 			}
 		}
 
-		if (conta.getFlag_comum() == null || conta.getFlag_comum().equals("")) {
-			throw new WarningException("Informar se a conta é Comun!");
+		if (conta.getFlag_comum() == null) {
+			throw new WarningException("Informar se a conta é comum!");
 		}
 
 		if (conta.getValor() == null || conta.getValor() == 0) {
-			throw new WarningException("Informar um Valor para a Conta!");
+			throw new WarningException("Informar um valor para a conta!");
 		}
 
 		if (conta.getValor() < somaParciais(conta)) {
-			throw new WarningException("Valor da Conta inferior ao total das parcelas, verifique!!");
+			throw new WarningException("Valor da conta inferior ao total das parcelas!");
 		}
 
 		if (conta.getDia_vencimento() != null && (conta.getDia_vencimento() > 31 || conta.getDia_vencimento() <= 0)) {
-			throw new WarningException("Dia de Vencimento inválido (1-31), verifique!");
+			throw new WarningException("Dia de vencimento inválido (1-31)!");
 		}
 
-		if (UtilObjeto.isNull(conta.getQtde_parcelas()) || conta.getQtde_parcelas() == 0) {
+		if (UtilObjeto.isNull(conta.getQtde_parcelas()) || conta.getQtde_parcelas() <= 0) {
 			conta.setQtde_parcelas(1);
 		}
 
@@ -70,7 +69,7 @@ public class ContaServiceImpl {
 		if (conta.getContaPai() != null) {
 
 			if (conta.getContaPai().getStatus().equals(EnumStatusConta.B)) {
-				throw new WarningException("Conta Baixada, verifique!");
+				throw new WarningException("A conta foi baixada!");
 			}
 
 		}
@@ -102,7 +101,7 @@ public class ContaServiceImpl {
 
 	}
 
-	public void excluirTodos(Conta conta) throws WarningException, ErrorException {
+	public void excluirTodos(Conta conta) throws WarningException {
 
 		List<Conta> contas = (List<Conta>) this.obterPorAgrupador(conta.getNumr_agrupador());
 
@@ -115,11 +114,11 @@ public class ContaServiceImpl {
 
 	}
 
-	public Double somaParciais(Conta conta) throws ErrorException {
+	public Double somaParciais(Conta conta) {
 		return somaParciais(conta, true);
 	}
 
-	public Double somaParciais(Conta conta, boolean apenasBaixadas) throws ErrorException {
+	public Double somaParciais(Conta conta, boolean apenasBaixadas) {
 
 		if (conta == null) {
 			return 0.0;
@@ -155,17 +154,17 @@ public class ContaServiceImpl {
 
 	}
 
-	public void exluir(Conta conta) throws WarningException, ErrorException {
+	public void exluir(Conta conta) throws WarningException {
 
 		if (conta.getContaPai() != null) {
 			if (conta.getContaPai().getStatus().equals(EnumStatusConta.B)) {
-				throw new WarningException("Conta Pai Baixada, verifique!");
+				throw new WarningException("Conta pai baixada!");
 			}
 
 		}
 
 		if (conta.getStatus().equals(EnumStatusConta.B)) {
-			throw new WarningException("Conta já baixada, verifique!");
+			throw new WarningException("Conta já baixada!");
 		}
 
 		List<Conta> contasFilhas = buscaContasFilhas(conta.getId());
@@ -193,9 +192,9 @@ public class ContaServiceImpl {
 	}
 
 	public List<Conta> buscaContaMes(Integer mesSelecionado, Integer anoSelecionado, Usuario usuario)
-			throws WarningException, ErrorException {
+			throws WarningException {
 		if (usuario == null || usuario.getId() == null) {
-			throw new WarningException("Usuário inválido, verifique!");
+			throw new WarningException("Usuário inválido!");
 		}
 		List<Conta> listaContas = contaDAOImpl.buscaContaMes(mesSelecionado, anoSelecionado, usuario);
 		for (Conta conta : listaContas) {
@@ -208,7 +207,7 @@ public class ContaServiceImpl {
 		return contaDAOImpl.buscaContasAcumuladoAberto(mesSelecionado, anoSelecionado, usuario);
 	}
 
-	public void baixarConta(Conta conta) throws WarningException, ErrorException {
+	public void baixarConta(Conta conta) throws WarningException {
 
 		if (conta.getStatus().equals(EnumStatusConta.A)) {
 
@@ -231,9 +230,9 @@ public class ContaServiceImpl {
 
 				// Conta Filha
 				if (conta.getContaPai().getStatus().equals(EnumStatusConta.B)) {
-					throw new WarningException("Conta Pai já baixada, verifique!");
+					throw new WarningException("Conta pai já baixada!");
 				}
-				
+
 				// Altera Valor da conta para o valor das parciais (caso
 				// parciais maior que conta)
 				totalParciais = somaParciais(conta.getContaPai(), false);
@@ -254,9 +253,10 @@ public class ContaServiceImpl {
 			contaDAOImpl.salvar(conta);
 
 		}
+
 	}
 
-	public void abrirConta(Conta conta) throws ErrorException, WarningException {
+	public void abrirConta(Conta conta) throws WarningException {
 
 		if (conta.getStatus().equals(EnumStatusConta.B)) {
 			conta.setStatus(EnumStatusConta.A);
@@ -278,7 +278,7 @@ public class ContaServiceImpl {
 				// Conta Filha
 
 				if (conta.getContaPai().getStatus().equals(EnumStatusConta.B)) {
-					throw new WarningException("Conta Pai já baixada, verifique!");
+					throw new WarningException("Conta pai já baixada!");
 				}
 				if (conta.getTipo().equals(EnumTipoConta.D)) {
 					conta.getUsuario().setSaldo(conta.getContaPai().getUsuario().getSaldo() + (conta.getValor()));
@@ -302,7 +302,7 @@ public class ContaServiceImpl {
 		return contaDAOImpl.obter(id);
 	}
 
-	public void salvarTodos(Conta conta) throws ErrorException {
+	public void salvarTodos(Conta conta) {
 		List<Conta> contas = (List<Conta>) contaDAOImpl.obterPorAgrupador(conta.getNumr_agrupador());
 
 		for (Conta conta2 : contas) {

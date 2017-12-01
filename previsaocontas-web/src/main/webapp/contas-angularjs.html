@@ -2,8 +2,7 @@
 <html>
 <head>
 <meta charset="UTF-8" />
-	<meta http-equiv="Refresh"
-		content="240;URL=#{facesContext.externalContext.requestContextPath}/contas/contas-angularjs.html" />
+<meta http-equiv="Refresh" content="240;URL=#{facesContext.externalContext.requestContextPath}/contas/contas-angularjs.html" />
 <title>Minhas Contas</title>
 <script type="text/javascript" src="./resources/js/angular.min.js"></script>
 <script type="text/javascript" src="./resources/js/angular-locale_pt-br.js"></script>
@@ -12,12 +11,10 @@
 <script type="text/javascript">
 	var app = angular.module('myapp', [ 'rw.moneymask' ]);
 
-	app.controller('myappcontroller', function($scope, $http) {
+	app.controller('myappcontroller', function($scope, $http, $timeout) {
 
 		$scope.mostraEdicao = false
 		$scope.listaAnos = []
-		$scope.ano = 0
-		$scope.mes = 0
 		$scope.usuarioLogado = false
 		$scope.tiposConta = []
 		$scope.conta = {
@@ -36,9 +33,16 @@
 			data_mes : new Date(),
 			flag_comum : "N"
 		}
+		$scope.usuario = {
+			id : null,
+			data_registro : null,
+			login : "",
+			senha : "",
+			saldo : 0
+		}
 		$scope.contaFilha = JSON.parse(JSON.stringify($scope.conta))
 		$scope.contaFilha.data_registro = new Date();
-		$scope.msg = ""
+
 		$scope.contas = []
 		$scope.contasFilhas = []
 		$scope.userform = {
@@ -46,7 +50,40 @@
 			senha : ""
 		};
 
-		login();
+		$scope.msg = ""
+		$scope.msgTitulo = "";
+		$scope.msgClass = "";
+		$scope.ano = (new Date()).getFullYear();
+		$scope.mes = (new Date()).getMonth() + 1;
+
+		getUsuarioLogado();
+		iniciar();
+
+		function iniciar() {
+			if (usuario != null) {
+				listaAnos();
+			}
+		}
+
+		function msgErro(msg, statusHTTP) {
+			$scope.msg = "";
+			$scope.msg = msg;
+			if (statusHTTP == 406) {
+				$scope.msgTitulo = "Verifique!";
+				$scope.msgClass = "alert alert-warning alert-dismissable fade in";
+			} else if (statusHTTP == 500) {
+				$scope.msgTitulo = "Erro!";
+				$scope.msgClass = "alert alert-danger alert-dismissable fade in";
+			}
+			show(3000);
+		}
+		function msgSucesso(msg) {
+			$scope.msg = "";
+			$scope.msg = msg;
+			$scope.msgTitulo = "Sucesso!";
+			$scope.msgClass = "alert alert-success alert-dismissable fade in";
+			show(3000);
+		}
 
 		$scope.salvar = function() {
 			$http({
@@ -57,16 +94,32 @@
 					'Content-Type' : 'application/json'
 				}
 			}).then(function successCallback(response) {
-				$scope.msg = response.data.mensagem;
+				msgSucesso(response.data.mensagem);
 				$scope.listarContas();
 				$scope.novaConta();
 			}, function errorCallback(response) {
-				$scope.msg = response.data.mensagem;
+				msgErro(response.data.mensagem, response.status)
 			});
 		}
-		
+
+		$scope.alterarSaldo = function() {
+			$http({
+				method : 'POST',
+				url : 'rest/usuario/alterarSaldo/',
+				data : angular.toJson($scope.usuario),
+				headers : {
+					'Content-Type' : 'application/json'
+				}
+			}).then(function successCallback(response) {
+				msgSucesso(response.data.mensagem);
+				iniciar();
+			}, function errorCallback(response) {
+				msgErro(response.data.mensagem, response.status)
+			});
+		}
+
 		$scope.salvarFilha = function() {
-			
+
 			$scope.contaFilha.data_registro = new Date();
 			$scope.contaFilha.data_mes = $scope.conta.data_mes;
 			$scope.contaFilha.flag_comum = $scope.conta.flag_comum;
@@ -74,7 +127,7 @@
 			$scope.contaFilha.status = "A";
 			$scope.contaFilha.usuario = $scope.conta.usuario;
 			$scope.contaFilha.contaPai = $scope.conta;
-			
+
 			$http({
 				method : 'POST',
 				url : 'rest/contas/salvar/',
@@ -83,18 +136,18 @@
 					'Content-Type' : 'application/json'
 				}
 			}).then(function successCallback(response) {
-				$scope.msg = response.data.mensagem;
+				msgSucesso(response.data.mensagem);
 				$scope.listarContasFilhas($scope.conta.id);
 				$scope.novaContaFilha();
 			}, function errorCallback(response) {
-				$scope.msg = response.data.mensagem;
+				msgErro(response.data.mensagem, response.status)
 			});
 		}
-		
+
 		$scope.salvarTodos = function() {
 			if (confirm('Salvar todas as parcelas relacionadas e não pagas iguais a essa?') == false) {
-					return;
-				}
+				return;
+			}
 			$http({
 				method : 'POST',
 				url : 'rest/contas/salvarTodos/',
@@ -103,14 +156,18 @@
 					'Content-Type' : 'application/json'
 				}
 			}).then(function successCallback(response) {
-				$scope.msg = response.data.mensagem;
+				msgSucesso(response.data.mensagem);
 				$scope.listarContas();
-				$scope.novaConta();
+				if (c.contaPai == null) {
+					$scope.editarConta(response.data.objecto);
+				} else {
+					$scope.editarConta(response.data.objecto.contaPai);
+				}
 			}, function errorCallback(response) {
-				$scope.msg = response.data.mensagem;
+				msgErro(response.data.mensagem, response.status)
 			});
 		}
-		
+
 		$scope.baixar = function(c) {
 			$http({
 				method : 'POST',
@@ -120,18 +177,19 @@
 					'Content-Type' : 'application/json'
 				}
 			}).then(function successCallback(response) {
-				$scope.msg = response.data.mensagem;
+				msgSucesso(response.data.mensagem);
 				$scope.listarContas();
+				$scope.cancelarEdicao();
 				if (c.contaPai == null) {
-					$scope.limparEdicao();	
-				}else {
-					$scope.editarConta(c.contaPai);
+					$scope.cancelarEdicao();
+				} else {
+					$scope.editarConta(response.data.objecto.contaPai);
 				}
 			}, function errorCallback(response) {
-				$scope.msg = response.data.mensagem;
+				msgErro(response.data.mensagem, response.status)
 			});
 		}
-		
+
 		$scope.cancelarBaixa = function(c) {
 			$http({
 				method : 'POST',
@@ -141,18 +199,18 @@
 					'Content-Type' : 'application/json'
 				}
 			}).then(function successCallback(response) {
-				$scope.msg = response.data.mensagem;
+				msgSucesso(response.data.mensagem);
 				$scope.listarContas();
 				if (c.contaPai == null) {
-					$scope.limparEdicao();	
-				}else {
-					$scope.editarConta(c.contaPai);
+					$scope.cancelarEdicao();
+				} else {
+					$scope.editarConta(response.data.objecto.contaPai);
 				}
 			}, function errorCallback(response) {
-				$scope.msg = response.data.mensagem;
+				msgErro(response.data.mensagem, response.status)
 			});
 		}
-		
+
 		$scope.excluir = function(c) {
 			if (confirm('Excluir conta (' + c.descricao + ')') == false) {
 				return;
@@ -165,19 +223,18 @@
 					'Content-Type' : 'application/json'
 				}
 			}).then(function successCallback(response) {
-				$scope.msg = response.data.mensagem;
+				msgSucesso(response.data.mensagem);
 				$scope.listarContas();
 				if (c.contaPai == null) {
-					$scope.limparEdicao();	
-				}else {
-					$scope.editarConta(c.contaPai);
+					$scope.cancelarEdicao();
+				} else {
+					$scope.editarConta(response.data.objecto.contaPai);
 				}
 			}, function errorCallback(response) {
-				$scope.msg = response.data.mensagem;
+				msgErro(response.data.mensagem, response.status)
 			});
 		}
-		
-		
+
 		$scope.excluirTodos = function() {
 			if (confirm('Excluir todas as parcelas relacionadas e não pagas?') == false) {
 				return;
@@ -190,31 +247,29 @@
 					'Content-Type' : 'application/json'
 				}
 			}).then(function successCallback(response) {
-				$scope.msg = response.data.mensagem;
+				msgSucesso(response.data.mensagem);
 				$scope.listarContas();
-				if (c.contaPai == null) {
-					$scope.limparEdicao();	
-				}else {
-					$scope.editarConta(c.contaPai);
-				}
+				$scope.cancelarEdicao()
 			}, function errorCallback(response) {
-				$scope.msg = response.data.mensagem;
+				msgErro(response.data.mensagem, response.status)
 			});
 		}
 
 		$scope.listarContas = function() {
-			$scope.limparEdicao();
+			$scope.cancelarEdicao();
+
 			$http({
 				method : 'GET',
 				url : 'rest/contas/' + $scope.mes + '/' + $scope.ano
 			}).then(function successCallback(response) {
 				$scope.contas = response.data;
+				getUsuarioLogado();
 			}, function errorCallback(response) {
 				$scope.contas = [];
-				$scope.msg = response.data.mensagem;
+				msgErro(response.data.mensagem, response.status)
 			});
 		}
-		
+
 		$scope.listarContasFilhas = function(idPai) {
 			$http({
 				method : 'GET',
@@ -223,10 +278,9 @@
 				$scope.contasFilhas = response.data;
 			}, function errorCallback(response) {
 				$scope.contasFilhas = [];
-				$scope.msg = response.data.mensagem;
+				msgErro(response.data.mensagem, response.status)
 			});
 		}
-		
 
 		function listaAnos() {
 			$http({
@@ -234,27 +288,25 @@
 				url : 'rest/anos',
 			}).then(function successCallback(response) {
 				$scope.listaAnos = response.data.listaAnos;
-				$scope.ano = (new Date()).getFullYear();
-				$scope.mes = (new Date()).getMonth() + 1;
 				tiposConta();
 			}, function errorCallback(response) {
 				$scope.listaAnos = [];
-				$scope.msg = "Erro ao buscar Lista de Anos";
+				msgErro("Erro ao buscar lista de anos!", response.status)
 			});
 		}
 
-		function login() {
+		function getUsuarioLogado() {
 			$http({
 				method : 'GET',
-				url : 'rest/login',
+				url : 'rest/login/usuarioLogado',
 			}).then(function successCallback(response) {
-				listaAnos();
-				$scope.userform.usuario = response.data.login;
+				$scope.usuario = response.data.objeto;
+				$scope.userform.usuario = $scope.usuario.login;
+				$scope.userform.senha = '';
 				disableLogin();
 				$scope.usuarioLogado = true;
 			}, function errorCallback(response) {
-				$scope.contas = [];
-				$scope.msg = response.data.mensagem;
+				msgErro(response.data.mensagem, response.status);
 			});
 		}
 
@@ -267,25 +319,21 @@
 				$scope.listarContas();
 			}, function errorCallback(response) {
 				$scope.tiposConta = [];
-				$scope.msg = "Erro ao buscar Tipos de Conta";
+				msgErro("Erro ao buscar tipo Conta!", response.status)
 			});
 		}
 
 		$scope.validaLogin = function() {
-			$http(
-					{
-						method : 'GET',
-						url : 'rest/login/' + $scope.userform.usuario + '/'
-								+ $scope.userform.senha,
-					}).then(function successCallback(response) {
-				$scope.msg = response.data.mensagem;
-				listaAnos();
-				disableLogin();
-				$scope.userform.senha = '';
-				$scope.usuarioLogado = true;
+			$http({
+				method : 'GET',
+				url : 'rest/login/' + $scope.userform.usuario + '/' + $scope.userform.senha,
+			}).then(function successCallback(response) {
+				getUsuarioLogado();
+				iniciar();
+				msgSucesso(response.data.mensagem);
 			}, function errorCallback(response) {
 				$scope.contas = [];
-				$scope.msg = response.data.mensagem;
+				msgErro(response.data.mensagem, response.status)
 				$scope.usuarioLogado = false;
 			});
 		}
@@ -297,12 +345,11 @@
 			}).then(function successCallback(response) {
 				$scope.contas = [];
 				enableLogin();
-				$scope.msg = response.data.mensagem;
+				msgSucesso(response.data.mensagem);
 				$scope.userform.senha = '';
 				$scope.usuarioLogado = false;
 			}, function errorCallback(response) {
-				console.log(response.data.resultado);
-				$scope.msg = response.data.mensagem;
+				msgErro(response.data.mensagem, response.status)
 			});
 		}
 
@@ -326,106 +373,97 @@
 			document.getElementById("qtdeParcelas").disabled = true;
 			$scope.mostraEdicao = true;
 			$scope.listarContasFilhas(c.id);
-			location.href = "#salvar";
+			location.href = "#editarConta";
 		}
-		
+
+		$scope.cancelarEdicao = function() {
+			$scope.novaConta();
+			$scope.mostraEdicao = false;
+		}
+
 		$scope.novaConta = function() {
 			$scope.conta = {
-					id : null,
-					data_registro : null,
-					descricao : "",
-					valor : 0,
-					dia_vencimento : null,
-					numr_agrupador : 0,
-					qtde_parcelas : 1,
-					numr_parcela : 1,
-					usuario : null,
-					contaPai : null,
-					valorParciais : 0,
-					tipo : "D",
-					data_mes : new Date(),
-					flag_comum : "N"
-				}
+				id : null,
+				data_registro : null,
+				descricao : "",
+				valor : 0,
+				dia_vencimento : null,
+				numr_agrupador : 0,
+				qtde_parcelas : 1,
+				numr_parcela : 1,
+				usuario : null,
+				contaPai : null,
+				valorParciais : 0,
+				tipo : "D",
+				data_mes : new Date($scope.ano, $scope.mes - 1, 1, new Date().getHours(), new Date().getMinutes(), new Date().getSeconds()),
+				flag_comum : "N"
+			}
+			$scope.novaContaFilha();
+			$scope.contasFilhas = [];
 			document.getElementById("despesa").disabled = false;
 			document.getElementById("receita").disabled = false;
 			document.getElementById("qtdeParcelas").disabled = false;
 			$scope.mostraEdicao = true;
 			document.getElementById('descricao').focus();
 		}
-		
+
 		$scope.novaContaFilha = function() {
 			$scope.contaFilha = {
-					id : null,
-					data_registro : new Date(),
-					descricao : "",
-					valor : 0,
-					dia_vencimento : null,
-					numr_agrupador : 0,
-					qtde_parcelas : 1,
-					numr_parcela : 1,
-					usuario : null,
-					contaPai : null,
-					valorParciais : 0,
-					tipo : "D",
-					data_mes : new Date(),
-					flag_comum : "N"
-				}
+				id : null,
+				data_registro : new Date(),
+				descricao : "",
+				valor : 0,
+				dia_vencimento : null,
+				numr_agrupador : 0,
+				qtde_parcelas : 1,
+				numr_parcela : 1,
+				usuario : null,
+				contaPai : null,
+				valorParciais : 0,
+				tipo : "D",
+				data_mes : new Date(),
+				flag_comum : "N"
+			}
 		}
-		
-		
-		
-		$scope.limparEdicao = function() {
-			$scope.conta = {
-					id : null,
-					data_registro : null,
-					descricao : "",
-					valor : 0,
-					dia_vencimento : null,
-					numr_agrupador : 0,
-					qtde_parcelas : 1,
-					numr_parcela : 0,
-					usuario : null,
-					contaPai : null,
-					valorParciais : 0,
-					tipo : "D",
-					data_mes : new Date(),
-					flag_comum : "N"
-				}
-			$scope.contasFilhas = [];
-			document.getElementById("despesa").disabled = false;
-			document.getElementById("receita").disabled = false;
-			document.getElementById("qtdeParcelas").disabled = false;
-		}
-		
+
 		$scope.cssLinhaTabela = function(c) {
-			css = "cursor: pointer;";
-			
+
+			css = [];
+			css.cursor = "pointer";
+
 			if (c.tipo == 'D') {
 				if (c.status == "B") {
-					css = css + "color: #DCBCB9;";
-				}	else{
+					css.color = "#DCBCB9";
+				} else {
 					if (c.valorParciais > 0) {
-						css = css + "color: #A94442;";	
-					}else {
-						css = css + "color: red;";	
+						css.color = "#A94442";
+					} else {
+						css.color = 'red';
 					}
 				}
-			}else {
-				
+			} else {
+
 				if (c.status == "B") {
-					css = css + "color: #C2D8C2;";
-				}	else{
+					css.color = "#C2D8C2";
+				} else {
 					if (c.valorParciais > 0) {
-						css = css + "color: ##3D803E;";	
-					}else {
-						css = css + "color: green;";	
+						css.color = '#3D803E';
+					} else {
+						css.color = 'green';
 					}
 				}
 			}
-			
+
 			return css;
 		}
-		
+
+		function show(timeout_ms) {
+			$timeout(function() {
+				$scope.msg = "";
+			}, timeout_ms);
+
+		}
+
 	});
 </script>
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
@@ -435,28 +473,45 @@
 </head>
 <body ng-app="myapp" ng-controller="myappcontroller">
 	<div class="container-fluid">
-	 <div class="row">
-    	<div class="col-md-2">
-	    	<form>
+		<div class="row">
+			<div class="col-md-2">
 				<div class="form-group">
 					<label for="usuario">Usuário:</label> <input type="text" class="form-control input-sm" id="usuario" ng-model="userform.usuario">
 				</div>
 				<div class="form-group">
 					<label for="senha">Senha:</label> <input type="password" class="form-control input-sm" id="senha" ng-model="userform.senha">
 				</div>
-				
-				<button id="submit" type="submit" class="btn btn-default btn-sm" ng-click="validaLogin()">Entrar</button>
-				<button id="sair" type="submit" class="btn btn-default btn-sm" ng-click="logout()">Sair</button>
-				
-				<div class="form-group">
-					<h4 id="msg">{{msg}}</h4>
+
+				<button id="submit" type="submit" class="btn btn-default btn-sm" ng-click="validaLogin()">
+					<span class="glyphicon glyphicon-log-in"> </span> Entrar
+				</button>
+				<button id="sair" type="submit" class="btn btn-default btn-sm" ng-click="logout()">
+					<span class="glyphicon glyphicon-log-out"> </span> Sair
+				</button>
+
+				<div ng-hide="usuarioLogado == false">
+
+					<hr>
+					<div class="form-group">
+						<label for="valorSaldo">Saldo</label><input type="text" id="valorSaldo" ng-model="usuario.saldo" size="10" money-mask class="form-control">
+					</div>
+					<button id="alterarSaldo" type="submit" class="btn btn-default btn-sm" ng-click="alterarSaldo()">
+						<span class="glyphicon glyphicon-save"> </span> Alterar
+					</button>
 				</div>
-				
-			</form>	
-    	</div>
-    	<div class="col-md-10">
-	    	<div ng-hide="usuarioLogado == false">
-	    	
+
+				<hr>
+				<div class="form-group">
+					<div ng-class="msgClass" ng-hide="msg == ''">
+						<strong>{{msgTitulo}} </strong> <br> <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a> {{msg}}
+					</div>
+				</div>
+
+
+			</div>
+			<div class="col-md-8">
+				<div ng-hide="usuarioLogado == false">
+
 					<nav class="navbar navbar-default">
 						<div class="container-fluid">
 							<div class="navbar-header">
@@ -495,133 +550,164 @@
 							</thead>
 							<tbody>
 								<tr ng-repeat="c in contas">
-									<td><a ng-click="excluir(c)" href="#"> <span class="glyphicon glyphicon-trash"></span></a>
-									<a ng-click="baixar(c)" ng-if="c.status=='A'" href="#" title="Baixar Conta"><span class="glyphicon glyphicon-folder-open"></span></a>
-									<a ng-click="cancelarBaixa(c)" ng-if="c.status=='B'" href="#" title="Cancelar Baixa"><span class="glyphicon glyphicon-folder-close"></span></a></td>
-									<td style="background-color: {{c.tipo== 'D'? 'red !important':'green'}}"></td>
-									<td style="background-color: {{c.flag_comum== 'S'? 'yellow': 'inherit'}}"></td>
-									<td style={{cssLinhaTabela(c)}} ng-click="editarConta(c)">{{ c.descricao }}</td>
-									<td style={{cssLinhaTabela(c)}} ng-click="editarConta(c)">{{ c.valor | currency:"":2 }}</td>
-									<td style={{cssLinhaTabela(c)}} ng-click="editarConta(c)">{{ c.valorParciais | currency:"":2 }}</td>
-									<td style={{cssLinhaTabela(c)}} ng-click="editarConta(c)">{{ c.dia_vencimento }}</td>
-									<td style={{cssLinhaTabela(c)}} ng-click="editarConta(c)">{{ c.numr_parcela }} - {{ c.qtde_parcelas }}</td>
-									<td style={{cssLinhaTabela(c)}} ng-click="editarConta(c)">{{ c.data_registro | date:'dd/MM/yyyy HH:mm:ss' }}</td>
+									<td><a ng-click="excluir(c)" href="#"> <span class="glyphicon glyphicon-trash"></span></a> <a ng-click="baixar(c)" ng-if="c.status=='A'" href="#" title="Baixar Conta"><span class="glyphicon glyphicon-folder-open"></span></a> <a ng-click="cancelarBaixa(c)" ng-if="c.status=='B'" href="#"
+										title="Cancelar Baixa"><span class="glyphicon glyphicon-folder-close"></span></a></td>
+									<td ng-style="{'background-color': c.tipo== 'D'? 'red':'green'}"></td>
+									<td ng-style="{'background-color': c.flag_comum== 'S'? 'yellow': 'inherit'}"></td>
+									<td ng-style="cssLinhaTabela(c)" ng-click="editarConta(c)">{{ c.descricao }}</td>
+									<td ng-style="cssLinhaTabela(c)" ng-click="editarConta(c)">{{ c.valor | currency:"":2 }}</td>
+									<td ng-style="cssLinhaTabela(c)" ng-click="editarConta(c)">{{ c.valorParciais | currency:"":2 }}</td>
+									<td ng-style="cssLinhaTabela(c)" ng-click="editarConta(c)">{{ c.dia_vencimento }}</td>
+									<td ng-style="cssLinhaTabela(c)" ng-click="editarConta(c)">{{ c.numr_parcela }} - {{ c.qtde_parcelas }}</td>
+									<td ng-style="cssLinhaTabela(c)" ng-click="editarConta(c)">{{ c.data_registro | date:'dd/MM/yyyy HH:mm:ss' }}</td>
 								</tr>
 							</tbody>
-							</table>
-						</div>
-		
-					<button id="novaConta" ng-click="novaConta();" type="submit" class="btn btn-default">Nova</button>
-					<button id="fechar" ng-click="mostraEdicao = false" type="submit" class="btn btn-default">Fechar</button>
-					
+						</table>
+					</div>
+
+					<button id="novaConta" ng-click="novaConta();" type="submit" class="btn btn-default">
+						<span class="glyphicon glyphicon-plus"> </span> Nova
+					</button>
+					<button id="fechar" ng-click="mostraEdicao = false" type="submit" class="btn btn-default">
+						<span class="glyphicon glyphicon-eye-close"> </span> Fechar
+					</button>
+					<div class="row" style="min-height: 10px !important">
+						<div class="col-md-12"></div>
+					</div>
 					<div id="editarConta" ng-hide="mostraEdicao == false">
-						
-							<form>
-								<div class="panel panel-default">
-									<div class="row">
-									
-										<div class="col-md-4">
-												<div class="panel panel-default">
-													<div class="row">
+						<div class="panel panel-default">
+							<div class="panel-heading">Editar Conta</div>
+							<div class="panel-body">
+								<div class="row">
+									<div class="col-md-5">
+										<div class="panel panel-default">
+											<div class="panel-heading">Conta</div>
+											<div class="panel-body">
+												<div class="row">
 													<div class="col-md-12">
-															<input id="despesa" type="radio" ng-model="conta.tipo" value="D"><label style="color: red;" for="despesa">Despesa</label> <input id="receita" type="radio" ng-model="conta.tipo" value="R"><label style="color: green;" for="receita">Receita</label>
-															<input title="Conta Comun a todos os meses" type="checkbox" id="flagComun" ng-model="conta.flag_comum" size="30" ng-true-value="'S'" ng-false-value="'N'"><label  style="color: yellow; background-color: lightgray" for="flagComun">Conta Comun</label>
-															</div>
-													</div>
-														<div class="row">
-														<div class="col-md-12">
-															<label for="descricao">Descrição</label><input type="text" id="descricao" ng-model="conta.descricao" size="30" class="form-control">
-															 
-															 </div>
-														</div>
-														<div class="row">
-														<div class="col-md-12">
-															<label for="valor">Valor</label><input type="text" id="valor" ng-model="conta.valor" size="10" money-mask class="form-control">
-															</div>
-														</div>
-														<div class="row">
-														<div class="col-md-12">
-															<label for=Data>Data</label><input type="date" id="data" name="data" ng-model="conta.data_mes" class="form-control" />
-															</div>
-														</div>
-														<div class="row">
-														<div class="col-md-12">
-															<label for="vencimento">Vencimento</label><input type="number" id="vencimento" ng-model="conta.dia_vencimento" class="form-control">
-															</div>
-														</div>
-														<div class="row">
-														<div class="col-md-12">
-															<label for="qtdeParcelas">Parcelas</label><input type="number" id="qtdeParcelas" ng-model="conta.qtde_parcelas" class="form-control">
-															</div>
-														</div>
-													
-													<div class="row">
-														<div class="col-md-12">
-															<button id="salvar" ng-click="salvar();" type="submit" class="btn btn-default">Salvar</button>
-															<button id="salvarTodos" ng-hide="conta.qtde_parcelas == 1 || conta.id == null" ng-click="salvarTodos();" type="submit" class="btn btn-default" title="Salva todas as parcelas relacionadas não baixadas iguais a essa!">Salvar Parcelas</button>
-															<button id="excluirTodos" ng-hide="conta.qtde_parcelas == 1 || conta.id == null" ng-click="excluirTodos();" type="submit" class="btn btn-default" title="Exclui tdas as parcelas relacionadas não baixadas!">Excluir Parcelas</button>
-														</div>
+														<input id="despesa" type="radio" ng-model="conta.tipo" value="D"><label style="color: red;" for="despesa">Despesa</label> <input id="receita" type="radio" ng-model="conta.tipo" value="R"><label style="color: green;" for="receita">Receita</label> <input
+															title="Conta Comun a todos os meses" type="checkbox" id="flagComun" ng-model="conta.flag_comum" size="30" ng-true-value="'S'" ng-false-value="'N'"><label style="color: yellow; background-color: lightgray" for="flagComun">Conta Comun</label>
 													</div>
 												</div>
-										
-										</div>
-										<div class="col-md-8">
-										
-												<div class="panel panel-default">
-														<div class="row">
-															<div class="col-md-4">
-																<label for="descricaoFilha">Descrição</label><input type="text" id="descricaoFilha" ng-model="contaFilha.descricao" size="30" class="form-control">
-															</div>
-															<div class="col-md-2">
-																<label for="valorFilha">Valor</label><input type="text" id="valorFilha" ng-model="contaFilha.valor" size="10" money-mask class="form-control">
-															</div>
-															<div class="col-md-2">
-																<label for=dataFilha>Data</label><input type="date" id="dataFilha" name="data" ng-model="contaFilha.data_registro" class="form-control" />
-															</div>
-															<div class="col-md-2">
-																<label> </label><button id="salvar" ng-click="salvarFilha();" type="submit" class="btn btn-default">Salvar</button>
-															</div>
-														</div> 
-														<div class="row">
-															<div class="col-md-12">
-																<div class="table-responsive" ng-hide="contasFilhas.length <= 0">
-																	<table id="tabelaParciais" class="table table-hover table-striped table-bordered table-condensed">
-																		<thead>
-																			<tr>
-																				<th width="50"></th>
-																				<th>Descrição</th>
-																				<th>Valor</th>
-																				<th>Parciais</th>
-																			</tr>
-																		</thead>
-																		<tbody>
-																			<tr ng-repeat="c in contasFilhas">
-																				<td><a ng-click="excluir(c)" href="#"> <span class="glyphicon glyphicon-trash"></span></a>
-																				<a ng-click="baixar(c)" ng-if="c.status=='A'" href="#" title="Baixar Conta"><span class="glyphicon glyphicon-folder-open"></span></a>
-																				<a ng-click="cancelarBaixa(c)" ng-if="c.status=='B'" href="#" title="Cancelar Baixa"><span class="glyphicon glyphicon-folder-close"></span></a></td>
-																				<td style={{cssLinhaTabela(c)}}>{{ c.descricao }}</td>
-																				<td style={{cssLinhaTabela(c)}}>{{ c.valor | currency:"":2 }}</td>
-																				<td style={{cssLinhaTabela(c)}}>{{ c.data_registro | date:'dd/MM/yyyy HH:mm:ss' }}</td>
-																			</tr>
-																		</tbody>
-																	</table>
-																</div>
-														</div>
-														
+												<div class="row">
+													<div class="col-md-12">
+														<label for="descricao">Descrição</label><input type="text" id="descricao" ng-model="conta.descricao" size="30" class="form-control">
+
 													</div>
 												</div>
-										  
+												<div class="row">
+													<div class="col-md-12">
+														<label for="valor">Valor</label><input type="text" id="valor" ng-model="conta.valor" size="10" money-mask class="form-control">
+													</div>
+												</div>
+												<div class="row">
+													<div class="col-md-12">
+														<label for=Data>Data</label><input type="date" id="data" name="data" ng-model="conta.data_mes" class="form-control" />
+													</div>
+												</div>
+												<div class="row">
+													<div class="col-md-12">
+														<label for="vencimento">Vencimento</label><input type="number" id="vencimento" ng-model="conta.dia_vencimento" class="form-control">
+													</div>
+												</div>
+												<div class="row">
+													<div class="col-md-12">
+														<label for="qtdeParcelas">Parcelas</label><input type="number" id="qtdeParcelas" ng-model="conta.qtde_parcelas" class="form-control">
+													</div>
+												</div>
+												<div class="row" style="min-height: 10px !important">
+													<div class="col-md-12"></div>
+												</div>
+												<div class="row">
+													<div class="col-md-12">
+														<button id="salvar" ng-click="salvar();" type="submit" class="btn btn-default">
+															<span class="glyphicon glyphicon-save"> </span> Salvar
+														</button>
+														<button id="salvarTodos" ng-hide="conta.qtde_parcelas == 1 || conta.id == null" ng-click="salvarTodos();" type="submit" class="btn btn-default" title="Salva todas as parcelas relacionadas não baixadas iguais a essa!">
+															<span class="glyphicon glyphicon-save"> </span> Salvar Parcelas
+														</button>
+														<button id="excluirTodos" ng-hide="conta.qtde_parcelas == 1 || conta.id == null" ng-click="excluirTodos();" type="submit" class="btn btn-default" title="Exclui tdas as parcelas relacionadas não baixadas!">
+															<span class="glyphicon glyphicon-trash"> </span> Excluir Parcelas
+														</button>
+													</div>
+												</div>
 											</div>
-									
 										</div>
-								
 									</div>
-								<hr>
-							</form>
+									<div class="col-md-7">
+
+										<div class="panel panel-default">
+											<div class="panel-heading">Parciais</div>
+											<div class="panel-body">
+												<div class="row">
+													<div class="col-md-4">
+														<label for="descricaoFilha">Descrição</label><input type="text" id="descricaoFilha" ng-model="contaFilha.descricao" size="30" class="form-control">
+													</div>
+													<div class="col-md-4">
+														<label for="valorFilha">Valor</label><input type="text" id="valorFilha" ng-model="contaFilha.valor" size="10" money-mask class="form-control">
+													</div>
+													<div class="col-md-4">
+														<label for=dataFilha>Data</label><input type="date" id="dataFilha" name="data" ng-model="contaFilha.data_registro" class="form-control" />
+													</div>
+												</div>
+												<div class="row" style="min-height: 10px !important">
+													<div class="col-md-12"></div>
+												</div>
+												<div class="row">
+													<div class="col-md-12">
+														<button id="salvar" ng-click="salvarFilha();" type="submit" class="btn btn-default">
+															<span class="glyphicon glyphicon-save"> </span> Salvar
+														</button>
+													</div>
+												</div>
+												<div class="row" style="min-height: 10px !important">
+													<div class="col-md-12"></div>
+												</div>
+												<div class="row">
+													<div class="col-md-12">
+														<div class="table-responsive" ng-hide="contasFilhas.length <= 0">
+															<table id="tabelaParciais" class="table table-hover table-striped table-bordered table-condensed">
+																<thead>
+																	<tr>
+																		<th width="50"></th>
+																		<th>Descrição</th>
+																		<th>Valor</th>
+																		<th>Parciais</th>
+																	</tr>
+																</thead>
+																<tbody>
+																	<tr ng-repeat="c in contasFilhas">
+																		<td><a ng-click="excluir(c)" href="#"> <span class="glyphicon glyphicon-trash"></span></a> <a ng-click="baixar(c)" ng-if="c.status=='A'" href="#" title="Baixar Conta"><span class="glyphicon glyphicon-folder-open"></span></a> <a ng-click="cancelarBaixa(c)" ng-if="c.status=='B'"
+																			href="#" title="Cancelar Baixa"><span class="glyphicon glyphicon-folder-close"></span></a></td>
+																		<td ng-style="cssLinhaTabela(c)">{{ c.descricao }}</td>
+																		<td ng-style="cssLinhaTabela(c)">{{ c.valor | currency:"":2 }}</td>
+																		<td ng-style="cssLinhaTabela(c)">{{ c.data_registro | date:'dd/MM/yyyy HH:mm:ss' }}</td>
+																	</tr>
+																</tbody>
+															</table>
+														</div>
+													</div>
+												</div>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
 					</div>
 				</div>
-	    	</div>
-    	</div>
+
+				<hr>
+			</div>
+			<div ng-hide="usuarioLogado == false">
+				<div class="col-md-2">
+					<div class="form-group">
+						<label for="despesaMes">Resumo Mês</label> <input type="text" id="despesaMes" ng-model="resumoMes.despesa" size="10" money-mask class="form-control"> <input type="text" id="despesaMes" ng-model="resumoMes.despesa" size="10" money-mask class="form-control"> <input type="text"
+							id="despesaMes" ng-model="resumoMes.despesa" size="10" money-mask class="form-control"> <input type="text" id="despesaMes" ng-model="resumoMes.despesa" size="10" money-mask class="form-control">
+					</div>
+				</div>
+			</div>
+		</div>
 	</div>
 </body>
 </html>
