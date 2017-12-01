@@ -225,13 +225,6 @@ public class ContaServiceImpl {
 					if (conta.getTipo().equals(EnumTipoConta.R)) {
 						conta.getUsuario().setSaldo(conta.getUsuario().getSaldo() + (conta.getValor() - totalParciais));
 					}
-				} else {
-					// Altera Valor da conta para o valor das parciais (caso
-					// parciais maior que conta)
-					totalParciais = somaParciais(conta.getContaPai(), false);
-					if ((totalParciais) > conta.getContaPai().getValor()) {
-						conta.getContaPai().setValor(totalParciais);
-					}
 				}
 
 			} else {
@@ -239,6 +232,14 @@ public class ContaServiceImpl {
 				// Conta Filha
 				if (conta.getContaPai().getStatus().equals(EnumStatusConta.B)) {
 					throw new WarningException("Conta Pai já baixada, verifique!");
+				}
+				
+				// Altera Valor da conta para o valor das parciais (caso
+				// parciais maior que conta)
+				totalParciais = somaParciais(conta.getContaPai(), false);
+				if ((totalParciais) > conta.getContaPai().getValor()) {
+					conta.getContaPai().setValor(totalParciais);
+					contaDAOImpl.salvar(conta.getContaPai());
 				}
 
 				if (conta.getTipo().equals(EnumTipoConta.D)) {

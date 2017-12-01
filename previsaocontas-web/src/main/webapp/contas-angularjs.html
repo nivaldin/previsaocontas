@@ -2,6 +2,8 @@
 <html>
 <head>
 <meta charset="UTF-8" />
+	<meta http-equiv="Refresh"
+		content="240;URL=#{facesContext.externalContext.requestContextPath}/contas/contas-angularjs.html" />
 <title>Minhas Contas</title>
 <script type="text/javascript" src="./resources/js/angular.min.js"></script>
 <script type="text/javascript" src="./resources/js/angular-locale_pt-br.js"></script>
@@ -34,6 +36,8 @@
 			data_mes : new Date(),
 			flag_comum : "N"
 		}
+		$scope.contaFilha = JSON.parse(JSON.stringify($scope.conta))
+		$scope.contaFilha.data_registro = new Date();
 		$scope.msg = ""
 		$scope.contas = []
 		$scope.contasFilhas = []
@@ -56,6 +60,32 @@
 				$scope.msg = response.data.mensagem;
 				$scope.listarContas();
 				$scope.novaConta();
+			}, function errorCallback(response) {
+				$scope.msg = response.data.mensagem;
+			});
+		}
+		
+		$scope.salvarFilha = function() {
+			
+			$scope.contaFilha.data_registro = new Date();
+			$scope.contaFilha.data_mes = $scope.conta.data_mes;
+			$scope.contaFilha.flag_comum = $scope.conta.flag_comum;
+			$scope.contaFilha.tipo = $scope.conta.tipo;
+			$scope.contaFilha.status = "A";
+			$scope.contaFilha.usuario = $scope.conta.usuario;
+			$scope.contaFilha.contaPai = $scope.conta;
+			
+			$http({
+				method : 'POST',
+				url : 'rest/contas/salvar/',
+				data : angular.toJson($scope.contaFilha),
+				headers : {
+					'Content-Type' : 'application/json'
+				}
+			}).then(function successCallback(response) {
+				$scope.msg = response.data.mensagem;
+				$scope.listarContasFilhas($scope.conta.id);
+				$scope.novaContaFilha();
 			}, function errorCallback(response) {
 				$scope.msg = response.data.mensagem;
 			});
@@ -296,6 +326,7 @@
 			document.getElementById("qtdeParcelas").disabled = true;
 			$scope.mostraEdicao = true;
 			$scope.listarContasFilhas(c.id);
+			location.href = "#salvar";
 		}
 		
 		$scope.novaConta = function() {
@@ -321,6 +352,27 @@
 			$scope.mostraEdicao = true;
 			document.getElementById('descricao').focus();
 		}
+		
+		$scope.novaContaFilha = function() {
+			$scope.contaFilha = {
+					id : null,
+					data_registro : new Date(),
+					descricao : "",
+					valor : 0,
+					dia_vencimento : null,
+					numr_agrupador : 0,
+					qtde_parcelas : 1,
+					numr_parcela : 1,
+					usuario : null,
+					contaPai : null,
+					valorParciais : 0,
+					tipo : "D",
+					data_mes : new Date(),
+					flag_comum : "N"
+				}
+		}
+		
+		
 		
 		$scope.limparEdicao = function() {
 			$scope.conta = {
@@ -382,147 +434,194 @@
 
 </head>
 <body ng-app="myapp" ng-controller="myappcontroller">
-	<div class="container">
-		<hr>
-			<h3 id="msg">{{msg}}</h3>
-		<hr>
-		<form class="form-inline">
-			<div class="form-group">
-				<label for="usuario">Usuário:</label> <input type="text" class="form-control input-sm" id="usuario" ng-model="userform.usuario">
-			</div>
-			<div class="form-group">
-				<label for="senha">Senha:</label> <input type="password" class="form-control input-sm" id="senha" ng-model="userform.senha">
-			</div>
-			<button id="submit" type="submit" class="btn btn-default btn-sm" ng-click="validaLogin()">Entrar</button>
-			<button id="sair" type="submit" class="btn btn-default btn-sm" ng-click="logout()">Sair</button>
-		</form>
-		<hr>
-		<div ng-hide="usuarioLogado == false">
-			<nav class="navbar navbar-default">
-				<div class="container-fluid">
-					<div class="navbar-header">
-						<a class="navbar-brand" href="#"><select id="ano" ng-options="ano for ano in listaAnos" ng-model="ano"></select></a>
-					</div>
-					<ul class="nav navbar-nav">
-						<li><a ng-click="mes = 1; listarContas();" href="#">Jan</a></li>
-						<li><a ng-click="mes = 2; listarContas();" href="#">Fev</a></li>
-						<li><a ng-click="mes = 3; listarContas();" href="#">Mar</a></li>
-						<li><a ng-click="mes = 4; listarContas();" href="#">Abr</a></li>
-						<li><a ng-click="mes = 5; listarContas();" href="#">Mai</a></li>
-						<li><a ng-click="mes = 6; listarContas();" href="#">Jun</a></li>
-						<li><a ng-click="mes = 7; listarContas();" href="#">Jul</a></li>
-						<li><a ng-click="mes = 8; listarContas();" href="#">Ago</a></li>
-						<li><a ng-click="mes = 9; listarContas();" href="#">Set</a></li>
-						<li><a ng-click="mes = 10; listarContas();" href="#">Out</a></li>
-						<li><a ng-click="mes = 11; listarContas();" href="#">Nov</a></li>
-						<li><a ng-click="mes = 12; listarContas();" href="#">Dez</a></li>
-					</ul>
+	<div class="container-fluid">
+	 <div class="row">
+    	<div class="col-md-2">
+	    	<form>
+				<div class="form-group">
+					<label for="usuario">Usuário:</label> <input type="text" class="form-control input-sm" id="usuario" ng-model="userform.usuario">
 				</div>
-			</nav>
-			<div class="table-responsive">
-				<table class="table table-hover table-striped table-bordered table-condensed">
-					  <caption>Contas</caption>
-						<thead>
-							<tr>
-								<th width="50"></th>
-								<th width="5"></th>
-								<th>Descrição</th>
-								<th>Valor</th>
-								<th>Parciais</th>
-								<th>Vcto</th>
-								<th>Parcela</th>
-								<th>Data Registro</th>
-							</tr>
-						</thead>
-						<tbody>
-							<tr ng-repeat="c in contas">
-								<td><a ng-click="excluir(c)" href="#"> <span class="glyphicon glyphicon-trash"></span></a>
-								<a ng-click="baixar(c)" ng-if="c.status=='A'" href="#" title="Baixar Conta"><span class="glyphicon glyphicon-folder-open"></a>
-								<a ng-click="cancelarBaixa(c)" ng-if="c.status=='B'" href="#" title="Cancelar Baixa"><span class="glyphicon glyphicon-folder-close"></a></td>
-								<td style="background-color: {{c.flag_comum== 'S'? 'yellow': 'inherit'}}"></td>
-								<td style={{cssLinhaTabela(c)}} ng-click="editarConta(c)">{{ c.descricao }}</td>
-								<td style={{cssLinhaTabela(c)}} ng-click="editarConta(c)">{{ c.valor | currency:"":2 }}</td>
-								<td style={{cssLinhaTabela(c)}} ng-click="editarConta(c)">{{ c.valorParciais | currency:"":2 }}</td>
-								<td style={{cssLinhaTabela(c)}} ng-click="editarConta(c)">{{ c.dia_vencimento }}</td>
-								<td style={{cssLinhaTabela(c)}} ng-click="editarConta(c)">{{ c.numr_parcela }} - {{ c.qtde_parcelas }}</td>
-								<td style={{cssLinhaTabela(c)}} ng-click="editarConta(c)">{{ c.data_registro | date:'dd/MM/yyyy HH:mm:ss' }}</td>
-							</tr>
-						</tbody>
-					</table>
+				<div class="form-group">
+					<label for="senha">Senha:</label> <input type="password" class="form-control input-sm" id="senha" ng-model="userform.senha">
 				</div>
-
-			<button ng-click="novaConta();" type="submit" class="btn btn-default">Nova</button>
-			<button ng-click="mostraEdicao = false" type="submit" class="btn btn-default">Fechar</button>
-			
-			<div id="editarConta" ng-hide="mostraEdicao == false">
-			<hr>
-				<div class="container">
-					<form>
-						<div class="row">
-							<div class="col-sm-12">
-								<input id="despesa" type="radio" ng-model="conta.tipo" value="D"><label style="color: red;" for="despesa">Despesa</label> <input id="receita" type="radio" ng-model="conta.tipo" value="R"><label style="color: green;" for="receita">Receita</label>
-								<input title="Conta Comun a todos os meses" type="checkbox" id="flagComun" ng-model="conta.flag_comum" size="30" ng-true-value="'S'" ng-false-value="'N'"><label  style="color: yellow; background-color: lightgray" for="flagComun">Conta Comun</label>
+				
+				<button id="submit" type="submit" class="btn btn-default btn-sm" ng-click="validaLogin()">Entrar</button>
+				<button id="sair" type="submit" class="btn btn-default btn-sm" ng-click="logout()">Sair</button>
+				
+				<div class="form-group">
+					<h4 id="msg">{{msg}}</h4>
+				</div>
+				
+			</form>	
+    	</div>
+    	<div class="col-md-10">
+	    	<div ng-hide="usuarioLogado == false">
+	    	
+					<nav class="navbar navbar-default">
+						<div class="container-fluid">
+							<div class="navbar-header">
+								<a class="navbar-brand" href="#"><select id="ano" ng-options="ano for ano in listaAnos" ng-model="ano"></select></a>
 							</div>
+							<ul class="nav navbar-nav">
+								<li><a ng-click="mes = 1; listarContas();" href="#">Jan</a></li>
+								<li><a ng-click="mes = 2; listarContas();" href="#">Fev</a></li>
+								<li><a ng-click="mes = 3; listarContas();" href="#">Mar</a></li>
+								<li><a ng-click="mes = 4; listarContas();" href="#">Abr</a></li>
+								<li><a ng-click="mes = 5; listarContas();" href="#">Mai</a></li>
+								<li><a ng-click="mes = 6; listarContas();" href="#">Jun</a></li>
+								<li><a ng-click="mes = 7; listarContas();" href="#">Jul</a></li>
+								<li><a ng-click="mes = 8; listarContas();" href="#">Ago</a></li>
+								<li><a ng-click="mes = 9; listarContas();" href="#">Set</a></li>
+								<li><a ng-click="mes = 10; listarContas();" href="#">Out</a></li>
+								<li><a ng-click="mes = 11; listarContas();" href="#">Nov</a></li>
+								<li><a ng-click="mes = 12; listarContas();" href="#">Dez</a></li>
+							</ul>
 						</div>
-						<div class="row">
-							<div class="col-sm-4">
-								<label for="descricao">Descrição</label><input type="text" id="descricao" ng-model="conta.descricao" size="30" class="form-control">
-							</div>
-							<div class="col-sm-2">
-								<label for="valor">Valor</label><input type="text" id="valor" ng-model="conta.valor" size="10" money-mask class="form-control">
-							</div>
-							<div class="col-sm-2">
-								<label for=Data>Data</label><input type="date" id="data" name="data" ng-model="conta.data_mes" class="form-control" />
-							</div>
-							<div class="col-sm-1">
-								<label for="vencimento">Vencimento</label><input type="number" id="vencimento" ng-model="conta.dia_vencimento" class="form-control">
-							</div>
-							<div class="col-sm-1">
-								<label for="qtdeParcelas">Parcelas</label><input type="number" id="qtdeParcelas" ng-model="conta.qtde_parcelas" class="form-control">
-							</div>
-						</div>
-						<div class="row">
-							<div class="col-sm-12">
-								<label></label>
-							</div>
-						</div>
-						
-						<div class="table-responsive" ng-hide="contasFilhas.length <= 0">
-							<table class="table table-hover table-striped table-bordered table-condensed">
-							  <caption>Parciais</caption>
-								<thead>
-									<tr>
-										<th width="50"></th>
-										<th>Descrição</th>
-										<th>Valor</th>
-										<th>Parciais</th>
-									</tr>
-								</thead>
-								<tbody>
-									<tr ng-repeat="c in contasFilhas">
-										<td><a ng-click="excluir(c)" href="#"> <span class="glyphicon glyphicon-trash"></span></a>
-										<a ng-click="baixar(c)" ng-if="c.status=='A'" href="#" title="Baixar Conta"><span class="glyphicon glyphicon-folder-open"></a>
-										<a ng-click="cancelarBaixa(c)" ng-if="c.status=='B'" href="#" title="Cancelar Baixa"><span class="glyphicon glyphicon-folder-close"></a></td>
-										<td style={{cssLinhaTabela(c)}}>{{ c.descricao }}</td>
-										<td style={{cssLinhaTabela(c)}}>{{ c.valor | currency:"":2 }}</td>
-										<td style={{cssLinhaTabela(c)}}>{{ c.data_registro | date:'dd/MM/yyyy HH:mm:ss' }}</td>
-									</tr>
-								</tbody>
+					</nav>
+					<div class="table-responsive">
+						<table id="tabelaContas" class="table table-hover table-striped table-bordered table-condensed">
+							<thead>
+								<tr>
+									<th width="50"></th>
+									<th width="5"></th>
+									<th width="5"></th>
+									<th>Descrição</th>
+									<th>Valor</th>
+									<th>Parciais</th>
+									<th>Vcto</th>
+									<th>Parcela</th>
+									<th>Data Registro</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr ng-repeat="c in contas">
+									<td><a ng-click="excluir(c)" href="#"> <span class="glyphicon glyphicon-trash"></span></a>
+									<a ng-click="baixar(c)" ng-if="c.status=='A'" href="#" title="Baixar Conta"><span class="glyphicon glyphicon-folder-open"></span></a>
+									<a ng-click="cancelarBaixa(c)" ng-if="c.status=='B'" href="#" title="Cancelar Baixa"><span class="glyphicon glyphicon-folder-close"></span></a></td>
+									<td style="background-color: {{c.tipo== 'D'? 'red !important':'green'}}"></td>
+									<td style="background-color: {{c.flag_comum== 'S'? 'yellow': 'inherit'}}"></td>
+									<td style={{cssLinhaTabela(c)}} ng-click="editarConta(c)">{{ c.descricao }}</td>
+									<td style={{cssLinhaTabela(c)}} ng-click="editarConta(c)">{{ c.valor | currency:"":2 }}</td>
+									<td style={{cssLinhaTabela(c)}} ng-click="editarConta(c)">{{ c.valorParciais | currency:"":2 }}</td>
+									<td style={{cssLinhaTabela(c)}} ng-click="editarConta(c)">{{ c.dia_vencimento }}</td>
+									<td style={{cssLinhaTabela(c)}} ng-click="editarConta(c)">{{ c.numr_parcela }} - {{ c.qtde_parcelas }}</td>
+									<td style={{cssLinhaTabela(c)}} ng-click="editarConta(c)">{{ c.data_registro | date:'dd/MM/yyyy HH:mm:ss' }}</td>
+								</tr>
+							</tbody>
 							</table>
 						</div>
+		
+					<button id="novaConta" ng-click="novaConta();" type="submit" class="btn btn-default">Nova</button>
+					<button id="fechar" ng-click="mostraEdicao = false" type="submit" class="btn btn-default">Fechar</button>
+					
+					<div id="editarConta" ng-hide="mostraEdicao == false">
 						
-						
-						<div class="row">
-							<div class="col-sm-6">
-								<button ng-click="salvar();" type="submit" class="btn btn-default">Salvar</button>
-								<button ng-hide="conta.qtde_parcelas == 1 || conta.id == null" ng-click="salvarTodos();" type="submit" class="btn btn-default" title="Salva todas as parcelas relacionadas não baixadas iguais a essa!">Salvar Parcelas</button>
-								<button ng-hide="conta.qtde_parcelas == 1 || conta.id == null" ng-click="excluirTodos();" type="submit" class="btn btn-default" title="Exclui tdas as parcelas relacionadas não baixadas!">Excluir Parcelas</button>
-							</div>
-						</div>
-					</form>
+							<form>
+								<div class="panel panel-default">
+									<div class="row">
+									
+										<div class="col-md-4">
+												<div class="panel panel-default">
+													<div class="row">
+													<div class="col-md-12">
+															<input id="despesa" type="radio" ng-model="conta.tipo" value="D"><label style="color: red;" for="despesa">Despesa</label> <input id="receita" type="radio" ng-model="conta.tipo" value="R"><label style="color: green;" for="receita">Receita</label>
+															<input title="Conta Comun a todos os meses" type="checkbox" id="flagComun" ng-model="conta.flag_comum" size="30" ng-true-value="'S'" ng-false-value="'N'"><label  style="color: yellow; background-color: lightgray" for="flagComun">Conta Comun</label>
+															</div>
+													</div>
+														<div class="row">
+														<div class="col-md-12">
+															<label for="descricao">Descrição</label><input type="text" id="descricao" ng-model="conta.descricao" size="30" class="form-control">
+															 
+															 </div>
+														</div>
+														<div class="row">
+														<div class="col-md-12">
+															<label for="valor">Valor</label><input type="text" id="valor" ng-model="conta.valor" size="10" money-mask class="form-control">
+															</div>
+														</div>
+														<div class="row">
+														<div class="col-md-12">
+															<label for=Data>Data</label><input type="date" id="data" name="data" ng-model="conta.data_mes" class="form-control" />
+															</div>
+														</div>
+														<div class="row">
+														<div class="col-md-12">
+															<label for="vencimento">Vencimento</label><input type="number" id="vencimento" ng-model="conta.dia_vencimento" class="form-control">
+															</div>
+														</div>
+														<div class="row">
+														<div class="col-md-12">
+															<label for="qtdeParcelas">Parcelas</label><input type="number" id="qtdeParcelas" ng-model="conta.qtde_parcelas" class="form-control">
+															</div>
+														</div>
+													
+													<div class="row">
+														<div class="col-md-12">
+															<button id="salvar" ng-click="salvar();" type="submit" class="btn btn-default">Salvar</button>
+															<button id="salvarTodos" ng-hide="conta.qtde_parcelas == 1 || conta.id == null" ng-click="salvarTodos();" type="submit" class="btn btn-default" title="Salva todas as parcelas relacionadas não baixadas iguais a essa!">Salvar Parcelas</button>
+															<button id="excluirTodos" ng-hide="conta.qtde_parcelas == 1 || conta.id == null" ng-click="excluirTodos();" type="submit" class="btn btn-default" title="Exclui tdas as parcelas relacionadas não baixadas!">Excluir Parcelas</button>
+														</div>
+													</div>
+												</div>
+										
+										</div>
+										<div class="col-md-8">
+										
+												<div class="panel panel-default">
+														<div class="row">
+															<div class="col-md-4">
+																<label for="descricaoFilha">Descrição</label><input type="text" id="descricaoFilha" ng-model="contaFilha.descricao" size="30" class="form-control">
+															</div>
+															<div class="col-md-2">
+																<label for="valorFilha">Valor</label><input type="text" id="valorFilha" ng-model="contaFilha.valor" size="10" money-mask class="form-control">
+															</div>
+															<div class="col-md-2">
+																<label for=dataFilha>Data</label><input type="date" id="dataFilha" name="data" ng-model="contaFilha.data_registro" class="form-control" />
+															</div>
+															<div class="col-md-2">
+																<label> </label><button id="salvar" ng-click="salvarFilha();" type="submit" class="btn btn-default">Salvar</button>
+															</div>
+														</div> 
+														<div class="row">
+															<div class="col-md-12">
+																<div class="table-responsive" ng-hide="contasFilhas.length <= 0">
+																	<table id="tabelaParciais" class="table table-hover table-striped table-bordered table-condensed">
+																		<thead>
+																			<tr>
+																				<th width="50"></th>
+																				<th>Descrição</th>
+																				<th>Valor</th>
+																				<th>Parciais</th>
+																			</tr>
+																		</thead>
+																		<tbody>
+																			<tr ng-repeat="c in contasFilhas">
+																				<td><a ng-click="excluir(c)" href="#"> <span class="glyphicon glyphicon-trash"></span></a>
+																				<a ng-click="baixar(c)" ng-if="c.status=='A'" href="#" title="Baixar Conta"><span class="glyphicon glyphicon-folder-open"></span></a>
+																				<a ng-click="cancelarBaixa(c)" ng-if="c.status=='B'" href="#" title="Cancelar Baixa"><span class="glyphicon glyphicon-folder-close"></span></a></td>
+																				<td style={{cssLinhaTabela(c)}}>{{ c.descricao }}</td>
+																				<td style={{cssLinhaTabela(c)}}>{{ c.valor | currency:"":2 }}</td>
+																				<td style={{cssLinhaTabela(c)}}>{{ c.data_registro | date:'dd/MM/yyyy HH:mm:ss' }}</td>
+																			</tr>
+																		</tbody>
+																	</table>
+																</div>
+														</div>
+														
+													</div>
+												</div>
+										  
+											</div>
+									
+										</div>
+								
+									</div>
+								<hr>
+							</form>
+					</div>
 				</div>
-			</div>
-		</div>
+	    	</div>
+    	</div>
 	</div>
 </body>
 </html>
