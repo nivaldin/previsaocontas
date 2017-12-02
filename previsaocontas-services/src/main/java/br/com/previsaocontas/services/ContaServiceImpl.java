@@ -1,6 +1,7 @@
 package br.com.previsaocontas.services;
 
 import java.util.Calendar;
+import java.util.HashMap;
 import java.util.List;
 
 import org.apache.commons.lang3.SerializationUtils;
@@ -15,6 +16,7 @@ import br.com.previsaocontas.enums.EnumTipoConta;
 import br.com.previsaocontas.exception.WarningException;
 import br.com.previsaocontas.model.Conta;
 import br.com.previsaocontas.model.Usuario;
+import br.com.previsaocontas.utilitarios.UtilNumero;
 import br.com.previsaocontas.utilitarios.UtilObjeto;
 
 @Service
@@ -203,7 +205,7 @@ public class ContaServiceImpl {
 		return listaContas;
 	}
 
-	public List<Conta> buscaContasAcumuladoAberto(Integer mesSelecionado, Integer anoSelecionado, Usuario usuario) {
+	private List<Conta> buscaContasAcumuladoAberto(Integer mesSelecionado, Integer anoSelecionado, Usuario usuario) {
 		return contaDAOImpl.buscaContasAcumuladoAberto(mesSelecionado, anoSelecionado, usuario);
 	}
 
@@ -253,6 +255,97 @@ public class ContaServiceImpl {
 			contaDAOImpl.salvar(conta);
 
 		}
+
+	}
+	
+	public HashMap<String, Double> calculaResumoMes(Integer mes, Integer ano, List<Conta> contas, Usuario usuario) {
+	    
+		Double totalDespesaMes = 0.0;
+		Double totalReceitaMes = 0.0;
+		Double totalDespesaPrevistoMes = 0.0;
+		Double totalReceitaPrevistoMes = 0.0;
+		Double totalDespesaPrevistoAcumulado = 0.0;
+		Double totalReceitaPrevistoAcumulado = 0.0;
+
+		for (Conta conta : contas) {
+
+			// Despesas Mes
+			if (conta.getTipo().equals(EnumTipoConta.D)) {
+
+				totalDespesaMes += conta.getValor();
+
+				if (conta.getStatus().equals(EnumStatusConta.A)) {
+
+					Double totalParciais = this.somaParciais(conta);
+					if (totalParciais == conta.getValor()) {
+
+						totalParciais = 0.0;
+
+					}
+					totalDespesaPrevistoMes += conta.getValor() - UtilNumero.round(totalParciais, 2);
+
+				}
+
+			}
+			// Receitas Mes
+			if (conta.getTipo().equals(EnumTipoConta.R)) {
+
+				totalReceitaMes += conta.getValor();
+
+				if (conta.getStatus().equals(EnumStatusConta.A)) {
+
+					Double totalParciais = this.somaParciais(conta);
+					if (totalParciais == conta.getValor()) {
+
+						totalParciais = 0.0;
+
+					}
+					totalReceitaPrevistoMes += conta.getValor() - UtilNumero.round(totalParciais, 2);
+
+				}
+
+			}
+
+		}
+
+		List<Conta> contasAcumuladoAberto = this.buscaContasAcumuladoAberto(mes, ano,
+			usuario);
+		for (Conta conta : contasAcumuladoAberto) {
+
+			if (conta.getTipo().equals(EnumTipoConta.D)) {
+
+				Double totalParciais = this.somaParciais(conta);
+				if (totalParciais == conta.getValor()) {
+
+					totalParciais = 0.0;
+
+				}
+				totalDespesaPrevistoAcumulado += conta.getValor() - UtilNumero.round(totalParciais, 2);
+
+			}
+
+			if (conta.getTipo().equals(EnumTipoConta.R)) {
+
+				Double totalParciais = this.somaParciais(conta);
+				if (totalParciais == conta.getValor()) {
+
+					totalParciais = 0.0;
+
+				}
+				totalReceitaPrevistoAcumulado += conta.getValor() - UtilNumero.round(totalParciais, 2);
+
+			}
+		}
+		
+		HashMap<String, Double> listaValores = new HashMap<>();
+		listaValores.put("totalDespesaMes", totalDespesaMes);
+		listaValores.put("totalReceitaMes", totalReceitaMes);
+		listaValores.put("totalDespesaPrevistoMes", totalDespesaPrevistoMes);
+		listaValores.put("totalReceitaPrevistoMes", totalReceitaPrevistoMes);
+		listaValores.put("totalDespesaPrevistoAcumulado", totalDespesaPrevistoAcumulado);
+		listaValores.put("totalReceitaPrevistoAcumulado", totalReceitaPrevistoAcumulado);
+		
+		return listaValores;
 
 	}
 
