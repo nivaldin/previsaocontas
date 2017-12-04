@@ -2,593 +2,600 @@
 <html>
 <head>
 <meta charset="UTF-8" />
-<meta http-equiv="Refresh" content="240;URL=#{facesContext.externalContext.requestContextPath}/contas/contas-angularjs.html" />
+<meta http-equiv="Refresh" content="240;URL=#{facesContext.externalContext.requestContextPath}/contas-angularjs.html" />
 <title>Minhas Contas</title>
 
 <script type="text/javascript" src="./resources/js/angular.min.js"></script>
 <script type="text/javascript" src="./resources/js/angular-locale_pt-br.js"></script>
 <script type="text/javascript" src="./resources/js/rw-money-mask.js"></script>
 
-<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-
+<link rel="stylesheet" href="./resources/css/bootstrap.min.css"></link>
+<script src="./resources/js/jquery.min.js"></script>
+<script src="./resources/js/bootstrap.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.4/angular-animate.js"></script>
 <script type="text/javascript">
-	var app = angular.module('myapp', [ 'rw.moneymask' ]);
+	var app = angular.module('myapp', [ 'rw.moneymask', 'ngAnimate' ]);
 
-	app
-			.controller(
-					'myappcontroller',
-					function($scope, $http, $timeout) {
+	app.controller('myappcontroller', function($scope, $http, $timeout, $q, $rootScope) {
 
-						$scope.mostraEdicao = false
-						$scope.listaAnos = []
-						$scope.usuarioLogado = false
-						$scope.tiposConta = []
-						$scope.conta = {
-							id : null,
-							data_registro : null,
-							descricao : "",
-							valor : 0,
-							dia_vencimento : null,
-							numr_agrupador : 0,
-							qtde_parcelas : 1,
-							numr_parcela : 0,
-							usuario : null,
-							contaPai : null,
-							valorParciais : 0,
-							tipo : "D",
-							data_mes : new Date(),
-							flag_comum : "N"
-						}
-						$scope.usuario = {
-							id : null,
-							data_registro : null,
-							login : "",
-							senha : "",
-							saldo : 0
-						}
-						$scope.contaFilha = JSON.parse(JSON
-								.stringify($scope.conta))
-						$scope.contaFilha.data_registro = new Date();
+		$scope.mostraEdicao = false
+		$scope.listaAnos = []
+		$scope.indrUsuarioLogado = false
+		$scope.conta = {
+			id : null,
+			data_registro : null,
+			descricao : "",
+			valor : 0,
+			dia_vencimento : null,
+			numr_agrupador : 0,
+			qtde_parcelas : 1,
+			numr_parcela : 0,
+			usuario : null,
+			contaPai : null,
+			valorParciais : 0,
+			tipo : "D",
+			data_mes : new Date(),
+			flag_comum : "N"
+		}
+		$scope.usuarioLogado = {
+			id : null,
+			data_registro : null,
+			login : "",
+			senha : "",
+			saldo : 0
+		}
+		$scope.contaFilha = JSON.parse(JSON.stringify($scope.conta))
+		$scope.contaFilha.data_registro = new Date();
 
-						$scope.contas = []
-						$scope.contasFilhas = []
-						$scope.userform = {
-							usuario : "",
-							senha : ""
-						};
+		$scope.contas = []
+		$scope.contasFilhas = []
+		$scope.userform = {
+			usuario : "",
+			senha : ""
+		};
 
-						$scope.msg = ""
-						$scope.msgTitulo = "";
-						$scope.msgClass = "";
-						$scope.ano = (new Date()).getFullYear();
-						$scope.mes = (new Date()).getMonth() + 1;
+		$scope.msgs = {};
 
-						getUsuarioLogado();
-						iniciar();
+		$scope.msg = ""
+		$scope.msgTitulo = "";
+		$scope.msgClass = "";
+		$scope.mes = 0;
+		$scope.ano = 0;
 
-						function iniciar() {
-							if (usuario != null) {
-								listaAnos();
-							}
-						}
+		iniciarPrimeiraVez();
 
-						function msgErro(msg, statusHTTP) {
-							$scope.msg = "";
-							$scope.msg = msg;
-							if (statusHTTP == 406) {
-								$scope.msgTitulo = "Verifique!";
-								$scope.msgClass = "alert alert-warning alert-dismissable fade in";
-							} else if (statusHTTP == 500) {
-								$scope.msgTitulo = "Erro!";
-								$scope.msgClass = "alert alert-danger alert-dismissable fade in";
-							}
-						}
-						function msgSucesso(msg) {
-							$scope.msg = "";
-							$scope.msg = msg;
-							$scope.msgTitulo = "Sucesso";
-							$scope.msgClass = "alert alert-success alert-dismissable fade in";
-						}
+		function iniciarPrimeiraVez() {
+			var promise = getUsuarioLogado();
+			promise.then(function(r) {
+					iniciar();	
+			}, function(r) {
+				console.log(r);
+			});
+		}
 
-						$scope.totalDespesaMes = 0;
-						$scope.totalReceitaMes = 0;
-						$scope.totalDespesaPrevistoMes = 0;
-						$scope.totalReceitaPrevistoMes = 0;
-						$scope.totalDespesaPrevistoAcumulado = 0;
-						$scope.totalReceitaPrevistoAcumulado = 0;
+		function iniciar() {
 
-						function resumoContas() {
+			var promiseListaAnos = listaAnos();
 
-							$http(
-									{
-										method : 'POST',
-										url : 'rest/contas/resumoContas/'
-												+ $scope.mes + '/' + $scope.ano,
-										data : angular.toJson($scope.contas),
-										headers : {
-											'Content-Type' : 'application/json'
-										}
-									})
-									.then(
-											function successCallback(response) {
-												$scope.totalDespesaMes = response.data.totalDespesaMes;
-												$scope.totalReceitaMes = response.data.totalReceitaMes;
-												$scope.totalDespesaPrevistoMes = response.data.totalDespesaPrevistoMes;
-												$scope.totalReceitaPrevistoMes = response.data.totalReceitaPrevistoMes;
-												$scope.totalDespesaPrevistoAcumulado = response.data.totalDespesaPrevistoAcumulado;
-												$scope.totalReceitaPrevistoAcumulado = response.data.totalReceitaPrevistoAcumulado;
-											},
-											function errorCallback(response) {
-												$scope.totalDespesaMes = 0;
-												$scope.totalReceitaMes = 0;
-												$scope.totalDespesaPrevistoMes = 0;
-												$scope.totalReceitaPrevistoMes = 0;
-												$scope.totalDespesaPrevistoAcumulado = 0;
-												$scope.totalReceitaPrevistoAcumulado = 0;
-												msgErro(response.data.mensagem,
-														response.status)
-											});
+			promiseListaAnos.then(function(r) {
+				$scope.mes = (new Date()).getMonth() + 1;
+				$scope.ano = (new Date()).getFullYear();
+				$scope.listarContas();
+			}, function(r) {
+				console.log(r);
+			});
 
-						}
+		}
+		
+		function msgErro(response) {
+			
+			if (response.config.url != null)
+				delete $scope.msgs[response.config.url];
 
-						$scope.salvar = function() {
-							$http({
-								method : 'POST',
-								url : 'rest/contas/salvar/',
-								data : angular.toJson($scope.conta),
-								headers : {
-									'Content-Type' : 'application/json'
-								}
-							}).then(
-									function successCallback(response) {
-										msgSucesso(response.data.mensagem);
-										$scope.listarContas();
-										$scope.novaConta();
-									},
-									function errorCallback(response) {
-										msgErro(response.data.mensagem,
-												response.status)
-									});
-						}
+			if (response.data.mensagem != null) {
+				$scope.msg = response.data.mensagem;
+				if (response.status == 406) {
+					$scope.msgTitulo = "Verifique!";
+					$scope.msgClass = "alert alert-warning alert-dismissable fade in";
+				} else if (response.status == 500) {
+					$scope.msgTitulo = "Erro!";
+					$scope.msgClass = "alert alert-danger alert-dismissable fade in";
+				}
+				timeoutMsg(3000);
+			}
+		}
+		function msgSucesso(response) {
+			//console.log(Object.keys($scope.msgs).length);
+			
+			if (response.config.url != null)
+				delete $scope.msgs[response.config.url];
+			
+			if (response.data.mensagem != null) {
+				$scope.msg = response.data.mensagem;
+				$scope.msgTitulo = "Sucesso";
+				$scope.msgClass = "alert alert-success alert-dismissable fade in";
+				timeoutMsg(3000);
+			}
+		}
 
-						$scope.alterarSaldo = function() {
-							$http({
-								method : 'POST',
-								url : 'rest/usuario/alterarSaldo/',
-								data : angular.toJson($scope.usuario),
-								headers : {
-									'Content-Type' : 'application/json'
-								}
-							}).then(
-									function successCallback(response) {
-										msgSucesso(response.data.mensagem);
-										iniciar();
-									},
-									function errorCallback(response) {
-										msgErro(response.data.mensagem,
-												response.status)
-									});
-						}
+		$scope.totalDespesaMes = 0;
+		$scope.totalReceitaMes = 0;
+		$scope.totalDespesaPrevistoMes = 0;
+		$scope.totalReceitaPrevistoMes = 0;
+		$scope.totalDespesaPrevistoAcumulado = 0;
+		$scope.totalReceitaPrevistoAcumulado = 0;
 
-						$scope.salvarFilha = function() {
+		function resumoContas() {
+			$scope.msgs['rest/contas/resumoContas/' + $scope.mes + '/' + $scope.ano] = "Calculando previsão das contas...";
+			$http({
+				method : 'POST',
+				url : 'rest/contas/resumoContas/' + $scope.mes + '/' + $scope.ano,
+				data : angular.toJson($scope.contas),
+				headers : {
+					'Content-Type' : 'application/json'
+				}
+			}).then(function successCallback(response) {
+				$scope.totalDespesaMes = response.data.totalDespesaMes;
+				$scope.totalReceitaMes = response.data.totalReceitaMes;
+				$scope.totalDespesaPrevistoMes = response.data.totalDespesaPrevistoMes;
+				$scope.totalReceitaPrevistoMes = response.data.totalReceitaPrevistoMes;
+				$scope.totalDespesaPrevistoAcumulado = response.data.totalDespesaPrevistoAcumulado;
+				$scope.totalReceitaPrevistoAcumulado = response.data.totalReceitaPrevistoAcumulado;
+				msgSucesso(response)
+			}, function errorCallback(response) {
+				$scope.totalDespesaMes = 0;
+				$scope.totalReceitaMes = 0;
+				$scope.totalDespesaPrevistoMes = 0;
+				$scope.totalReceitaPrevistoMes = 0;
+				$scope.totalDespesaPrevistoAcumulado = 0;
+				$scope.totalReceitaPrevistoAcumulado = 0;
+				msgErro(response)
+			});
 
-							$scope.contaFilha.data_registro = new Date();
-							$scope.contaFilha.data_mes = $scope.conta.data_mes;
-							$scope.contaFilha.flag_comum = $scope.conta.flag_comum;
-							$scope.contaFilha.tipo = $scope.conta.tipo;
-							$scope.contaFilha.status = "A";
-							$scope.contaFilha.usuario = $scope.conta.usuario;
-							$scope.contaFilha.contaPai = $scope.conta;
+		}
 
-							$http({
-								method : 'POST',
-								url : 'rest/contas/salvar/',
-								data : angular.toJson($scope.contaFilha),
-								headers : {
-									'Content-Type' : 'application/json'
-								}
-							})
-									.then(
-											function successCallback(response) {
-												msgSucesso(response.data.mensagem);
-												$scope
-														.listarContasFilhas($scope.conta.id);
-												$scope.novaContaFilha();
-											},
-											function errorCallback(response) {
-												msgErro(response.data.mensagem,
-														response.status)
-											});
-						}
+		$scope.salvar = function() {
+			$scope.msgs['rest/contas/salvar/'] = "Salvando conta...";
+			$http({
+				method : 'POST',
+				url : 'rest/contas/salvar/',
+				data : angular.toJson($scope.conta),
+				headers : {
+					'Content-Type' : 'application/json'
+				}
+			}).then(function successCallback(response) {
+				msgSucesso(response);
+				$scope.listarContas();
+				$scope.novaConta();
+			}, function errorCallback(response) {
+				msgErro(response);
+			});
+		}
 
-						$scope.salvarTodos = function() {
-							if (confirm('Salvar todas as parcelas relacionadas e não pagas iguais a essa?') == false) {
-								return;
-							}
-							$http({
-								method : 'POST',
-								url : 'rest/contas/salvarTodos/',
-								data : angular.toJson($scope.conta),
-								headers : {
-									'Content-Type' : 'application/json'
-								}
-							})
-									.then(
-											function successCallback(response) {
-												msgSucesso(response.data.mensagem);
-												$scope.listarContas();
-												if (c.contaPai == null) {
-													$scope
-															.editarConta(response.data.objecto);
-												} else {
-													$scope
-															.editarConta(response.data.objecto.contaPai);
-												}
-											},
-											function errorCallback(response) {
-												msgErro(response.data.mensagem,
-														response.status)
-											});
-						}
+		$scope.alterarSaldo = function() {
+			$scope.msgs['rest/usuario/alterarSaldo/'] = "Alterando saldo...";
+			$http({
+				method : 'POST',
+				url : 'rest/usuario/alterarSaldo/',
+				data : angular.toJson($scope.usuarioLogado),
+				headers : {
+					'Content-Type' : 'application/json'
+				}
+			}).then(function successCallback(response) {
+				msgSucesso(response);
+				iniciar();
+			}, function errorCallback(response) {
+				msgErro(response);
+			});
+		}
 
-						$scope.baixar = function(c) {
-							$http({
-								method : 'POST',
-								url : 'rest/contas/baixar/',
-								data : angular.toJson(c),
-								headers : {
-									'Content-Type' : 'application/json'
-								}
-							})
-									.then(
-											function successCallback(response) {
-												msgSucesso(response.data.mensagem);
-												$scope.listarContas();
-												$scope.cancelarEdicao();
-												if (c.contaPai == null) {
-													$scope.cancelarEdicao();
-												} else {
-													$scope
-															.editarConta(response.data.objecto.contaPai);
-												}
-											},
-											function errorCallback(response) {
-												msgErro(response.data.mensagem,
-														response.status)
-											});
-						}
+		$scope.salvarFilha = function() {
 
-						$scope.cancelarBaixa = function(c) {
-							$http({
-								method : 'POST',
-								url : 'rest/contas/cancelarBaixa/',
-								data : angular.toJson(c),
-								headers : {
-									'Content-Type' : 'application/json'
-								}
-							})
-									.then(
-											function successCallback(response) {
-												msgSucesso(response.data.mensagem);
-												$scope.listarContas();
-												if (c.contaPai == null) {
-													$scope.cancelarEdicao();
-												} else {
-													$scope
-															.editarConta(response.data.objecto.contaPai);
-												}
-											},
-											function errorCallback(response) {
-												msgErro(response.data.mensagem,
-														response.status)
-											});
-						}
+			$scope.msgs['rest/contas/salvar/'] = "Salvando conta filha...";
 
-						$scope.excluir = function(c) {
-							if (confirm('Excluir conta (' + c.descricao + ')') == false) {
-								return;
-							}
-							$http({
-								method : 'DELETE',
-								url : 'rest/contas/excluir/',
-								data : angular.toJson(c),
-								headers : {
-									'Content-Type' : 'application/json'
-								}
-							})
-									.then(
-											function successCallback(response) {
-												msgSucesso(response.data.mensagem);
-												$scope.listarContas();
-												if (c.contaPai == null) {
-													$scope.cancelarEdicao();
-												} else {
-													$scope
-															.editarConta(response.data.objecto.contaPai);
-												}
-											},
-											function errorCallback(response) {
-												msgErro(response.data.mensagem,
-														response.status)
-											});
-						}
+			$scope.contaFilha.data_registro = new Date();
+			$scope.contaFilha.data_mes = $scope.conta.data_mes;
+			$scope.contaFilha.flag_comum = $scope.conta.flag_comum;
+			$scope.contaFilha.tipo = $scope.conta.tipo;
+			$scope.contaFilha.status = "A";
+			$scope.contaFilha.usuario = $scope.conta.usuario;
+			$scope.contaFilha.contaPai = $scope.conta;
 
-						$scope.excluirTodos = function() {
-							if (confirm('Excluir todas as parcelas relacionadas e não pagas?') == false) {
-								return;
-							}
-							$http({
-								method : 'DELETE',
-								url : 'rest/contas/excluirTodos/',
-								data : angular.toJson($scope.conta),
-								headers : {
-									'Content-Type' : 'application/json'
-								}
-							}).then(
-									function successCallback(response) {
-										msgSucesso(response.data.mensagem);
-										$scope.listarContas();
-										$scope.cancelarEdicao()
-									},
-									function errorCallback(response) {
-										msgErro(response.data.mensagem,
-												response.status)
-									});
-						}
+			$http({
+				method : 'POST',
+				url : 'rest/contas/salvar/',
+				data : angular.toJson($scope.contaFilha),
+				headers : {
+					'Content-Type' : 'application/json'
+				}
+			}).then(function successCallback(response) {
+				msgSucesso(response);
+				$scope.listarContasFilhas($scope.conta.id);
+				$scope.novaContaFilha();
+			}, function errorCallback(response) {
+				msgErro(response)
+			});
+		}
 
-						$scope.listarContas = function() {
-							$scope.cancelarEdicao();
+		$scope.salvarTodos = function() {
+			if (confirm('Salvar todas as parcelas relacionadas e não pagas iguais a essa?') == false) {
+				return;
+			}
+			$scope.msgs['rest/contas/salvarTodos'] = "Salvando contas...";
+			$http({
+				method : 'POST',
+				url : 'rest/contas/salvarTodos',
+				data : angular.toJson($scope.conta),
+				headers : {
+					'Content-Type' : 'application/json'
+				}
+			}).then(function successCallback(response) {
+				msgSucesso(response);
+				$scope.listarContas();
+				if (c.contaPai == null) {
+					$scope.editarConta(response.data.objecto);
+				} else {
+					$scope.editarConta(response.data.objecto.contaPai);
+				}
+			}, function errorCallback(response) {
+				msgErro(response)
+			});
+		}
 
-							$http(
-									{
-										method : 'GET',
-										url : 'rest/contas/' + $scope.mes + '/'
-												+ $scope.ano
-									}).then(
-									function successCallback(response) {
-										$scope.contas = response.data;
-										getUsuarioLogado();
-										resumoContas();
-									},
-									function errorCallback(response) {
-										$scope.contas = [];
-										msgErro(response.data.mensagem,
-												response.status)
-									});
-						}
+		$scope.baixar = function(c) {
+			$scope.msgs['rest/contas/baixar'] = "Baixando conta...";
+			$http({
+				method : 'POST',
+				url : 'rest/contas/baixar',
+				data : angular.toJson(c),
+				headers : {
+					'Content-Type' : 'application/json'
+				}
+			}).then(function successCallback(response) {
+				msgSucesso(response);
+				$scope.listarContas();
+				if (c.contaPai == null) {
+					$scope.cancelarEdicao();
+				} else {
+					$scope.editarConta(response.data.objecto.contaPai);
+				}
+			}, function errorCallback(response) {
+				msgErro(response)
+			});
+		}
 
-						$scope.listarContasFilhas = function(idPai) {
-							$http({
-								method : 'GET',
-								url : 'rest/contas/contasFilhas/' + idPai
-							}).then(
-									function successCallback(response) {
-										$scope.contasFilhas = response.data;
-									},
-									function errorCallback(response) {
-										$scope.contasFilhas = [];
-										msgErro(response.data.mensagem,
-												response.status)
-									});
-						}
+		$scope.cancelarBaixa = function(c) {
+			$scope.msgs['rest/contas/cancelarBaixa'] = "Cancelando baixa de contas...";
+			$http({
+				method : 'POST',
+				url : 'rest/contas/cancelarBaixa',
+				data : angular.toJson(c),
+				headers : {
+					'Content-Type' : 'application/json'
+				}
+			}).then(function successCallback(response) {
+				msgSucesso(response);
+				$scope.listarContas();
+				if (c.contaPai == null) {
+					$scope.cancelarEdicao();
+				} else {
+					$scope.editarConta(response.data.objecto.contaPai);
+				}
+			}, function errorCallback(response) {
+				msgErro(response)
+			});
+		}
 
-						function listaAnos() {
-							$http({
-								method : 'GET',
-								url : 'rest/anos',
-							})
-									.then(
-											function successCallback(response) {
-												$scope.listaAnos = response.data.listaAnos;
-												tiposConta();
-											},
-											function errorCallback(response) {
-												$scope.listaAnos = [];
-												msgErro(
-														"Erro ao buscar lista de anos!",
-														response.status)
-											});
-						}
+		$scope.excluir = function(c) {
+			if (confirm('Excluir conta (' + c.descricao + ')') == false) {
+				return;
+			}
+			$scope.msgs['rest/contas/excluir'] = "Excluindo conta...";
+			$http({
+				method : 'DELETE',
+				url : 'rest/contas/excluir',
+				data : angular.toJson(c),
+				headers : {
+					'Content-Type' : 'application/json'
+				}
+			}).then(function successCallback(response) {
+				msgSucesso(response);
+				$scope.listarContas();
+				if (c.contaPai == null) {
+					$scope.cancelarEdicao();
+				} else {
+					$scope.editarConta(response.data.objecto.contaPai);
+				}
+			}, function errorCallback(response) {
+				msgErro(response)
+			});
+		}
 
-						function getUsuarioLogado() {
-							$http({
-								method : 'GET',
-								url : 'rest/login/usuarioLogado',
-							})
-									.then(
-											function successCallback(response) {
-												$scope.usuario = response.data.objeto;
-												$scope.userform.usuario = $scope.usuario.login;
-												$scope.userform.senha = '';
-												disableLogin();
-												$scope.usuarioLogado = true;
-											},
-											function errorCallback(response) {
-												msgErro(response.data.mensagem,
-														response.status);
-											});
-						}
+		$scope.excluirTodos = function() {
+			if (confirm('Excluir todas as parcelas relacionadas e não pagas?') == false) {
+				return;
+			}
+			$scope.msgs['rest/contas/excluirTodos'] = "Excluindo contas...";
+			$http({
+				method : 'DELETE',
+				url : 'rest/contas/excluirTodos',
+				data : angular.toJson($scope.conta),
+				headers : {
+					'Content-Type' : 'application/json'
+				}
+			}).then(function successCallback(response) {
+				msgSucesso(response);
+				$scope.listarContas();
+				$scope.cancelarEdicao()
+			}, function errorCallback(response) {
+				msgErro(response)
+			});
+		}
 
-						function tiposConta() {
-							$http({
-								method : 'GET',
-								url : 'rest/tiposConta',
-							})
-									.then(
-											function successCallback(response) {
-												$scope.tiposConta = response.data.tiposConta;
-												$scope.listarContas();
-											},
-											function errorCallback(response) {
-												$scope.tiposConta = [];
-												msgErro(
-														"Erro ao buscar tipo Conta!",
-														response.status)
-											});
-						}
+		$scope.listarContas = function() {
+			$scope.msgs['rest/contas/' + $scope.mes + '/' + $scope.ano] = "Buscando contas...";
+			$scope.cancelarEdicao();
 
-						$scope.validaLogin = function() {
-							
-							if ($scope.userform.usuario == "" || $scope.userform.senha == "") {
-								msgErro("Informar usuário e senha.", 406);
-								return;
-							}
-							$http(
-									{
-										method : 'GET',
-										url : 'rest/login/'
-												+ $scope.userform.usuario + '/'
-												+ $scope.userform.senha,
-									}).then(
-									function successCallback(response) {
-										getUsuarioLogado();
-										iniciar();
-										msgSucesso(response.data.mensagem);
-									},
-									function errorCallback(response) {
-										$scope.contas = [];
-										msgErro(response.data.mensagem,
-												response.status)
-										$scope.usuarioLogado = false;
-									});
-						}
+			$http({
+				method : 'GET',
+				url : 'rest/contas/' + $scope.mes + '/' + $scope.ano
+			}).then(function successCallback(response) {
+				$scope.contas = response.data;
+				resumoContas();
+				getUsuarioLogado();
+				msgSucesso(response);
+			}, function errorCallback(response) {
+				$scope.contas = [];
+				msgErro(response);
+			});
 
-						$scope.logout = function() {
-							$http({
-								method : 'GET',
-								url : 'rest/login/logout'
-							}).then(
-									function successCallback(response) {
-										$scope.contas = [];
-										enableLogin();
-										msgSucesso(response.data.mensagem);
-										$scope.userform.senha = '';
-										$scope.usuarioLogado = false;
-									},
-									function errorCallback(response) {
-										msgErro(response.data.mensagem,
-												response.status)
-									});
-						}
+		}
 
-						function disableLogin() {
-							document.getElementById("usuario").disabled = true;
-							document.getElementById("senha").disabled = true;
-							document.getElementById("submit").disabled = true;
-						}
+		$scope.listarContasFilhas = function(idPai) {
+			$scope.msgs['rest/contas/contasFilhas/' + idPai] = "Buscando contas filhas...";
+			$http({
+				method : 'GET',
+				url : 'rest/contas/contasFilhas/' + idPai
+			}).then(function successCallback(response) {
+				$scope.contasFilhas = response.data;
+				msgSucesso(response);
+			}, function errorCallback(response) {
+				$scope.contasFilhas = [];
+				msgErro(response)
+			});
+		}
 
-						function enableLogin() {
-							document.getElementById("usuario").disabled = false;
-							document.getElementById("senha").disabled = false;
-							document.getElementById("submit").disabled = false;
-						}
+		function listaAnos() {
+			$scope.msgs['rest/anos'] = "Buscando anos...";
+			var deferred = $q.defer();
+			$http({
+				method : 'GET',
+				url : 'rest/anos'
+			}).then(function successCallback(response) {
+				deferred.resolve(response);
+				$scope.listaAnos = response.data.listaAnos;
+				msgSucesso(response);
+			}, function errorCallback(response) {
+				deferred.reject(response);
+				$scope.listaAnos = [];
+				msgErro(response);
+			});
 
-						$scope.editarConta = function(c) {
-							$scope.conta = JSON.parse(JSON.stringify(c));
-							$scope.conta.data_mes = new Date(c.data_mes);
-							document.getElementById("despesa").disabled = true;
-							document.getElementById("receita").disabled = true;
-							document.getElementById("qtdeParcelas").disabled = true;
-							$scope.mostraEdicao = true;
-							$scope.listarContasFilhas(c.id);
-							location.href = "#editarConta";
-						}
+			return deferred.promise;
+		}
 
-						$scope.cancelarEdicao = function() {
-							$scope.novaConta();
-							$scope.mostraEdicao = false;
-						}
+		function getUsuarioLogado() {
+			$scope.msgs['rest/login/usuarioLogado'] = "Buscando usuario logado...";
+			var deferred = $q.defer();
 
-						$scope.novaConta = function() {
-							$scope.conta = {
-								id : null,
-								data_registro : null,
-								descricao : "",
-								valor : 0,
-								dia_vencimento : null,
-								numr_agrupador : 0,
-								qtde_parcelas : 1,
-								numr_parcela : 1,
-								usuario : null,
-								contaPai : null,
-								valorParciais : 0,
-								tipo : "D",
-								data_mes : new Date($scope.ano, $scope.mes - 1,
-										1, new Date().getHours(), new Date()
-												.getMinutes(), new Date()
-												.getSeconds()),
-								flag_comum : "N"
-							}
-							$scope.novaContaFilha();
-							$scope.contasFilhas = [];
-							document.getElementById("despesa").disabled = false;
-							document.getElementById("receita").disabled = false;
-							document.getElementById("qtdeParcelas").disabled = false;
-							$scope.mostraEdicao = true;
-							document.getElementById('descricao').focus();
-						}
+			$http({
+				method : 'GET',
+				url : 'rest/login/usuarioLogado'
+			}).then(function successCallback(response) {
+				deferred.resolve(response);
+				$scope.usuarioLogado = response.data.objeto;
+				$scope.userform.usuario = $scope.usuarioLogado.login;
+				$scope.userform.senha = '';
+				disableLogin();
+				$scope.indrUsuarioLogado = true;
+				msgSucesso(response);
+			}, function errorCallback(response) {
+				deferred.reject(response);
+				msgErro(response);
+			});
 
-						$scope.novaContaFilha = function() {
-							$scope.contaFilha = {
-								id : null,
-								data_registro : new Date(),
-								descricao : "",
-								valor : 0,
-								dia_vencimento : null,
-								numr_agrupador : 0,
-								qtde_parcelas : 1,
-								numr_parcela : 1,
-								usuario : null,
-								contaPai : null,
-								valorParciais : 0,
-								tipo : "D",
-								data_mes : new Date(),
-								flag_comum : "N"
-							}
-						}
+			return deferred.promise;
+		}
 
-						$scope.cssLinhaTabela = function(c) {
+		$scope.validaLogin = function() {
+			$scope.msgs['rest/login/' + $scope.userform.usuario + '/' + $scope.userform.senha] = "Validando login...";
+			if ($scope.userform.usuario == "" || $scope.userform.senha == "") {
+				msgErro("Informar usuário e senha.", 406);
+				return;
+			}
+			$http({
+				method : 'GET',
+				url : 'rest/login/' + $scope.userform.usuario + '/' + $scope.userform.senha
+			}).then(function successCallback(response) {
+				iniciarPrimeiraVez();
+				msgSucesso(response);
+			}, function errorCallback(response) {
+				$scope.contas = [];
+				msgErro(response)
+				$scope.indrUsuarioLogado = false;
+			});
+		}
 
-							css = [];
-							css.cursor = "pointer";
+		$scope.logout = function() {
+			$scope.msgs['rest/login/logout'] = "Saindo do sistema...";
+			$http({
+				method : 'GET',
+				url : 'rest/login/logout'
+			}).then(function successCallback(response) {
+				$scope.contas = [];
+				enableLogin();
+				msgSucesso(response);
+				$scope.userform.senha = '';
+				$scope.indrUsuarioLogado = false;
+			}, function errorCallback(response) {
+				msgErro(response)
+			});
+		}
 
-							if (c.tipo == 'D') {
-								if (c.status == "B") {
-									css.color = "#DCBCB9";
-								} else {
-									if (c.valorParciais > 0) {
-										css.color = "#A94442";
-									} else {
-										css.color = 'red';
-									}
-								}
-							} else {
+		function disableLogin() {
+			document.getElementById("usuario").disabled = true;
+			document.getElementById("senha").disabled = true;
+			document.getElementById("submit").disabled = true;
+		}
 
-								if (c.status == "B") {
-									css.color = "#C2D8C2";
-								} else {
-									if (c.valorParciais > 0) {
-										css.color = '#3D803E';
-									} else {
-										css.color = 'green';
-									}
-								}
-							}
+		function enableLogin() {
+			document.getElementById("usuario").disabled = false;
+			document.getElementById("senha").disabled = false;
+			document.getElementById("submit").disabled = false;
+		}
 
-							return css;
-						}
+		$scope.editarConta = function(c) {
+			$scope.conta = JSON.parse(JSON.stringify(c));
+			$scope.conta.data_mes = new Date(c.data_mes);
+			document.getElementById("despesa").disabled = true;
+			document.getElementById("receita").disabled = true;
+			document.getElementById("qtdeParcelas").disabled = true;
+			$scope.mostraEdicao = true;
+			$scope.listarContasFilhas(c.id);
+			location.href = "#editarConta";
+		}
 
-					});
+		$scope.cancelarEdicao = function() {
+			$scope.novaConta();
+			$scope.mostraEdicao = false;
+		}
+
+		$scope.novaConta = function() {
+			$scope.conta = {
+				id : null,
+				data_registro : null,
+				descricao : "",
+				valor : 0,
+				dia_vencimento : null,
+				numr_agrupador : 0,
+				qtde_parcelas : 1,
+				numr_parcela : 1,
+				usuario : null,
+				contaPai : null,
+				valorParciais : 0,
+				tipo : "D",
+				data_mes : new Date($scope.ano, $scope.mes - 1, 1, new Date().getHours(), new Date().getMinutes(), new Date().getSeconds()),
+				flag_comum : "N"
+			}
+			$scope.novaContaFilha();
+			$scope.contasFilhas = [];
+			document.getElementById("despesa").disabled = false;
+			document.getElementById("receita").disabled = false;
+			document.getElementById("qtdeParcelas").disabled = false;
+			$scope.mostraEdicao = true;
+			document.getElementById('descricao').focus();
+		}
+
+		$scope.novaContaFilha = function() {
+			$scope.contaFilha = {
+				id : null,
+				data_registro : new Date(),
+				descricao : "",
+				valor : 0,
+				dia_vencimento : null,
+				numr_agrupador : 0,
+				qtde_parcelas : 1,
+				numr_parcela : 1,
+				usuario : null,
+				contaPai : null,
+				valorParciais : 0,
+				tipo : "D",
+				data_mes : new Date(),
+				flag_comum : "N"
+			}
+		}
+
+		var promiseTimeoutMsg;
+
+		function timeoutMsg(timeout) {
+
+			$timeout.cancel(promiseTimeoutMsg);
+
+			promiseTimeoutMsg = $timeout(function() {
+
+				$scope.msg = "";
+
+			}, timeout);
+
+		}
+
+		$scope.cssLinhaTabela = function(c) {
+
+			css = [];
+			css.cursor = "pointer";
+
+			if (c.tipo == 'D') {
+				if (c.status == "B") {
+					css.color = "#DCBCB9";
+				} else {
+					if (c.valorParciais > 0) {
+						css.color = "#A94442";
+					} else {
+						css.color = 'red';
+					}
+				}
+			} else {
+
+				if (c.status == "B") {
+					css.color = "#C2D8C2";
+				} else {
+					if (c.valorParciais > 0) {
+						css.color = '#3D803E';
+					} else {
+						css.color = 'green';
+					}
+				}
+			}
+
+			return css;
+		}
+		
+		$scope.isObjectEmpty = function(obj){
+			   return Object.keys(obj).length === 0;
+			}
+
+		$scope.cssVencimento = function(c) {
+
+			css = [];
+
+			if (c.status != "B") {
+				if (c.dia_vencimento > 0) {
+					var data = new Date($scope.ano, $scope.mes - 1, c.dia_vencimento);
+					if (new Date() >= data) {
+						css.background = 'black';
+					}
+				}
+			}
+
+			return css;
+		}
+
+	});
+	
+	
+	
 </script>
 
 </head>
 <body ng-app="myapp" ng-controller="myappcontroller">
-	<div class="container-fluid">
-		<div class="row" >
-			<div class="col-sm-2">
 
+	<div class="container-fluid">
+		<!-- 		<div class="progress"> -->
+		<!-- 			<div class="progress-bar" role="progressbar" aria-valuenow="{{progressBar}}" aria-valuemin="0" aria-valuemax="100" >{{progressCounter}}%</div> -->
+		<!-- 		</div> -->
+
+		<div class="row">
+			<div class="col-sm-2">
 				<div class="input-group">
 					<span class="input-group-addon"><i class="glyphicon glyphicon-user"></i></span> <input id="usuario" type="text" class="form-control input-sm" name="usuario" placeholder="Usuário" ng-model="userform.usuario">
 				</div>
@@ -603,8 +610,8 @@
 					<span class="glyphicon glyphicon-log-out"> </span> Sair
 				</button>
 
-				<div ng-hide="usuarioLogado == false">
-					
+				<div ng-hide="indrUsuarioLogado == false || !isObjectEmpty(msgs)">
+
 					<hr>
 					<div class="row">
 						<div class="col-sm-12">
@@ -643,7 +650,7 @@
 					</div>
 					<div class="row">
 						<div class="col-sm-12">
-							<span type="text" id="totalPrevisaoMes">{{usuario.saldo + (totalReceitaPrevistoMes - totalDespesaPrevistoMes) | currency:'':2}}</span>
+							<span type="text" id="totalPrevisaoMes">{{usuarioLogado.saldo + (totalReceitaPrevistoMes - totalDespesaPrevistoMes) | currency:'':2}}</span>
 						</div>
 					</div>
 					<div class="row">
@@ -663,30 +670,34 @@
 					</div>
 					<div class="row">
 						<div class="col-sm-12">
-							<span id="totalAcumulado">{{usuario.saldo + (totalReceitaPrevistoAcumulado - totalDespesaPrevistoAcumulado) | currency:'':2}}</span>
+							<span id="totalAcumulado">{{usuarioLogado.saldo + (totalReceitaPrevistoAcumulado - totalDespesaPrevistoAcumulado) | currency:'':2}}</span>
 						</div>
 					</div>
 					<hr>
 					<label for="valorSaldo">Saldo</label>
 					<div class="input-group">
-						 <input type="text" id="valorSaldo" ng-model="usuario.saldo" size="10" money-mask class="form-control input-sm" />
+						<input type="text" id="valorSaldo" ng-model="usuarioLogado.saldo" size="10" money-mask class="form-control input-sm" />
 						<div class="input-group-btn">
 							<button id="alterarSaldo" type="submit" class="btn btn-default btn-sm" ng-click="alterarSaldo()">
 								<i class="glyphicon glyphicon-save"> </i>
 							</button>
 						</div>
 					</div>
-
+					<hr>
 				</div>
 			</div>
 			<div class="col-sm-10">
 
-				<div class="form-group" style="position: fixed; z-index: 99; right: 10px; top: 5px;">
-					<div ng-class="msgClass">
-						<strong>{{msgTitulo}} </strong> <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a> {{msg}}
-					</div>
+				<div ng-class="msgClass" style="position: fixed; z-index: 1; right: 15px; top: 5px;" ng-hide="msg == ''">
+					<strong>{{msgTitulo}} </strong> <a href="#" class="close" data-dismiss="alert" aria-label="close" ng-hide="msg == ''">&times;</a> {{msg}}
 				</div>
-				<div ng-hide="usuarioLogado == false">
+				<div style="position: fixed; z-index: 2; right: 15px; top: 5px;">
+					<ul>
+						<li ng-repeat="m in msgs">{{m}}</li>
+					</ul>
+				</div>
+
+				<div ng-hide="indrUsuarioLogado == false || !isObjectEmpty(msgs)">
 
 					<nav class="navbar navbar-default">
 						<div class="container-fluid">
@@ -713,9 +724,10 @@
 						<table id="tabelaContas" class="table table-hover table-striped table-bordered table-condensed">
 							<thead>
 								<tr>
-									<th width="50"></th>
-									<th width="5"></th>
-									<th width="5"></th>
+									<th width="60"></th>
+									<th width="3"></th>
+									<th width="3"></th>
+									<th width="3"></th>
 									<th>Descrição</th>
 									<th>Valor</th>
 									<th>Parciais</th>
@@ -725,9 +737,9 @@
 							</thead>
 							<tbody>
 								<tr ng-repeat="c in contas">
-									<td><a ng-click="excluir(c)" href="#"> <span class="glyphicon glyphicon-trash"></span></a> <a ng-click="baixar(c)" ng-if="c.status=='A'" href="#" title="Baixar Conta"><span class="glyphicon glyphicon-folder-open"></span></a> <a ng-click="cancelarBaixa(c)" ng-if="c.status=='B'" href="#"
-										title="Cancelar Baixa"
-									><span class="glyphicon glyphicon-folder-close"></span></a></td>
+									<td><a ng-click="excluir(c)" href="#"><img src="./resources/img/lixo.png"></a> <a ng-click="baixar(c)" ng-if="c.status=='A'" href="#" title="Baixar Conta"><img src="./resources/img/aberto.png"></a> <a ng-click="cancelarBaixa(c)" ng-if="c.status=='B'" href="#"
+										title="Cancelar Baixa"><img src="./resources/img/baixado.png"></a></td>
+									<td ng-style="cssVencimento(c)"></td>
 									<td ng-style="{'background-color': c.tipo== 'D'? 'red':'green'}"></td>
 									<td ng-style="{'background-color': c.flag_comum== 'S'? 'yellow': 'inherit'}"></td>
 									<td ng-style="cssLinhaTabela(c)" ng-click="editarConta(c)">{{ c.descricao }}</td>
@@ -761,8 +773,7 @@
 												<div class="row">
 													<div class="col-sm-12">
 														<input id="despesa" type="radio" ng-model="conta.tipo" value="D"><label style="color: red;" for="despesa">Despesa</label> <input id="receita" type="radio" ng-model="conta.tipo" value="R"><label style="color: green;" for="receita">Receita</label> <input
-															title="Conta Comun a todos os meses" type="checkbox" id="flagComun" ng-model="conta.flag_comum" size="30" ng-true-value="'S'" ng-false-value="'N'"
-														><label style="color: yellow; background-color: lightgray" for="flagComun">Conta Comun</label>
+															title="Conta Comun a todos os meses" type="checkbox" id="flagComun" ng-model="conta.flag_comum" size="30" ng-true-value="'S'" ng-false-value="'N'"><label style="color: yellow; background-color: lightgray" for="flagComun">Conta Comun</label>
 													</div>
 												</div>
 												<div class="row">
@@ -783,7 +794,7 @@
 												</div>
 												<div class="row">
 													<div class="col-sm-12">
-														<label for="vencimento">Vencimento</label><input type="number" id="vencimento" ng-model="conta.dia_vencimento" class="form-control">
+														<label for="vencimento">Vencimento</label><input type="number" min="1" max="31" id="vencimento" ng-model="conta.dia_vencimento" class="form-control">
 													</div>
 												</div>
 												<div class="row">
@@ -859,8 +870,7 @@
 																<tbody>
 																	<tr ng-repeat="c in contasFilhas">
 																		<td><a ng-click="excluir(c)" href="#"> <span class="glyphicon glyphicon-trash"></span></a> <a ng-click="baixar(c)" ng-if="c.status=='A'" href="#" title="Baixar Conta"><span class="glyphicon glyphicon-folder-open"></span></a> <a ng-click="cancelarBaixa(c)" ng-if="c.status=='B'"
-																			href="#" title="Cancelar Baixa"
-																		><span class="glyphicon glyphicon-folder-close"></span></a></td>
+																			href="#" title="Cancelar Baixa"><span class="glyphicon glyphicon-folder-close"></span></a></td>
 																		<td ng-style="cssLinhaTabela(c)">{{ c.descricao }}</td>
 																		<td ng-style="cssLinhaTabela(c)">{{ c.valor | currency:"":2 }}</td>
 																		<td ng-style="cssLinhaTabela(c)">{{ c.data_registro | date:'dd/MM/yyyy HH:mm:ss' }}</td>
@@ -877,11 +887,9 @@
 							</div>
 						</div>
 					</div>
+					<hr>
 				</div>
-
-				<hr>
 			</div>
-
 		</div>
 	</div>
 </body>

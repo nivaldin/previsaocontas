@@ -1,6 +1,6 @@
 /*!
- * Bootstrap v3.3.5 (http://getbootstrap.com)
- * Copyright 2011-2015 Twitter, Inc.
+ * Bootstrap v3.3.7 (http://getbootstrap.com)
+ * Copyright 2011-2016 Twitter, Inc.
  * Licensed under MIT (https://github.com/twbs/bootstrap/blob/master/LICENSE)
  */
 /*! normalize.css v3.0.3 | MIT License | github.com/necolas/normalize.css */
@@ -279,11 +279,11 @@ td, th {
 }
 
 .glyphicon-asterisk:before {
-	content: "\2a"
+	content: "\002a"
 }
 
 .glyphicon-plus:before {
-	content: "\2b"
+	content: "\002b"
 }
 
 .glyphicon-eur:before, .glyphicon-euro:before {
@@ -1368,7 +1368,6 @@ a:focus, a:hover {
 }
 
 a:focus {
-	outline: thin dotted;
 	outline: 5px auto -webkit-focus-ring-color;
 	outline-offset: -2px
 }
@@ -1861,8 +1860,7 @@ pre code {
 
 .row {
 	margin-right: -15px;
-	margin-left: -15px;
-	padding: 0px
+	margin-left: -15px
 }
 
 .col-lg-1, .col-lg-10, .col-lg-11, .col-lg-12, .col-lg-2, .col-lg-3,
@@ -1875,8 +1873,8 @@ pre code {
 	.col-xs-4, .col-xs-5, .col-xs-6, .col-xs-7, .col-xs-8, .col-xs-9 {
 	position: relative;
 	min-height: 1px;
-	padding-right: 5px;
-	padding-left: 5px
+	padding-right: 15px;
+	padding-left: 15px
 }
 
 .col-xs-1, .col-xs-10, .col-xs-11, .col-xs-12, .col-xs-2, .col-xs-3,
@@ -2829,7 +2827,6 @@ select[multiple], select[size] {
 
 input[type=file]:focus, input[type=checkbox]:focus, input[type=radio]:focus
 	{
-	outline: thin dotted;
 	outline: 5px auto -webkit-focus-ring-color;
 	outline-offset: -2px
 }
@@ -2883,6 +2880,11 @@ output {
 
 .form-control::-webkit-input-placeholder {
 	color: #999
+}
+
+.form-control::-ms-expand {
+	background-color: transparent;
+	border: 0
 }
 
 .form-control[disabled], .form-control[readonly], fieldset[disabled] .form-control
@@ -3296,7 +3298,7 @@ select[multiple].input-lg, textarea.input-lg {
 
 @media ( min-width :768px) {
 	.form-horizontal .form-group-lg .control-label {
-		padding-top: 14.33px;
+		padding-top: 11px;
 		font-size: 18px
 	}
 }
@@ -3332,7 +3334,6 @@ select[multiple].input-lg, textarea.input-lg {
 
 .btn.active.focus, .btn.active:focus, .btn.focus, .btn:active.focus,
 	.btn:active:focus, .btn:focus {
-	outline: thin dotted;
 	outline: 5px auto -webkit-focus-ring-color;
 	outline-offset: -2px
 }
@@ -3400,12 +3401,9 @@ a.btn.disabled, fieldset[disabled] a.btn {
 	background-image: none
 }
 
-.btn-default.disabled, .btn-default.disabled.active, .btn-default.disabled.focus,
-	.btn-default.disabled:active, .btn-default.disabled:focus, .btn-default.disabled:hover,
-	.btn-default[disabled], .btn-default[disabled].active, .btn-default[disabled].focus,
-	.btn-default[disabled]:active, .btn-default[disabled]:focus,
-	.btn-default[disabled]:hover, fieldset[disabled] .btn-default, fieldset[disabled] .btn-default.active,
-	fieldset[disabled] .btn-default.focus, fieldset[disabled] .btn-default:active,
+.btn-default.disabled.focus, .btn-default.disabled:focus, .btn-default.disabled:hover,
+	.btn-default[disabled].focus, .btn-default[disabled]:focus,
+	.btn-default[disabled]:hover, fieldset[disabled] .btn-default.focus,
 	fieldset[disabled] .btn-default:focus, fieldset[disabled] .btn-default:hover
 	{
 	background-color: #fff;
@@ -3456,12 +3454,9 @@ a.btn.disabled, fieldset[disabled] a.btn {
 	background-image: none
 }
 
-.btn-primary.disabled, .btn-primary.disabled.active, .btn-primary.disabled.focus,
-	.btn-primary.disabled:active, .btn-primary.disabled:focus, .btn-primary.disabled:hover,
-	.btn-primary[disabled], .btn-primary[disabled].active, .btn-primary[disabled].focus,
-	.btn-primary[disabled]:active, .btn-primary[disabled]:focus,
-	.btn-primary[disabled]:hover, fieldset[disabled] .btn-primary, fieldset[disabled] .btn-primary.active,
-	fieldset[disabled] .btn-primary.focus, fieldset[disabled] .btn-primary:active,
+.btn-primary.disabled.focus, .btn-primary.disabled:focus, .btn-primary.disabled:hover,
+	.btn-primary[disabled].focus, .btn-primary[disabled]:focus,
+	.btn-primary[disabled]:hover, fieldset[disabled] .btn-primary.focus,
 	fieldset[disabled] .btn-primary:focus, fieldset[disabled] .btn-primary:hover
 	{
 	background-color: #337ab7;
@@ -3512,12 +3507,9 @@ a.btn.disabled, fieldset[disabled] a.btn {
 	background-image: none
 }
 
-.btn-success.disabled, .btn-success.disabled.active, .btn-success.disabled.focus,
-	.btn-success.disabled:active, .btn-success.disabled:focus, .btn-success.disabled:hover,
-	.btn-success[disabled], .btn-success[disabled].active, .btn-success[disabled].focus,
-	.btn-success[disabled]:active, .btn-success[disabled]:focus,
-	.btn-success[disabled]:hover, fieldset[disabled] .btn-success, fieldset[disabled] .btn-success.active,
-	fieldset[disabled] .btn-success.focus, fieldset[disabled] .btn-success:active,
+.btn-success.disabled.focus, .btn-success.disabled:focus, .btn-success.disabled:hover,
+	.btn-success[disabled].focus, .btn-success[disabled]:focus,
+	.btn-success[disabled]:hover, fieldset[disabled] .btn-success.focus,
 	fieldset[disabled] .btn-success:focus, fieldset[disabled] .btn-success:hover
 	{
 	background-color: #5cb85c;
@@ -3566,14 +3558,10 @@ a.btn.disabled, fieldset[disabled] a.btn {
 	background-image: none
 }
 
-.btn-info.disabled, .btn-info.disabled.active, .btn-info.disabled.focus,
-	.btn-info.disabled:active, .btn-info.disabled:focus, .btn-info.disabled:hover,
-	.btn-info[disabled], .btn-info[disabled].active, .btn-info[disabled].focus,
-	.btn-info[disabled]:active, .btn-info[disabled]:focus, .btn-info[disabled]:hover,
-	fieldset[disabled] .btn-info, fieldset[disabled] .btn-info.active,
-	fieldset[disabled] .btn-info.focus, fieldset[disabled] .btn-info:active,
-	fieldset[disabled] .btn-info:focus, fieldset[disabled] .btn-info:hover
-	{
+.btn-info.disabled.focus, .btn-info.disabled:focus, .btn-info.disabled:hover,
+	.btn-info[disabled].focus, .btn-info[disabled]:focus, .btn-info[disabled]:hover,
+	fieldset[disabled] .btn-info.focus, fieldset[disabled] .btn-info:focus,
+	fieldset[disabled] .btn-info:hover {
 	background-color: #5bc0de;
 	border-color: #46b8da
 }
@@ -3622,12 +3610,9 @@ a.btn.disabled, fieldset[disabled] a.btn {
 	background-image: none
 }
 
-.btn-warning.disabled, .btn-warning.disabled.active, .btn-warning.disabled.focus,
-	.btn-warning.disabled:active, .btn-warning.disabled:focus, .btn-warning.disabled:hover,
-	.btn-warning[disabled], .btn-warning[disabled].active, .btn-warning[disabled].focus,
-	.btn-warning[disabled]:active, .btn-warning[disabled]:focus,
-	.btn-warning[disabled]:hover, fieldset[disabled] .btn-warning, fieldset[disabled] .btn-warning.active,
-	fieldset[disabled] .btn-warning.focus, fieldset[disabled] .btn-warning:active,
+.btn-warning.disabled.focus, .btn-warning.disabled:focus, .btn-warning.disabled:hover,
+	.btn-warning[disabled].focus, .btn-warning[disabled]:focus,
+	.btn-warning[disabled]:hover, fieldset[disabled] .btn-warning.focus,
 	fieldset[disabled] .btn-warning:focus, fieldset[disabled] .btn-warning:hover
 	{
 	background-color: #f0ad4e;
@@ -3678,14 +3663,10 @@ a.btn.disabled, fieldset[disabled] a.btn {
 	background-image: none
 }
 
-.btn-danger.disabled, .btn-danger.disabled.active, .btn-danger.disabled.focus,
-	.btn-danger.disabled:active, .btn-danger.disabled:focus, .btn-danger.disabled:hover,
-	.btn-danger[disabled], .btn-danger[disabled].active, .btn-danger[disabled].focus,
-	.btn-danger[disabled]:active, .btn-danger[disabled]:focus, .btn-danger[disabled]:hover,
-	fieldset[disabled] .btn-danger, fieldset[disabled] .btn-danger.active,
-	fieldset[disabled] .btn-danger.focus, fieldset[disabled] .btn-danger:active,
-	fieldset[disabled] .btn-danger:focus, fieldset[disabled] .btn-danger:hover
-	{
+.btn-danger.disabled.focus, .btn-danger.disabled:focus, .btn-danger.disabled:hover,
+	.btn-danger[disabled].focus, .btn-danger[disabled]:focus, .btn-danger[disabled]:hover,
+	fieldset[disabled] .btn-danger.focus, fieldset[disabled] .btn-danger:focus,
+	fieldset[disabled] .btn-danger:hover {
 	background-color: #d9534f;
 	border-color: #d43f3a
 }
@@ -4093,6 +4074,7 @@ tbody.collapse.in {
 }
 
 .btn-group-vertical>.btn:first-child:not (:last-child ){
+	border-top-left-radius: 4px;
 	border-top-right-radius: 4px;
 	border-bottom-right-radius: 0;
 	border-bottom-left-radius: 0
@@ -4101,6 +4083,7 @@ tbody.collapse.in {
 .btn-group-vertical>.btn:last-child:not (:first-child ){
 	border-top-left-radius: 0;
 	border-top-right-radius: 0;
+	border-bottom-right-radius: 4px;
 	border-bottom-left-radius: 4px
 }
 
@@ -4169,6 +4152,10 @@ tbody.collapse.in {
 	float: left;
 	width: 100%;
 	margin-bottom: 0
+}
+
+.input-group .form-control:focus {
+	z-index: 3
 }
 
 .input-group-lg>.form-control, .input-group-lg>.input-group-addon,
@@ -5181,7 +5168,7 @@ select[multiple].input-group-sm>.form-control, select[multiple].input-group-sm>.
 
 .pagination>li>a:focus, .pagination>li>a:hover, .pagination>li>span:focus,
 	.pagination>li>span:hover {
-	z-index: 3;
+	z-index: 2;
 	color: #23527c;
 	background-color: #eee;
 	border-color: #ddd
@@ -5190,7 +5177,7 @@ select[multiple].input-group-sm>.form-control, select[multiple].input-group-sm>.
 .pagination>.active>a, .pagination>.active>a:focus, .pagination>.active>a:hover,
 	.pagination>.active>span, .pagination>.active>span:focus, .pagination>.active>span:hover
 	{
-	z-index: 2;
+	z-index: 3;
 	color: #fff;
 	cursor: default;
 	background-color: #337ab7;
@@ -5428,6 +5415,8 @@ a.badge:focus, a.badge:hover {
 }
 
 .container .jumbotron, .container-fluid .jumbotron {
+	padding-right: 15px;
+	padding-left: 15px;
 	border-radius: 6px
 }
 
@@ -5567,7 +5556,8 @@ a.thumbnail.active, a.thumbnail:focus, a.thumbnail:hover {
 	color: #843534
 }
 
-@-webkit-keyframes progress-bar-stripes {
+@
+-webkit-keyframes progress-bar-stripes {
 	from {background-position: 40px 0
 }
 
@@ -5576,7 +5566,8 @@ to {
 }
 
 }
-@-o-keyframes progress-bar-stripes {
+@
+-o-keyframes progress-bar-stripes {
 	from {background-position: 40px 0
 }
 
@@ -5585,7 +5576,8 @@ to {
 }
 
 }
-@keyframes progress-bar-stripes {
+@
+keyframes progress-bar-stripes {
 	from {background-position: 40px 0
 }
 
@@ -6526,7 +6518,6 @@ button.close {
 }
 
 .modal-header {
-	min-height: 16.43px;
 	padding: 15px;
 	border-bottom: 1px solid #e5e5e5
 }
@@ -6965,6 +6956,7 @@ button.close {
 	color: #fff;
 	text-align: center;
 	text-shadow: 0 1px 2px rgba(0, 0, 0, .6);
+	background-color: rgba(0, 0, 0, 0);
 	filter: alpha(opacity = 50);
 	opacity: .5
 }
@@ -7097,16 +7089,16 @@ button.close {
 		.carousel-control .icon-next, .carousel-control .icon-prev {
 		width: 30px;
 		height: 30px;
-		margin-top: -15px;
+		margin-top: -10px;
 		font-size: 30px
 	}
 	.carousel-control .glyphicon-chevron-left, .carousel-control .icon-prev
 		{
-		margin-left: -15px
+		margin-left: -10px
 	}
 	.carousel-control .glyphicon-chevron-right, .carousel-control .icon-next
 		{
-		margin-right: -15px
+		margin-right: -10px
 	}
 	.carousel-caption {
 		right: 20%;
@@ -7123,20 +7115,20 @@ button.close {
 	.container-fluid:after, .container-fluid:before, .container:after,
 	.container:before, .dl-horizontal dd:after, .dl-horizontal dd:before,
 	.form-horizontal .form-group:after, .form-horizontal .form-group:before,
-	.modal-footer:after, .modal-footer:before, .nav:after, .nav:before,
-	.navbar-collapse:after, .navbar-collapse:before, .navbar-header:after,
-	.navbar-header:before, .navbar:after, .navbar:before, .pager:after,
-	.pager:before, .panel-body:after, .panel-body:before, .row:after, .row:before
-	{
+	.modal-footer:after, .modal-footer:before, .modal-header:after,
+	.modal-header:before, .nav:after, .nav:before, .navbar-collapse:after,
+	.navbar-collapse:before, .navbar-header:after, .navbar-header:before,
+	.navbar:after, .navbar:before, .pager:after, .pager:before, .panel-body:after,
+	.panel-body:before, .row:after, .row:before {
 	display: table;
 	content: " "
 }
 
 .btn-group-vertical>.btn-group:after, .btn-toolbar:after, .clearfix:after,
 	.container-fluid:after, .container:after, .dl-horizontal dd:after,
-	.form-horizontal .form-group:after, .modal-footer:after, .nav:after,
-	.navbar-collapse:after, .navbar-header:after, .navbar:after, .pager:after,
-	.panel-body:after, .row:after {
+	.form-horizontal .form-group:after, .modal-footer:after, .modal-header:after,
+	.nav:after, .navbar-collapse:after, .navbar-header:after, .navbar:after,
+	.pager:after, .panel-body:after, .row:after {
 	clear: both
 }
 
@@ -7182,7 +7174,8 @@ button.close {
 	position: fixed
 }
 
-@-ms-viewport {
+@
+-ms-viewport {
 	width: device-width
 }
 
@@ -7407,3 +7400,4 @@ button.close {
 		display: none !important
 	}
 }
+/*# sourceMappingURL=bootstrap.min.css.map */
