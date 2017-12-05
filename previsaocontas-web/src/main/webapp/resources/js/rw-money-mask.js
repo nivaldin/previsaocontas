@@ -44,6 +44,10 @@
         ngModelCtrl.$viewValue = newValue;
         ngModelCtrl.$render();
       });
+      
+      var getKeyCode = function (str) {
+          return str.charCodeAt(str.length - 1);
+      }
 
       element.on('keydown', function (e) {
     	  var key = e.which || e.keyCode;
