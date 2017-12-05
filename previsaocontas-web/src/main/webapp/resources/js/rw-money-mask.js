@@ -46,19 +46,26 @@
       });
 
       element.on('keydown', function (e) {
-        if ((e.which || e.keyCode) === 8) {
+    	  var key = e.which || e.keyCode;
+          if (key == 0 || key == 229) { //for android chrome keycode fix
+          	key = getKeyCode(this.value);
+          }
+        if ((key.which || key.keyCode) === 8) {
           cents = parseInt(cents.toString().slice(0, -1)) || 0;
 
           ngModelCtrl.$setViewValue(cents / 100);
           ngModelCtrl.$render();
           scope.$apply();
-          e.preventDefault();
+          key.preventDefault();
         }
       });
 
       element.on('keypress', function (e) {
         var key = e.which || e.keyCode;
-        
+        if (key == 0 || key == 229) { //for android chrome keycode fix
+        	key = getKeyCode(this.value);
+        }
+                
         if(key === 9 || key === 13) {
           return true;
         }
