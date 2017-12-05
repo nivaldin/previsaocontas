@@ -156,6 +156,7 @@
 		}
 
 		$scope.salvar = function() {
+
 			$scope.msgs['rest/contas/salvar/'] = "Salvando conta...";
 			$http({
 				method : 'POST',
@@ -171,6 +172,7 @@
 			}, function errorCallback(response) {
 				msgErro(response);
 			});
+
 		}
 
 		$scope.alterarSaldo = function() {
@@ -413,10 +415,15 @@
 		$scope.validaLogin = function() {
 			$scope.msgs['rest/login/' + $scope.userform.usuario + '/' + $scope.userform.senha] = "Validando login...";
 			if ($scope.userform.usuario == "" || $scope.userform.senha == "") {
-				msgErro({config: {url: 'rest/login/' + $scope.userform.usuario + '/' + $scope.userform.senha},
-						 status: 406,
-						 data: {mensagem: 'Informar usuário e senha!'}
-						});
+				msgErro({
+					config : {
+						url : 'rest/login/' + $scope.userform.usuario + '/' + $scope.userform.senha
+					},
+					status : 406,
+					data : {
+						mensagem : 'Informar usuário e senha!'
+					}
+				});
 				return;
 			}
 			$http({
@@ -679,7 +686,7 @@
 					<hr>
 					<label for="valorSaldo">Saldo</label>
 					<div class="input-group">
-						<input type="text" id="valorSaldo" ng-model="usuarioLogado.saldo" size="10" money-mask class="form-control input-sm" />
+						<input type="text" id="valorSaldo" ng-model="usuarioLogado.saldo" size="10" class="form-control input-sm" />
 						<div class="input-group-btn">
 							<button id="alterarSaldo" type="submit" class="btn btn-default btn-sm" ng-click="alterarSaldo()">
 								<i class="glyphicon glyphicon-save"> </i>
@@ -787,7 +794,7 @@
 												</div>
 												<div class="row">
 													<div class="col-sm-12">
-														<label for="valor">Valor</label><input type="text" id="valor" ng-model="conta.valor" size="10" money-mask class="form-control">
+														<label for="valor">Valor</label><input type="text" id="valor" ng-model="conta.valor" money-mask size="10" class="form-control">
 													</div>
 												</div>
 												<div class="row">
