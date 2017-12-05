@@ -50,13 +50,13 @@
           if (key == 0 || key == 229) { //for android chrome keycode fix
           	key = getKeyCode(this.value);
           }
-        if ((key.which || key.keyCode) === 8) {
+        if (key === 8) {
           cents = parseInt(cents.toString().slice(0, -1)) || 0;
 
           ngModelCtrl.$setViewValue(cents / 100);
           ngModelCtrl.$render();
           scope.$apply();
-          key.preventDefault();
+          e.preventDefault();
         }
       });
 
