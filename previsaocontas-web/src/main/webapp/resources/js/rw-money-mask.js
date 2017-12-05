@@ -44,17 +44,9 @@
         ngModelCtrl.$viewValue = newValue;
         ngModelCtrl.$render();
       });
-      
-      var getKeyCode = function (str) {
-          return str.charCodeAt(str.length - 1);
-      }
 
       element.on('keydown', function (e) {
-    	  var key = e.which || e.keyCode;
-          if (key == 0 || key == 229) { //for android chrome keycode fix
-          	key = getKeyCode(this.value);
-          }
-        if (key === 8) {
+        if ((e.which || e.keyCode) === 8) {
           cents = parseInt(cents.toString().slice(0, -1)) || 0;
 
           ngModelCtrl.$setViewValue(cents / 100);
@@ -66,10 +58,7 @@
 
       element.on('keypress', function (e) {
         var key = e.which || e.keyCode;
-        if (key == 0 || key == 229) { //for android chrome keycode fix
-        	key = getKeyCode(this.value);
-        }
-                
+        
         if(key === 9 || key === 13) {
           return true;
         }
