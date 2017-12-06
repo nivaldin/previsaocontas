@@ -14,7 +14,7 @@
 <script src="./resources/js/bootstrap.min.js"></script>
 <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.4/angular-animate.js"></script>
 <script type="text/javascript">
-	var app = angular.module('myapp', [ 'rw.moneymask', 'ngAnimate' ]);
+	var app = angular.module('myapp', [ 'rw.moneymask' ]);
 
 	app.controller('myappcontroller', function($scope, $http, $timeout, $q, $rootScope) {
 
@@ -345,8 +345,8 @@
 			}).then(function successCallback(response) {
 				msgSucesso(response);
 				$scope.contas = response.data;
-				resumoContas();
 				getUsuarioLogado();
+				resumoContas();	
 			}, function errorCallback(response) {
 				msgErro(response);
 				$scope.contas = [];
@@ -392,23 +392,22 @@
 		function getUsuarioLogado() {
 			$scope.msgs['rest/login/usuarioLogado'] = "Buscando usuario logado...";
 			var deferred = $q.defer();
-
-			$http({
-				method : 'GET',
-				url : 'rest/login/usuarioLogado'
-			}).then(function successCallback(response) {
-				deferred.resolve(response);
-				msgSucesso(response);
-				$scope.usuarioLogado = response.data.objeto;
-				$scope.userform.usuario = $scope.usuarioLogado.login;
-				$scope.userform.senha = '';
-				disableLogin();
-				$scope.indrUsuarioLogado = true;
-			}, function errorCallback(response) {
-				deferred.reject(response);
-				msgErro(response);
-			});
-
+				$http({
+					method : 'GET',
+					url : 'rest/login/usuarioLogado'
+				}).then(function successCallback(response) {
+					deferred.resolve(response);
+					msgSucesso(response);
+					$scope.usuarioLogado = response.data.objeto;
+					$scope.userform.usuario = $scope.usuarioLogado.login;
+					$scope.userform.senha = '';
+					disableLogin();
+					$scope.indrUsuarioLogado = true;
+				}, function errorCallback(response) {
+					deferred.reject(response);
+					msgErro(response);
+				});
+			
 			return deferred.promise;
 		}
 
@@ -698,10 +697,10 @@
 			</div>
 			<div class="col-sm-10">
 
-				<div ng-class="msgClass" style="position: fixed; z-index: 1; right: 5px; inherit; top: 5px;" ng-hide="msg == ''">
+				<div ng-class="msgClass" style="position: fixed; z-index: 1; right: 1%; top: 5px;" ng-hide="msg == ''">
 					<strong>{{msgTitulo}} </strong> <a href="#" class="close" data-dismiss="alert" aria-label="close" ng-hide="msg == ''">&times;</a> {{msg}}
 				</div>
-				<div style="position: fixed; z-index: 2; right: 15px; top: 5px;">
+				<div style="position: fixed; z-index: 2; right:45%; top: 45%;">
 					<ul>
 						<li ng-repeat="m in msgs">{{m}}</li>
 					</ul>
