@@ -99,7 +99,6 @@ public class WsConta {
 			return new ResponseEntity<>(resultado, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 		request.getSession().setAttribute("usuario", u);
-		resultado.put("mensagem", "Usuário Logado!");
 		resultado.put("objeto", u);
 		return new ResponseEntity<>(resultado, HttpStatus.OK);
 
@@ -270,11 +269,8 @@ public class WsConta {
 
 	@RequestMapping(value = "/login/logout", method = RequestMethod.GET, produces = "application/json")
 	public ResponseEntity<?> logout() {
-		resultado.clear();
 		request.getSession().setAttribute("usuario", null);
-		HashMap<String, String> mensagem = new HashMap<>();
-		mensagem.put("mensagem", "Você saiu do sistema!");
-		return new ResponseEntity<>(mensagem, HttpStatus.OK);
+		return new ResponseEntity<>(HttpStatus.OK);
 	}
 
 	@RequestMapping(value = "/anos", method = RequestMethod.GET, produces = "application/json")
