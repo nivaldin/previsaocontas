@@ -780,7 +780,7 @@
 
 					<!-- Modal -->
 					<div id="myModal" class="modal fade" role="dialog" tabindex="-1" ng-hide="mostraEdicao == false">
-						<div class="modal-dialog {{conta.id == null ? 'modal-sm' : 'modal-lg'}}" role="document">
+						<div class="modal-dialog" role="document" ng-style="conta.id == null ? {width: '30%'} : {width: '90%'}">
 
 							<!-- Modal content-->
 							<div class="modal-content">
@@ -792,7 +792,7 @@
 
 									<div id="editarConta">
 										<div class="row">
-											<div class="{{conta.id == null ? 'col-sm-12' : 'col-sm-5'}}">
+											<div class="{{conta.id == null ? 'col-sm-12' : 'col-sm-4'}}">
 												<div class="panel panel-default">
 													<div class="panel-heading">Conta</div>
 													<div class="panel-body">
@@ -859,7 +859,7 @@
 													</div>
 												</div>
 											</div>
-											<div class="col-sm-7" ng-hide="conta.id == null">
+											<div class="col-sm-8" ng-hide="conta.id == null">
 
 												<div class="panel panel-default">
 													<div class="panel-heading">Parciais</div>
