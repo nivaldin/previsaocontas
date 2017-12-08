@@ -21,7 +21,6 @@
 
 	app.controller('myappcontroller', function($scope, $http, $timeout, $q, $rootScope) {
 
-		$scope.mostraEdicao = false
 		$scope.listaAnos = []
 		$scope.indrUsuarioLogado = false
 		$scope.conta = {
@@ -479,17 +478,16 @@
 			document.getElementById("despesa").disabled = true;
 			document.getElementById("receita").disabled = true;
 			document.getElementById("qtdeParcelas").disabled = true;
-			$scope.mostraEdicao = true;
 			$scope.listarContasFilhas(c.id);
 			$('#myModal').modal('show');
 		}
 
 		$scope.cancelarEdicao = function() {
-			$scope.novaConta();
-			$scope.mostraEdicao = false;
+			limparEdicaoConta();
+			$('#myModal').modal('hide');
 		}
 
-		$scope.novaConta = function() {
+		function limparEdicaoConta() {
 			$scope.conta = {
 				id : null,
 				data_registro : null,
@@ -508,10 +506,14 @@
 			}
 			$scope.novaContaFilha();
 			$scope.contasFilhas = [];
+		}
+
+		$scope.novaConta = function() {
+			limparEdicaoConta();
 			document.getElementById("despesa").disabled = false;
 			document.getElementById("receita").disabled = false;
 			document.getElementById("qtdeParcelas").disabled = false;
-			$scope.mostraEdicao = true;
+			$('#myModal').modal('show');
 			document.getElementById('descricao').focus();
 		}
 
@@ -605,14 +607,13 @@
 </head>
 <body ng-app="myapp" ng-controller="myappcontroller">
 
-
 	<div class="container-fluid" style="margin-top: 5px;">
 		<!-- 		<div class="progress"> -->
 		<!-- 			<div class="progress-bar" role="progressbar" aria-valuenow="{{progressBar}}" aria-valuemin="0" aria-valuemax="100" >{{progressCounter}}%</div> -->
 		<!-- 		</div> -->
 
 		<div class="row">
-			<div class="col-sm-3">
+			<div class="col-sm-2">
 				<div class="input-group">
 					<span class="input-group-addon"><i class="glyphicon glyphicon-user"></i></span> <input id="usuario" type="text" class="form-control input-sm" name="usuario" placeholder="Usuário" ng-model="userform.usuario">
 				</div>
@@ -622,11 +623,12 @@
 				<div class="row">
 					<div class="col-sm-12"></div>
 				</div>
-				<button id="submit" type="submit" class="btn btn-default btn-sm" ng-click="validaLogin()">
-					<span class="glyphicon glyphicon-log-in"> </span> Entrar
+				<button id="submit" type="submit" class="btn btn-default btn-sm" ng-click="validaLogin()" title="Entrar no Sistema">
+					<span class="glyphicon glyphicon-log-in"> </span>
 				</button>
-				<button id="sair" type="submit" class="btn btn-default btn-sm" ng-click="logout()">
-					<span class="glyphicon glyphicon-log-out"> </span> Sair
+
+				<button id="sair" type="submit" class="btn btn-default btn-sm" ng-click="logout()" title="Sair do Sistema">
+					<span class="glyphicon glyphicon-log-out"> </span>
 				</button>
 
 				<div ng-hide="indrUsuarioLogado == false || !isObjectEmpty(msgs)">
@@ -707,7 +709,7 @@
 					<hr>
 				</div>
 			</div>
-			<div class="col-sm-9">
+			<div class="col-sm-10">
 
 				<div ng-class="msgClass" style="position: fixed; z-index: 99999; right: 1%; top: 5px;" ng-hide="msg == ''">
 					<strong>{{msgTitulo}} </strong> <a href="#" class="close" data-dismiss="alert" aria-label="close" ng-hide="msg == ''">&times;</a> {{msg}}
@@ -739,8 +741,15 @@
 								<li><a ng-click="mes = 11; listarContas(); cancelarEdicao();" href="#">Nov</a></li>
 								<li><a ng-click="mes = 12; listarContas(); cancelarEdicao();" href="#">Dez</a></li>
 							</ul>
+							<div class="navbar-header">
+								<a class="navbar-brand" href="#"><button id="novaConta" ng-click="novaConta();" type="submit" class="btn btn-default btn-sm">
+										<span class="glyphicon glyphicon-plus"> </span>
+									</button></a>
+
+							</div>
 						</div>
 					</nav>
+
 					<div class="table-responsive">
 						<table id="tabelaContas" class="table table-hover table-striped table-bordered table-condensed">
 							<thead>
@@ -773,16 +782,10 @@
 						</table>
 					</div>
 
-					<button id="novaConta" ng-click="novaConta();" onclick="$('#myModal').modal('show');" type="submit" class="btn btn-default">
-						<span class="glyphicon glyphicon-plus"> </span> Nova
-					</button>
-					<div class="row" style="min-height: 10px !important">
-						<div class="col-sm-12"></div>
-					</div>
 
 					<!-- Modal -->
-					<div id="myModal" class="modal fade" role="dialog" tabindex="-1" ng-hide="mostraEdicao == false">
-						<div class="modal-dialog" role="document" ng-style="conta.id == null ? {width: '30%'} : {width: '90%'}">
+					<div id="myModal" class="modal fade" role="dialog" tabindex="-1">
+						<div class="modal-dialog" role="document" ng-style="{width: '50%'}">
 
 							<!-- Modal content-->
 							<div class="modal-content">
@@ -794,59 +797,69 @@
 
 									<div id="editarConta">
 										<div class="row">
-											<div class="{{conta.id == null ? 'col-sm-12' : 'col-sm-4'}}">
+											<div class="col-sm-12">
 												<div class="panel panel-default">
 													<div class="panel-heading">Conta</div>
 													<div class="panel-body">
 														<div class="row">
-															<div class="col-sm-4">
-																<label style="color: black; background-color: yellow" for="flagComun"><input title="Conta Comun a todos os meses" type="checkbox" id="flagComun" ng-model="conta.flag_comum" size="30" ng-true-value="'S'" ng-false-value="'N'"> Comun</label>
+															<div class="col-sm-12">
+																<label style="color: red;" for="despesa"><input id="despesa" type="radio" ng-model="conta.tipo" value="D"> Despesa</label> <label style="color: green;" for="receita"><input id="receita" type="radio" ng-model="conta.tipo" value="R"> Receita</label> <label
+																	style="color: black; background-color: yellow" for="flagComun"><input title="Conta Comun a todos os meses" type="checkbox" id="flagComun" ng-model="conta.flag_comum" size="30" ng-true-value="'S'" ng-false-value="'N'"> Comun</label>
 															</div>
-															<div class="col-sm-4">
-																<label style="color: green;" for="receita"><input id="receita" type="radio" ng-model="conta.tipo" value="R"> Receita</label>
-															</div>
-															<div class="col-sm-4">
-																<label style="color: red;" for="despesa"><input id="despesa" type="radio" ng-model="conta.tipo" value="D"> Despesa</label>
-															</div>
-														</div>
-<!-- 														<div class="container-fluid" style="padding-left: initial; padding-right: initial;" ng-style="conta.tipo == 'D'? {color: 'red'}: {color: 'green'}"> -->
-															<div class="row">
-																<div class="col-sm-12">
-																	<label for="descricao">Descrição</label><input type="text" id="descricao" ng-model="conta.descricao" size="30" class="form-control">
-
-																</div>
-															</div>
-															<div class="row">
-																<div class="col-sm-12">
-																	<label for="valor">Valor</label><input type="text" id="valor" ng-model="conta.valor" money-mask size="10" class="form-control">
-																</div>
-															</div>
-															<div class="row">
-																<div class="col-sm-12">
-																	<label for=Data>Data</label><input type="date" id="data" name="data" ng-model="conta.data_mes" class="form-control" />
-																</div>
-															</div>
-															<div class="row">
-																<div class="col-sm-12">
-																	<label for="vencimento">Vencimento</label><input type="number" min="1" max="31" id="vencimento" ng-model="conta.dia_vencimento" class="form-control">
-																</div>
-															</div>
-															<div class="row">
-																<div class="col-sm-12">
-																	<label for="parcela">Parcela</label><input disabled="disabled" type="text" id="parcela" ng-value="conta.numr_parcela + ' - ' + conta.qtde_parcelas" class="form-control">
-																</div>
-															</div>
-															<div class="row">
-																<div class="col-sm-12">
-																	<label for="qtdeParcelas">Parcelas</label><input type="number" id="qtdeParcelas" ng-model="conta.qtde_parcelas" class="form-control">
-																</div>
-															</div>
-<!-- 														</div> -->
-														<div class="row" style="min-height: 10px !important">
-															<div class="col-sm-12"></div>
 														</div>
 														<div class="row">
-															<div class="col-sm-12">
+															<div class="col-md-2">
+																<label for="descricao">Descrição</label>
+															</div>
+															<div class="col-md-10">
+																<input type="text" id="descricao" ng-model="conta.descricao" size="30" class="form-control">
+															</div>
+														</div>
+														<div class="row">
+															<div class="col-md-2">
+																<label for="valor">Valor</label>
+															</div>
+															<div class="col-md-10">
+																<input type="text" id="valor" ng-model="conta.valor" money-mask size="10" class="form-control">
+															</div>
+														</div>
+														<div class="row">
+															<div class="col-md-2">
+																<label for="Data">Data</label>
+															</div>
+															<div class="col-md-10">
+																<input type="date" id="data" name="data" ng-model="conta.data_mes" class="form-control" />
+															</div>
+														</div>
+														<div class="row">
+															<div class="col-md-2">
+																<label for="vencimento">Vencimento</label>
+															</div>
+															<div class="col-md-10">
+																<input type="number" min="1" max="31" id="vencimento" ng-model="conta.dia_vencimento" class="form-control">
+															</div>
+														</div>
+														<div class="row">
+															<div class="col-md-2">
+																<label for="parcela">Parcela</label>
+															</div>
+															<div class="col-md-10">
+																<input disabled="disabled" type="text" id="parcela" ng-value="conta.numr_parcela + ' - ' + conta.qtde_parcelas" class="form-control">
+															</div>
+														</div>
+														<div class="row">
+															<div class="col-md-2">
+																<label for="qtdeParcelas">Parcelas</label>
+															</div>
+															<div class="col-md-10">
+																<input type="number" id="qtdeParcelas" ng-model="conta.qtde_parcelas" class="form-control">
+															</div>
+														</div>
+														<div class="row" style="min-height: 10px !important">
+															<div class="col-md-12"></div>
+														</div>
+														<div class="row">
+															<div class="col-xs-12">
 																<button id="salvar" ng-click="salvar();" type="submit" class="btn btn-default">
 																	<span class="glyphicon glyphicon-save"> </span> Salvar
 																</button>
@@ -861,8 +874,9 @@
 													</div>
 												</div>
 											</div>
-											<div class="col-sm-8" ng-hide="conta.id == null">
-
+										</div>
+										<div class="row" ng-hide="conta.id == null">
+											<div class="col-sm-12">
 												<div class="panel panel-default">
 													<div class="panel-heading">Parciais</div>
 													<div class="panel-body">
@@ -874,21 +888,21 @@
 																<label for="valorFilha">Valor</label><input type="text" id="valorFilha" ng-model="contaFilha.valor" size="10" money-mask class="form-control">
 															</div>
 															<div class="col-sm-4">
-																<label for=dataFilha>Data</label><input type="date" id="dataFilha" name="data" ng-model="contaFilha.data_registro" class="form-control" />
+																<label for="dataFilha">Data</label><input type="date" id="dataFilha" name="data" ng-model="contaFilha.data_registro" class="form-control" />
 															</div>
 														</div>
 														<div class="row" style="min-height: 10px !important">
-															<div class="col-sm-12"></div>
+															<div class="col-md-12"></div>
 														</div>
 														<div class="row">
-															<div class="col-sm-12">
+															<div class="col-xs-12">
 																<button id="salvar" ng-click="salvarFilha();" type="submit" class="btn btn-default">
-																	<span class="glyphicon glyphicon-save"> </span> Salvar
+																	<span class="glyphicon glyphicon-save"></span> Salvar
 																</button>
 															</div>
 														</div>
 														<div class="row" style="min-height: 10px !important">
-															<div class="col-sm-12"></div>
+															<div class="col-md-12"></div>
 														</div>
 														<div class="row">
 															<div class="col-sm-12">
