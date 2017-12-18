@@ -50,11 +50,11 @@ public class FiltroAutenticacao implements Filter {
 
 		String reqURI = ((HttpServletRequest) req).getRequestURI();
 
-		if (reqURI.contains("login.xhtml") || reqURI.contains("contas-angularjs.html") || reqURI.contains("rest/login/")) {
+		if (reqURI.contains("login.xhtml") || reqURI.contains("contas.html") || reqURI.contains("rest/login/")) {
 
 			chain.doFilter(req, resp);
 
-		}else if (reqURI.contains("resources") || reqURI.contains("javax.faces.resource")) {
+		}else if (reqURI.contains("resources") || reqURI.contains("javax.faces.resource") || reqURI.contains(".js") || reqURI.contains(".css")) {
 
 		    chain.doFilter(req, resp);
 		    

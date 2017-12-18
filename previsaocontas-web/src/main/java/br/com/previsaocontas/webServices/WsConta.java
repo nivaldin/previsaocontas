@@ -35,12 +35,9 @@ public class WsConta {
 	@Autowired
 	private ContaServiceImpl contaServiceImpl;
 
-	private HashMap<String, Object> resultado = new HashMap<>();
-
 	@RequestMapping(value = "/contas/{mes}/{ano}", method = RequestMethod.GET, produces = "application/json")
 	public ResponseEntity<?> buscaContasMes(@PathVariable("mes") Integer mes, @PathVariable("ano") Integer ano) {
-
-		resultado.clear();
+		HashMap<String, Object> resultado = new HashMap<>();
 		try {
 			List<Conta> contas = new ArrayList<Conta>();
 			contas = contaServiceImpl.buscaContaMes(mes, ano, this.getUsuarioLogado());
@@ -55,7 +52,7 @@ public class WsConta {
 	@RequestMapping(value = "/contas/contasFilhas/{idPai}", method = RequestMethod.GET, produces = "application/json")
 	public ResponseEntity<?> buscaContasMes(@PathVariable("idPai") Long idPai) {
 
-		resultado.clear();
+		HashMap<String, Object> resultado = new HashMap<>();
 		try {
 			List<Conta> contas = new ArrayList<Conta>();
 			contas = contaServiceImpl.buscaContasFilhas(idPai);
@@ -71,7 +68,7 @@ public class WsConta {
 	public ResponseEntity<?> resumoContas(@PathVariable("mes") Integer mes, @PathVariable("ano") Integer ano,
 			@RequestBody List<Conta> listaContas) {
 
-		resultado.clear();
+		HashMap<String, Object> resultado = new HashMap<>();
 		try {
 			HashMap<String, Double> listaValores = new HashMap<>();
 			listaValores = contaServiceImpl.calculaResumoMes(mes, ano, listaContas, this.getUsuarioLogado());
@@ -86,7 +83,7 @@ public class WsConta {
 	@RequestMapping(value = "/login/{usuario}/{senha}", method = RequestMethod.GET, produces = "application/json")
 	public ResponseEntity<?> validaLogin(@PathVariable("usuario") String usuario, @PathVariable("senha") String senha) {
 
-		resultado.clear();
+		HashMap<String, Object> resultado = new HashMap<>();
 
 		Usuario u = new Usuario();
 		try {
@@ -106,9 +103,8 @@ public class WsConta {
 
 	@RequestMapping(value = "/login/usuarioLogado", method = RequestMethod.GET, produces = "application/json")
 	public ResponseEntity<?> usuarioSessao() {
-
+		HashMap<String, Object> resultado = new HashMap<>();
 		try {
-			resultado.clear();
 			Usuario usuario = this.getUsuarioLogado();
 			if (usuario == null) {
 				resultado.put("mensagem", "Usuário logado não encontrado!");
@@ -116,6 +112,7 @@ public class WsConta {
 			}
 			resultado.put("objeto", usuario);
 			return new ResponseEntity<>(resultado, HttpStatus.OK);
+			
 		} catch (Exception e) {
 			resultado.put("mensagem", e.getMessage());
 			return new ResponseEntity<>(resultado, HttpStatus.INTERNAL_SERVER_ERROR);
@@ -124,39 +121,34 @@ public class WsConta {
 	}
 
 	private Usuario getUsuarioLogado() {
-		try {
 
-			Usuario usuario = (Usuario) request.getSession().getAttribute("usuario");
-			usuario = usuarioServiceImpl.obter(usuario.getId());
-			request.getSession().setAttribute("usuario", usuario);
-			return usuario;
+		Usuario usuario = (Usuario) request.getSession().getAttribute("usuario");
+		usuario = usuarioServiceImpl.obter(usuario.getId());
+		request.getSession().setAttribute("usuario", usuario);
+		return usuario;
 
-		} catch (Exception e) {
-			return null;
-		}
 	}
 
 	@RequestMapping(value = "/contas/salvarTodos", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<?> salvarTodos(@RequestBody Conta conta) {
-
+		HashMap<String, Object> resultado = new HashMap<>();
 		try {
-			resultado.clear();
 			contaServiceImpl.salvarTodos(conta);
 		} catch (Exception e) {
 			resultado.put("mensagem", e.getMessage());
 			return new ResponseEntity<>(resultado, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 
-		resultado.put("mensagem", "Todas as parcelas não pagas foram salvas iguais a parcela atual!");
+		// resultado.put("mensagem", "Todas as parcelas não pagas foram salvas iguais a
+		// parcela atual!");
 		resultado.put("objeto", conta);
 		return new ResponseEntity<>(resultado, HttpStatus.OK);
 	}
 
 	@RequestMapping(value = "/contas/excluirTodos", method = RequestMethod.DELETE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<?> excluirTodos(@RequestBody Conta conta) {
-
+		HashMap<String, Object> resultado = new HashMap<>();
 		try {
-			resultado.clear();
 			contaServiceImpl.excluirTodos(conta);
 		} catch (WarningException e) {
 			resultado.put("mensagem", e.getMessage());
@@ -167,15 +159,14 @@ public class WsConta {
 		}
 
 		HashMap<String, String> mensagem = new HashMap<>();
-		mensagem.put("mensagem", "Todas as parcelas não pagas foram excluídas!");
+		// mensagem.put("mensagem", "Todas as parcelas não pagas foram excluídas!");
 		return new ResponseEntity<>(mensagem, HttpStatus.OK);
 	}
 
 	@RequestMapping(value = "/contas/excluir", method = RequestMethod.DELETE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<?> excluir(@RequestBody Conta conta) {
-
+		HashMap<String, Object> resultado = new HashMap<>();
 		try {
-			resultado.clear();
 			contaServiceImpl.exluir(conta);
 		} catch (WarningException e) {
 			resultado.put("mensagem", e.getMessage());
@@ -186,16 +177,15 @@ public class WsConta {
 		}
 
 		HashMap<String, Object> mensagem = new HashMap<>();
-		mensagem.put("mensagem", "A conta foi excluída!");
+		// mensagem.put("mensagem", "A conta foi excluída!");
 		mensagem.put("objecto", conta);
 		return new ResponseEntity<>(mensagem, HttpStatus.OK);
 	}
 
 	@RequestMapping(value = "/contas/baixar", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<?> baixar(@RequestBody Conta conta) {
-
+		HashMap<String, Object> resultado = new HashMap<>();
 		try {
-			resultado.clear();
 			contaServiceImpl.baixarConta(conta);
 		} catch (WarningException e) {
 			resultado.put("mensagem", e.getMessage());
@@ -206,16 +196,15 @@ public class WsConta {
 		}
 
 		HashMap<String, Object> mensagem = new HashMap<>();
-		mensagem.put("mensagem", "A conta foi baixada!");
+		// mensagem.put("mensagem", "A conta foi baixada!");
 		mensagem.put("objecto", conta);
 		return new ResponseEntity<>(mensagem, HttpStatus.OK);
 	}
 
 	@RequestMapping(value = "/contas/cancelarBaixa", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<?> cancelarBaixa(@RequestBody Conta conta) {
-
+		HashMap<String, Object> resultado = new HashMap<>();
 		try {
-			resultado.clear();
 			contaServiceImpl.abrirConta(conta);
 		} catch (WarningException e) {
 			resultado.put("mensagem", e.getMessage());
@@ -226,16 +215,15 @@ public class WsConta {
 		}
 
 		HashMap<String, Object> mensagem = new HashMap<>();
-		mensagem.put("mensagem", "A baixa foi cancelada!");
+		// mensagem.put("mensagem", "A baixa foi cancelada!");
 		mensagem.put("objecto", conta);
 		return new ResponseEntity<>(mensagem, HttpStatus.OK);
 	}
 
 	@RequestMapping(value = "/contas/salvar", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<?> salvar(@RequestBody Conta conta) {
-
+		HashMap<String, Object> resultado = new HashMap<>();
 		try {
-			resultado.clear();
 			conta.setUsuario(getUsuarioLogado());
 			contaServiceImpl.salvar(conta);
 		} catch (WarningException e) {
@@ -246,16 +234,15 @@ public class WsConta {
 			return new ResponseEntity<>(resultado, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 
-		resultado.put("mensagem", "A conta foi salva!");
+		// resultado.put("mensagem", "A conta foi salva!");
 		resultado.put("objeto", conta);
 		return new ResponseEntity<>(resultado, HttpStatus.OK);
 	}
 
 	@RequestMapping(value = "/usuario/alterarSaldo", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<?> alterarSaldo(@RequestBody Usuario usuario) {
-
+		HashMap<String, Object> resultado = new HashMap<>();
 		try {
-			resultado.clear();
 			usuarioServiceImpl.salvar(usuario);
 		} catch (Exception e) {
 			resultado.put("mensagem", e.getMessage());
@@ -263,7 +250,7 @@ public class WsConta {
 		}
 
 		HashMap<String, String> mensagem = new HashMap<>();
-		mensagem.put("mensagem", "O Saldo foi alterado!");
+		// mensagem.put("mensagem", "O Saldo foi alterado!");
 		return new ResponseEntity<>(mensagem, HttpStatus.OK);
 	}
 
@@ -276,7 +263,7 @@ public class WsConta {
 	@RequestMapping(value = "/anos", method = RequestMethod.GET, produces = "application/json")
 	public ResponseEntity<?> anos() {
 
-		resultado.clear();
+		HashMap<String, Object> resultado = new HashMap<>();
 		List<Integer> listaAnos = new ArrayList<>();
 		Calendar calendario = Calendar.getInstance();
 		calendario.add(Calendar.YEAR, -3);

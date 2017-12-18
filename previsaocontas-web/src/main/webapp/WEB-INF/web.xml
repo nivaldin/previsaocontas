@@ -65,7 +65,7 @@
 
 	<servlet-mapping>
 		<servlet-name>application-context</servlet-name>
-		<url-pattern>/rest/*</url-pattern>
+		<url-pattern>/app/views/rest/*</url-pattern>
 	</servlet-mapping>
 
 
