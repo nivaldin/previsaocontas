@@ -139,8 +139,7 @@ public class WsConta {
 			return new ResponseEntity<>(resultado, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 
-		// resultado.put("mensagem", "Todas as parcelas não pagas foram salvas iguais a
-		// parcela atual!");
+		resultado.put("mensagem", "Todas as parcelas não pagas foram salvas iguais a parcela atual!");
 		resultado.put("objeto", conta);
 		return new ResponseEntity<>(resultado, HttpStatus.OK);
 	}
@@ -159,7 +158,7 @@ public class WsConta {
 		}
 
 		HashMap<String, String> mensagem = new HashMap<>();
-		// mensagem.put("mensagem", "Todas as parcelas não pagas foram excluídas!");
+		mensagem.put("mensagem", "Todas as parcelas não pagas foram excluídas!");
 		return new ResponseEntity<>(mensagem, HttpStatus.OK);
 	}
 
@@ -177,7 +176,7 @@ public class WsConta {
 		}
 
 		HashMap<String, Object> mensagem = new HashMap<>();
-		// mensagem.put("mensagem", "A conta foi excluída!");
+		mensagem.put("mensagem", "A conta '" + conta.getDescricao() + "' foi excluída!");
 		mensagem.put("objecto", conta);
 		return new ResponseEntity<>(mensagem, HttpStatus.OK);
 	}
@@ -196,7 +195,7 @@ public class WsConta {
 		}
 
 		HashMap<String, Object> mensagem = new HashMap<>();
-		// mensagem.put("mensagem", "A conta foi baixada!");
+		mensagem.put("mensagem", "A conta foi baixada!");
 		mensagem.put("objecto", conta);
 		return new ResponseEntity<>(mensagem, HttpStatus.OK);
 	}
@@ -215,7 +214,7 @@ public class WsConta {
 		}
 
 		HashMap<String, Object> mensagem = new HashMap<>();
-		// mensagem.put("mensagem", "A baixa foi cancelada!");
+		mensagem.put("mensagem", "A baixa foi cancelada!");
 		mensagem.put("objecto", conta);
 		return new ResponseEntity<>(mensagem, HttpStatus.OK);
 	}
@@ -234,7 +233,7 @@ public class WsConta {
 			return new ResponseEntity<>(resultado, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 
-		// resultado.put("mensagem", "A conta foi salva!");
+		resultado.put("mensagem", "A conta foi salva!");
 		resultado.put("objeto", conta);
 		return new ResponseEntity<>(resultado, HttpStatus.OK);
 	}
@@ -250,7 +249,7 @@ public class WsConta {
 		}
 
 		HashMap<String, String> mensagem = new HashMap<>();
-		// mensagem.put("mensagem", "O Saldo foi alterado!");
+		mensagem.put("mensagem", "O Saldo foi alterado!");
 		return new ResponseEntity<>(mensagem, HttpStatus.OK);
 	}
 
