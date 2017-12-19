@@ -588,5 +588,20 @@ angular.module('app.controllers', []).controller('contasController', function($s
 
 		return css;
 	}
+	
+	$scope.mesSeguinte = function () {
+		var data = new Date($scope.ano, $scope.mes, 1);
+		$scope.mes = data.getMonth() + 1;
+		$scope.ano = data.getFullYear();
+		$scope.listarContas();
+		$scope.cancelarEdicao();
+	}
+	$scope.mesAnterior = function () {
+		var data = new Date($scope.ano, $scope.mes - 2, 1);
+		$scope.mes = data.getMonth() + 1;
+		$scope.ano = data.getFullYear();
+		$scope.listarContas();
+		$scope.cancelarEdicao();
+	}
 
 });

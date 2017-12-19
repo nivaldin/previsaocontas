@@ -1,111 +1,115 @@
 <!DOCTYPE html>
 <html>
 <head>
-<meta charset="UTF-8" />
-<meta http-equiv="Refresh" content="240;URL=#{facesContext.externalContext.requestContextPath}/contas-angularjs.html" />
+
 <title>Minhas Contas</title>
 
-<script type="text/javascript" src="../js/angular.min.js"></script>
-<script type="text/javascript" src="../js/angular-locale_pt-br.js"></script>
-<script type="text/javascript" src="../js/rw-money-mask.js"></script>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Refresh" content="240;URL=#{facesContext.externalContext.requestContextPath}/contas-angularjs.html" />
 
 <link rel="stylesheet" href="../../resources/css/bootstrap.min.css"></link>
-
 <link rel="stylesheet" href="../../resources/css/angularStyle.css"></link>
-
-<script type="text/javascript" src="../js/app.js"></script>
-<script type="text/javascript" src="../controllers/contasController.js"></script>
-<script type="text/javascript" src="../services/contasService.js"></script>
-
-<script type="text/javascript" src="../../resources/js/jquery.min.js"></script>
-<script type="text/javascript" src="../../resources/js/bootstrap.min.js"></script>
-<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.4/angular-animate.js"></script>
 
 </head>
 <body ng-app="app" ng-controller="contasController">
 
+	<script type="text/javascript" src="../js/angular.min.js"></script>
+	<script type="text/javascript" src="../js/angular-locale_pt-br.js"></script>
+	<script type="text/javascript" src="../js/rw-money-mask.js"></script>
+
+	<script type="text/javascript" src="../js/app.js"></script>
+	<script type="text/javascript" src="../controllers/contasController.js"></script>
+	<script type="text/javascript" src="../services/contasService.js"></script>
+
+	<script type="text/javascript" src="../../resources/js/jquery.min.js"></script>
+	<script type="text/javascript" src="../../resources/js/bootstrap.min.js"></script>
+
 	<div class="container-fluid" style="margin-top: 5px;">
 		<div class="row">
-			<div class="col-sm-2">
-				<div class="input-group">
-					<span class="input-group-addon"><i class="glyphicon glyphicon-user"></i></span> <input id="usuario" type="text" class="form-control input-sm" name="usuario" placeholder="Usuário" ng-model="userform.usuario">
-				</div>
-				<div class="input-group">
-					<span class="input-group-addon"><i class="glyphicon glyphicon-lock"></i></span> <input id="senha" type="password" class="form-control input-sm" name="password" placeholder="Senha" ng-model="userform.senha">
-				</div>
-				<div class="row">
-					<div class="col-sm-12"></div>
-				</div>
-				<button id="submit" type="submit" class="btn btn-default btn-sm" ng-click="validaLogin()" title="Entrar no Sistema">
-					<span class="glyphicon glyphicon-log-in"> </span>
-				</button>
+			<div class="col-xs-2">
+				<div class="container-fluid">
+					<div class="row">
+						<input id="usuario" type="text" class="form-control input-sm" name="usuario" placeholder="Usuário" ng-model="userform.usuario">
+					</div>
+					<div class="row">
+						<input id="senha" type="password" class="form-control input-sm" name="password" placeholder="Senha" ng-model="userform.senha">
+					</div>
+					<div class="row">
+						<div class="col-sm-12"></div>
+					</div>
+					<div class="row">
+						<button id="submit" type="submit" class="btn btn-default btn-sm" ng-click="validaLogin()" title="Entrar no Sistema">
+							<span class="glyphicon glyphicon-log-in"> </span>
+						</button>
 
-				<button id="sair" type="submit" class="btn btn-default btn-sm" ng-click="logout()" title="Sair do Sistema">
-					<span class="glyphicon glyphicon-log-out"> </span>
-				</button>
+						<button id="sair" type="submit" class="btn btn-default btn-sm" ng-click="logout()" title="Sair do Sistema">
+							<span class="glyphicon glyphicon-log-out"> </span>
+						</button>
+					</div>
+				</div>
 
 				<div ng-hide="indrUsuarioLogado == false || !isObjectEmpty(msgs)">
-
-					<hr>
-					<div class="container">
+					<div class="container-fluid">
+						<hr>
 						<div class="row">
-							<div class="col-sm-12">
+							<div class="col-xs-12">
 								<label>Resumo Mês</label>
 							</div>
 						</div>
 						<div class="row">
-							<div class="col-sm-12">
+							<div class="col-xs-12">
 								<span style="color: red" id="despesaMes">{{totalDespesaMes | currency:'':2}}</span>
 							</div>
 						</div>
 						<div class="row">
-							<div class="col-sm-12">
+							<div class="col-xs-12">
 								<span style="color: green" id="ReceitaMes">{{totalReceitaMes | currency:'':2}}</span>
 							</div>
 						</div>
 						<div class="row">
-							<div class="col-sm-12">
-								<span id="totalMes">{{totalReceitaMes - totalDespesaMes | currency:'':2}}</span>
+							<div class="col-xs-12">
+								<span style="color: blue" id="totalMes">{{totalReceitaMes - totalDespesaMes | currency:'':2}}</span>
 							</div>
 						</div>
 						<div class="row">
-							<div class="col-sm-12">
+							<div class="col-xs-12">
 								<label>Previsão Mês</label>
 							</div>
 						</div>
 						<div class="row">
-							<div class="col-sm-12">
+							<div class="col-xs-12">
 								<span style="color: red" id="despesaPrevistoMes">{{totalDespesaPrevistoMes | currency:'':2}}</span>
 							</div>
 						</div>
 						<div class="row">
-							<div class="col-sm-12">
+							<div class="col-xs-12">
 								<span style="color: green" id="despesaPrevistoMes">{{totalReceitaPrevistoMes | currency:'':2}}</span>
 							</div>
 						</div>
 						<div class="row">
-							<div class="col-sm-12">
-								<span type="text" id="totalPrevisaoMes">{{usuarioLogado.saldo + (totalReceitaPrevistoMes - totalDespesaPrevistoMes) | currency:'':2}}</span>
+							<div class="col-xs-12">
+								<span style="color: blue" type="text" id="totalPrevisaoMes">{{usuarioLogado.saldo + (totalReceitaPrevistoMes - totalDespesaPrevistoMes) | currency:'':2}}</span>
 							</div>
 						</div>
 						<div class="row">
-							<div class="col-sm-12">
+							<div class="col-xs-12">
 								<label>Prev. Acumulado</label>
 							</div>
 						</div>
 						<div class="row">
-							<div class="col-sm-12">
+							<div class="col-xs-12">
 								<span style="color: red" id="despesaPrevistoAcumulado">{{totalDespesaPrevistoAcumulado | currency:'':2}}</span>
 							</div>
 						</div>
 						<div class="row">
-							<div class="col-sm-12">
+							<div class="col-xs-12">
 								<span style="color: green" id="receitaPrevistoAcumulado">{{totalReceitaPrevistoAcumulado | currency:'':2}}</span>
 							</div>
 						</div>
 						<div class="row">
-							<div class="col-sm-12">
-								<span id="totalAcumulado">{{usuarioLogado.saldo + (totalReceitaPrevistoAcumulado - totalDespesaPrevistoAcumulado) | currency:'':2}}</span>
+							<div class="col-xs-12">
+								<span style="color: blue" id="totalAcumulado">{{usuarioLogado.saldo + (totalReceitaPrevistoAcumulado - totalDespesaPrevistoAcumulado) | currency:'':2}}</span>
 							</div>
 						</div>
 					</div>
@@ -120,9 +124,10 @@
 						</div>
 					</div>
 					<hr>
+
 				</div>
 			</div>
-			<div class="col-sm-10">
+			<div class="col-xs-10">
 
 				<div ng-class="msgClass" style="position: fixed; z-index: 99999; right: 5px; top: 5px;" ng-hide="msg == ''" ng-click="msg = ''">
 					<strong>{{msgTitulo}}</strong> {{msg}}
@@ -135,67 +140,72 @@
 				<div class="modal-backdrop fade in" style="z-index: 10000;" ng-hide="msg == ''" ng-click="msg = ''"></div>
 
 				<div ng-hide="indrUsuarioLogado == false || !isObjectEmpty(msgs)">
+					<div class="container-fluid">
+						<div class="row">
 
-					<nav class="navbar navbar-default">
-						<div class="container-fluid">
-							<div class="navbar-header">
-								<a class="navbar-brand" href="#"><select id="ano" ng-options="ano for ano in listaAnos" ng-model="ano"></select></a>
-							</div>
-							<ul class="nav navbar-nav">
-								<li><a ng-click="mes = 1; listarContas(); cancelarEdicao();" href="#">Jan</a></li>
-								<li><a ng-click="mes = 2; listarContas(); cancelarEdicao();" href="#">Fev</a></li>
-								<li><a ng-click="mes = 3; listarContas(); cancelarEdicao();" href="#">Mar</a></li>
-								<li><a ng-click="mes = 4; listarContas(); cancelarEdicao();" href="#">Abr</a></li>
-								<li><a ng-click="mes = 5; listarContas(); cancelarEdicao();" href="#">Mai</a></li>
-								<li><a ng-click="mes = 6; listarContas(); cancelarEdicao();" href="#">Jun</a></li>
-								<li><a ng-click="mes = 7; listarContas(); cancelarEdicao();" href="#">Jul</a></li>
-								<li><a ng-click="mes = 8; listarContas(); cancelarEdicao();" href="#">Ago</a></li>
-								<li><a ng-click="mes = 9; listarContas(); cancelarEdicao();" href="#">Set</a></li>
-								<li><a ng-click="mes = 10; listarContas(); cancelarEdicao();" href="#">Out</a></li>
-								<li><a ng-click="mes = 11; listarContas(); cancelarEdicao();" href="#">Nov</a></li>
-								<li><a ng-click="mes = 12; listarContas(); cancelarEdicao();" href="#">Dez</a></li>
-							</ul>
-							<div class="navbar-header">
-								<a class="navbar-brand" href="#"><button id="novaConta" ng-click="novaConta();" type="submit" class="btn btn-default btn-sm">
-										<span class="glyphicon glyphicon-plus"> </span>
-									</button></a>
 
+
+							<div class="col-sm-12">
+								<table>
+									<tr>
+									<td style="padding: 5px; font-size: 18px; cursor: pointer;" ng-click="mesAnterior()">-</td>
+										<td style="padding: 5px;"><select style="font-size: 18px;" id="mes" ng-model="mes" ng-change="listarContas(); cancelarEdicao();">
+												<option label="Janeiro" ng-value="1"></option>
+												<option label="Fevereiro" ng-value="2"></option>
+												<option label="Março" ng-value="3"></option>
+												<option label="Abril" ng-value="4"></option>
+												<option label="Maio" ng-value="5"></option>
+												<option label="Junho" ng-value="6"></option>
+												<option label="Julho" ng-value="7"></option>
+												<option label="Agosto" ng-value="8"></option>
+												<option label="Setembro" ng-value="9"></option>
+												<option label="Outubro" ng-value="10"></option>
+												<option label="Novembro" ng-value="11"></option>
+												<option label="Dezembro" ng-value="12"></option>
+										</select></td>
+										<td style="padding: 5px; font-size: 18px; cursor: pointer;" ng-click="mesSeguinte()">+</td>
+										<td style="padding: 5px;"><select style="font-size: 18px;" id="ano" ng-options="ano for ano in listaAnos" ng-model="ano" ng-change="listarContas(); cancelarEdicao();"></select></td>
+										<td style="padding: 5px;"><button id="novaConta" ng-click="novaConta();" type="submit" class="btn btn-default btn-sm">
+												<span class="glyphicon glyphicon-plus"> </span>
+											</button></td>
+									</tr>
+								</table>
 							</div>
 						</div>
-					</nav>
-
-					<div class="table-responsive">
-						<table id="tabelaContas" class="table table-hover table-striped table-bordered table-condensed">
-							<thead>
-								<tr>
-									<th width="60"></th>
-									<th width="3"></th>
-									<th width="3"></th>
-									<th width="3"></th>
-									<th>Descrição</th>
-									<th>Valor</th>
-									<th>Parciais</th>
-									<th>Vcto</th>
-									<th>Parcela</th>
-								</tr>
-							</thead>
-							<tbody>
-								<tr ng-repeat="c in contas">
-									<td><a ng-click="excluir(c)" href="#"><img src="../../resources/img/lixo.png"></a> <a ng-click="baixar(c)" ng-if="c.status=='A'" href="#" title="Baixar Conta"><img src="../../resources/img/aberto.png"></a> <a ng-click="cancelarBaixa(c)" ng-if="c.status=='B'" href="#"
-										title="Cancelar Baixa"><img src="../../resources/img/baixado.png"></a></td>
-									<td ng-style="cssVencimento(c)"></td>
-									<td ng-style="{'background-color': c.tipo== 'D'? 'red':'green'}"></td>
-									<td ng-style="{'background-color': c.flag_comum== 'S'? 'yellow': 'inherit'}"></td>
-									<td ng-style="cssLinhaTabela(c)" ng-click="editarConta(c)">{{ c.descricao }}</td>
-									<td ng-style="cssLinhaTabela(c)" ng-click="editarConta(c)">{{ c.valor | currency:"":2 }}</td>
-									<td ng-style="cssLinhaTabela(c)" ng-click="editarConta(c)">{{ c.valorParciais | currency:"":2 }}</td>
-									<td ng-style="cssLinhaTabela(c)" ng-click="editarConta(c)">{{ c.dia_vencimento }}</td>
-									<td ng-style="cssLinhaTabela(c)" ng-click="editarConta(c)">{{ c.numr_parcela }} - {{ c.qtde_parcelas }}</td>
-								</tr>
-							</tbody>
-						</table>
+						<div class="row">
+							<div class="col-sm-12">
+								<table id="tabelaContas" class="table table-hover table-striped table-bordered table-condensed">
+									<thead>
+										<tr>
+											<th width="60"></th>
+											<th width="3"></th>
+											<th width="3"></th>
+											<th width="3"></th>
+											<th>Descrição</th>
+											<th>Valor</th>
+											<th>Parciais</th>
+											<th>Vcto</th>
+											<th>Parcela</th>
+										</tr>
+									</thead>
+									<tbody>
+										<tr ng-repeat="c in contas">
+											<td><a ng-click="excluir(c)" href="#"><img src="../../resources/img/lixo.png"></a> <a ng-click="baixar(c)" ng-if="c.status=='A'" href="#" title="Baixar Conta"><img src="../../resources/img/aberto.png"></a> <a ng-click="cancelarBaixa(c)" ng-if="c.status=='B'" href="#"
+												title="Cancelar Baixa"><img src="../../resources/img/baixado.png"></a></td>
+											<td ng-style="cssVencimento(c)"></td>
+											<td ng-style="{'background-color': c.tipo== 'D'? 'red':'green'}"></td>
+											<td ng-style="{'background-color': c.flag_comum== 'S'? 'yellow': 'inherit'}"></td>
+											<td ng-style="cssLinhaTabela(c)" ng-click="editarConta(c)">{{ c.descricao }}</td>
+											<td ng-style="cssLinhaTabela(c)" ng-click="editarConta(c)">{{ c.valor | currency:"":2 }}</td>
+											<td ng-style="cssLinhaTabela(c)" ng-click="editarConta(c)">{{ c.valorParciais | currency:"":2 }}</td>
+											<td ng-style="cssLinhaTabela(c)" ng-click="editarConta(c)">{{ c.dia_vencimento }}</td>
+											<td ng-style="cssLinhaTabela(c)" ng-click="editarConta(c)">{{ c.numr_parcela }} - {{ c.qtde_parcelas }}</td>
+										</tr>
+									</tbody>
+								</table>
+							</div>
+						</div>
 					</div>
-
 
 					<!-- Modal -->
 					<div id="myModal" class="modal fade" role="dialog" tabindex="-1">
