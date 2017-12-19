@@ -16,7 +16,8 @@ angular.module('app.controllers', []).controller('contasController', function($s
 		valorParciais : 0,
 		tipo : "D",
 		data_mes : new Date(),
-		flag_comum : "N"
+		flag_comum : "N",
+		tipoRepeticao : "ME"
 	}
 	$scope.usuarioLogado = {
 		id : null,
@@ -311,8 +312,10 @@ angular.module('app.controllers', []).controller('contasController', function($s
 	}
 
 	$scope.listarContas = function() {
+		if ($scope.mes == null || $scope.ano == null) {
+			return;
+		}
 		$scope.msgs['rest/contas/' + $scope.mes + '/' + $scope.ano] = "Buscando contas...";
-		// $scope.cancelarEdicao();
 
 		$http({
 			method : 'GET',
@@ -449,6 +452,7 @@ angular.module('app.controllers', []).controller('contasController', function($s
 		document.getElementById("despesa").disabled = true;
 		document.getElementById("receita").disabled = true;
 		document.getElementById("qtdeParcelas").disabled = true;
+		document.getElementById("tipoRepeticao").disabled = true;
 		$scope.listarContasFilhas(c.id);
 		$('#myModal').modal('show');
 	}
@@ -472,8 +476,9 @@ angular.module('app.controllers', []).controller('contasController', function($s
 			contaPai : null,
 			valorParciais : 0,
 			tipo : "D",
-			data_mes : new Date($scope.ano, $scope.mes - 1, 1, new Date().getHours(), new Date().getMinutes(), new Date().getSeconds()),
-			flag_comum : "N"
+			data_mes : new Date($scope.ano, $scope.mes - 1, new Date().getDate(), new Date().getHours(), new Date().getMinutes(), new Date().getSeconds()),
+			flag_comum : "N",
+			tipoRepeticao : "ME"
 		}
 		$scope.novaContaFilha();
 		$scope.contasFilhas = [];
@@ -484,6 +489,7 @@ angular.module('app.controllers', []).controller('contasController', function($s
 		document.getElementById("despesa").disabled = false;
 		document.getElementById("receita").disabled = false;
 		document.getElementById("qtdeParcelas").disabled = false;
+		document.getElementById("tipoRepeticao").disabled = false;
 		$('#myModal').modal('show');
 		document.getElementById('descricao').focus();
 	}
@@ -503,7 +509,8 @@ angular.module('app.controllers', []).controller('contasController', function($s
 			valorParciais : 0,
 			tipo : "D",
 			data_mes : new Date(),
-			flag_comum : "N"
+			flag_comum : "N",
+			tipoRepeticao : "ME"
 		}
 	}
 
@@ -528,12 +535,16 @@ angular.module('app.controllers', []).controller('contasController', function($s
 		if ($scope.conta.tipo == 'D') {
 			return {
 				//'background-color' : '#f2dede'
-				'color' : 'red'
+				'color' : 'red',
+				'font-weight' : 'bold',
+				'font-size' : '18px'
 			}
 		} else {
 			return {
 				//'background-color' : '#dff0d8'
-				'color' : 'green'
+				'color' : 'green',
+				'font-weight' : 'bold',
+				'font-size' : '18px'
 			}
 		}
 	}

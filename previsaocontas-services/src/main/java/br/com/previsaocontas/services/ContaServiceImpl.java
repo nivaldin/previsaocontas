@@ -89,8 +89,30 @@ public class ContaServiceImpl {
 				contac.setNumr_agrupador(numrAgrupador);
 				contac.setNumr_parcela(i + 1);
 				if (i > 0) {
-					calendar.set(Calendar.DAY_OF_MONTH, 1);
-					calendar.add(Calendar.MONTH, 1);
+					
+					if (contac.getTipoRepeticao().equals("DI")) {
+						calendar.add(Calendar.DAY_OF_MONTH, 1);
+					}
+					if (contac.getTipoRepeticao().equals("SM")) {
+						calendar.add(Calendar.DAY_OF_MONTH, 7);
+					}
+					if (contac.getTipoRepeticao().equals("ME")) {
+						calendar.set(Calendar.DAY_OF_MONTH, 1);
+						calendar.add(Calendar.MONTH, 1);
+					}
+					if (contac.getTipoRepeticao().equals("TR")) {
+						calendar.set(Calendar.DAY_OF_MONTH, 1);
+						calendar.add(Calendar.MONTH, 3);
+					}
+					if (contac.getTipoRepeticao().equals("ST")) {
+						calendar.set(Calendar.DAY_OF_MONTH, 1);
+						calendar.add(Calendar.MONTH, 6);
+					}
+					if (contac.getTipoRepeticao().equals("AN")) {
+						calendar.set(Calendar.DAY_OF_MONTH, 1);
+						calendar.add(Calendar.YEAR, 1);
+					}
+					
 				}
 				contac.setData_mes(calendar.getTime());
 				contaDAOImpl.salvar(contac);

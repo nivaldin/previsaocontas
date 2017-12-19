@@ -70,6 +70,9 @@ public class Conta extends Entidade {
 
 	@Transient
 	private Double valorParciais;
+	
+	@Column
+	private String tipoRepeticao;
 
 	// @OneToMany(mappedBy = "contaPai", fetch = FetchType.EAGER ,cascade =
 	// CascadeType.ALL)
@@ -204,6 +207,14 @@ public class Conta extends Entidade {
 
 	public void setValorParciais(Double valorParciais) {
 		this.valorParciais = valorParciais;
+	}
+	
+	public String getTipoRepeticao() {
+		return tipoRepeticao;
+	}
+
+	public void setTipoRepeticao(String tipoRepeticao) {
+		this.tipoRepeticao = tipoRepeticao;
 	}
 
 	@Override
