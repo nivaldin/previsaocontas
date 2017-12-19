@@ -133,7 +133,7 @@
 					</ul>
 				</div>
 				<div class="modal-backdrop fade in" style="z-index: 10000;" ng-hide="msg == ''" ng-click="msg = ''"></div>
-				
+
 				<div ng-hide="indrUsuarioLogado == false || !isObjectEmpty(msgs)">
 
 					<nav class="navbar navbar-default">
@@ -222,13 +222,13 @@
 															</div>
 														</div>
 														<div class="row">
-															<div class="col-md-6">
+															<div class="col-md-4">
 																<label for="descricao">Descrição</label> <input type="text" id="descricao" ng-model="conta.descricao" size="30" class="form-control">
 															</div>
-															<div class="col-md-3">
+															<div class="col-md-4">
 																<label for="valor">Valor</label> <input type="text" id="valor" ng-model="conta.valor" money-mask size="10" class="form-control">
 															</div>
-															<div class="col-md-3">
+															<div class="col-md-4">
 																<label for="Data">Data</label> <input type="date" id="data" name="data" ng-model="conta.data_mes" class="form-control" />
 															</div>
 														</div>
@@ -269,13 +269,13 @@
 													<div class="panel-heading" ng-style="cssTitulo()">Parciais</div>
 													<div class="panel-body">
 														<div class="row">
-															<div class="col-sm-6">
+															<div class="col-sm-4">
 																<label for="descricaoFilha">Descrição</label><input type="text" id="descricaoFilha" ng-model="contaFilha.descricao" size="30" class="form-control">
 															</div>
-															<div class="col-sm-3">
+															<div class="col-sm-4">
 																<label for="valorFilha">Valor</label><input type="text" id="valorFilha" ng-model="contaFilha.valor" size="10" money-mask class="form-control">
 															</div>
-															<div class="col-sm-3">
+															<div class="col-sm-4">
 																<label for="dataFilha">Data</label><input type="date" id="dataFilha" name="data" ng-model="contaFilha.data_registro" class="form-control" />
 															</div>
 														</div>

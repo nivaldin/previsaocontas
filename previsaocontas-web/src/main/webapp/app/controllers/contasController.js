@@ -161,7 +161,7 @@ angular.module('app.controllers', []).controller('contasController', function($s
 			}
 		}).then(function successCallback(response) {
 			msgSucesso(response);
-			iniciar();
+			$scope.listarContas();
 		}, function errorCallback(response) {
 			msgErro(response);
 		});
@@ -527,11 +527,13 @@ angular.module('app.controllers', []).controller('contasController', function($s
 		}
 		if ($scope.conta.tipo == 'D') {
 			return {
-				'background-color' : '#f2dede'
+				//'background-color' : '#f2dede'
+				'color' : 'red'
 			}
 		} else {
 			return {
-				'background-color' : '#dff0d8'
+				//'background-color' : '#dff0d8'
+				'color' : 'green'
 			}
 		}
 	}
