@@ -210,135 +210,135 @@
 			</div>
 		</div>
 
+		<div ng-hide="indrUsuarioLogado == false || !isObjectEmpty(msgs)">
+			<!-- Modal -->
+			<div id="myModal" class="modal fade" role="dialog" tabindex="-1">
+				<div class="modal-dialog" role="document" style="left: 50%; transform: translateX(-50%); position: absolute; width: 50%;">
 
-		<!-- Modal -->
-		<div id="myModal" class="modal fade" role="dialog" tabindex="-1">
-			<div class="modal-dialog" role="document" style="left: 50%; transform: translateX(-50%); position: absolute; width: 50%;">
+					<!-- Modal content-->
+					<div class="modal-content">
+						<div class="modal-header">
+							<button type="button" class="close" data-dismiss="modal">&times;</button>
+							<h4 class="modal-title">Editar Conta</h4>
+						</div>
+						<div class="modal-body">
 
-				<!-- Modal content-->
-				<div class="modal-content">
-					<div class="modal-header">
-						<button type="button" class="close" data-dismiss="modal">&times;</button>
-						<h4 class="modal-title">Editar Conta</h4>
-					</div>
-					<div class="modal-body">
-
-						<div id="editarConta">
-							<div class="row">
-								<div class="col-sm-12">
-									<div class="panel panel-default">
-										<div class="panel-heading" ng-style="cssTitulo()">Conta</div>
-										<div class="panel-body">
-											<div class="row">
-												<div class="col-xs-12" style="background-color: lightblue;">
-													<label style="color: red;" for="despesa"><input id="despesa" type="radio" ng-model="conta.tipo" value="D"> Despesa</label> <label style="color: green;" for="receita"><input id="receita" type="radio" ng-model="conta.tipo" value="R"> Receita</label> <label
-														style="color: black; color: yellow" for="flagComun"><input title="Conta Comun a todos os meses" type="checkbox" id="flagComun" ng-model="conta.flag_comum" size="30" ng-true-value="'S'" ng-false-value="'N'"> Comun</label>
+							<div id="editarConta">
+								<div class="row">
+									<div class="col-sm-12">
+										<div class="panel panel-default">
+											<div class="panel-heading" ng-style="cssTitulo()">Conta</div>
+											<div class="panel-body">
+												<div class="row">
+													<div class="col-xs-12" style="background-color: lightblue;">
+														<label style="color: red;" for="despesa"><input id="despesa" type="radio" ng-model="conta.tipo" value="D"> Despesa</label> <label style="color: green;" for="receita"><input id="receita" type="radio" ng-model="conta.tipo" value="R"> Receita</label> <label
+															style="color: black; color: yellow" for="flagComun"><input title="Conta Comun a todos os meses" type="checkbox" id="flagComun" ng-model="conta.flag_comum" size="30" ng-true-value="'S'" ng-false-value="'N'"> Comun</label>
+													</div>
 												</div>
-											</div>
-											<div class="row">
-												<div class="col-md-4">
-													<label for="descricao">Descrição</label> <input type="text" id="descricao" ng-model="conta.descricao" size="30" class="form-control">
+												<div class="row">
+													<div class="col-md-4">
+														<label for="descricao">Descrição</label> <input type="text" id="descricao" ng-model="conta.descricao" size="30" class="form-control">
+													</div>
+													<div class="col-md-4">
+														<label for="valor">Valor</label> <input type="text" id="valor" ng-model="conta.valor" money-mask size="10" class="form-control">
+													</div>
+													<div class="col-md-4">
+														<label for="Data">Data</label> <input type="date" id="data" name="data" ng-model="conta.data_mes" class="form-control" />
+													</div>
 												</div>
-												<div class="col-md-4">
-													<label for="valor">Valor</label> <input type="text" id="valor" ng-model="conta.valor" money-mask size="10" class="form-control">
+												<div class="row">
+													<div class="col-md-4">
+														<label for="vencimento">Vencimento</label> <input type="number" min="1" max="31" id="vencimento" ng-model="conta.dia_vencimento" class="form-control">
+													</div>
+													<div class="col-md-2">
+														<label for="qtdeParcelas">Parcelas</label> <input type="number" id="qtdeParcelas" ng-model="conta.qtde_parcelas" class="form-control">
+													</div>
+													<div class="col-md-2">
+														<label for="tipoRepeticao">Repetição</label> <select id="tipoRepeticao" ng-model="conta.tipoRepeticao" class="form-control">
+															<option label="Diária" value="DI"></option>
+															<option label="Semanal" value="SM"></option>
+															<option label="Mensal" value="ME"></option>
+															<option label="Trimestral" value="TR"></option>
+															<option label="Semestral" value="ST"></option>
+															<option label="Anual" value="AN"></option>
+														</select>
+													</div>
+													<div class="col-md-4">
+														<label for="parcela">Parcela</label> <input disabled="disabled" type="text" id="parcela" ng-value="conta.numr_parcela + ' - ' + conta.qtde_parcelas" class="form-control">
+													</div>
 												</div>
-												<div class="col-md-4">
-													<label for="Data">Data</label> <input type="date" id="data" name="data" ng-model="conta.data_mes" class="form-control" />
+												<div class="row" style="min-height: 10px !important">
+													<div class="col-md-12"></div>
 												</div>
-											</div>
-											<div class="row">
-												<div class="col-md-4">
-													<label for="vencimento">Vencimento</label> <input type="number" min="1" max="31" id="vencimento" ng-model="conta.dia_vencimento" class="form-control">
-												</div>
-												<div class="col-md-2">
-													<label for="qtdeParcelas">Parcelas</label> <input type="number" id="qtdeParcelas" ng-model="conta.qtde_parcelas" class="form-control">
-												</div>
-												<div class="col-md-2">
-													<label for="tipoRepeticao">Repetição</label>
-													<select id="tipoRepeticao" ng-model="conta.tipoRepeticao" class="form-control">
-														<option label="Diária" value="DI"></option>
-														<option label="Semanal" value="SM"></option>
-														<option label="Mensal" value="ME"></option>
-														<option label="Trimestral" value="TR"></option>
-														<option label="Semestral" value="ST"></option>
-														<option label="Anual" value="AN"></option>
-													</select>
-												</div>
-												<div class="col-md-4">
-													<label for="parcela">Parcela</label> <input disabled="disabled" type="text" id="parcela" ng-value="conta.numr_parcela + ' - ' + conta.qtde_parcelas" class="form-control">
-												</div>
-											</div>
-											<div class="row" style="min-height: 10px !important">
-												<div class="col-md-12"></div>
-											</div>
-											<div class="row">
-												<div class="col-xs-12">
-													<button id="salvar" ng-click="salvar();" type="submit" class="btn btn-default">
-														<span class="glyphicon glyphicon-save"> </span> Salvar
-													</button>
-													<button id="salvarTodos" ng-hide="conta.qtde_parcelas == 1 || conta.id == null" ng-click="salvarTodos();" type="submit" class="btn btn-default" title="Salva todas as parcelas relacionadas não baixadas iguais a essa!">
-														<span class="glyphicon glyphicon-save"> </span> Salvar Parcelas
-													</button>
-													<button id="excluirTodos" ng-hide="conta.qtde_parcelas == 1 || conta.id == null" ng-click="excluirTodos();" type="submit" class="btn btn-default" title="Exclui tdas as parcelas relacionadas não baixadas!">
-														<span class="glyphicon glyphicon-trash"> </span> Excluir Parcelas
-													</button>
+												<div class="row">
+													<div class="col-xs-12">
+														<button id="salvar" ng-click="salvar();" type="submit" class="btn btn-default">
+															<span class="glyphicon glyphicon-save"> </span> Salvar
+														</button>
+														<button id="salvarTodos" ng-hide="conta.qtde_parcelas == 1 || conta.id == null" ng-click="salvarTodos();" type="submit" class="btn btn-default" title="Salva todas as parcelas relacionadas não baixadas iguais a essa!">
+															<span class="glyphicon glyphicon-save"> </span> Salvar Parcelas
+														</button>
+														<button id="excluirTodos" ng-hide="conta.qtde_parcelas == 1 || conta.id == null" ng-click="excluirTodos();" type="submit" class="btn btn-default" title="Exclui tdas as parcelas relacionadas não baixadas!">
+															<span class="glyphicon glyphicon-trash"> </span> Excluir Parcelas
+														</button>
+													</div>
 												</div>
 											</div>
 										</div>
 									</div>
 								</div>
-							</div>
-							<div class="row" ng-hide="conta.id == null">
-								<div class="col-sm-12">
-									<div class="panel panel-default">
-										<div class="panel-heading" ng-style="cssTitulo()">Parciais</div>
-										<div class="panel-body">
-											<div class="row">
-												<div class="col-sm-4">
-													<label for="descricaoFilha">Descrição</label><input type="text" id="descricaoFilha" ng-model="contaFilha.descricao" size="30" class="form-control">
+								<div class="row" ng-hide="conta.id == null">
+									<div class="col-sm-12">
+										<div class="panel panel-default">
+											<div class="panel-heading" ng-style="cssTitulo()">Parciais</div>
+											<div class="panel-body">
+												<div class="row">
+													<div class="col-sm-4">
+														<label for="descricaoFilha">Descrição</label><input type="text" id="descricaoFilha" ng-model="contaFilha.descricao" size="30" class="form-control">
+													</div>
+													<div class="col-sm-4">
+														<label for="valorFilha">Valor</label><input type="text" id="valorFilha" ng-model="contaFilha.valor" size="10" money-mask class="form-control">
+													</div>
+													<div class="col-sm-4">
+														<label for="dataFilha">Data</label><input type="date" id="dataFilha" name="data" ng-model="contaFilha.data_registro" class="form-control" />
+													</div>
 												</div>
-												<div class="col-sm-4">
-													<label for="valorFilha">Valor</label><input type="text" id="valorFilha" ng-model="contaFilha.valor" size="10" money-mask class="form-control">
+												<div class="row" style="min-height: 10px !important">
+													<div class="col-md-12"></div>
 												</div>
-												<div class="col-sm-4">
-													<label for="dataFilha">Data</label><input type="date" id="dataFilha" name="data" ng-model="contaFilha.data_registro" class="form-control" />
+												<div class="row">
+													<div class="col-xs-12">
+														<button id="salvar" ng-click="salvarFilha();" type="submit" class="btn btn-default">
+															<span class="glyphicon glyphicon-save"></span> Salvar
+														</button>
+													</div>
 												</div>
-											</div>
-											<div class="row" style="min-height: 10px !important">
-												<div class="col-md-12"></div>
-											</div>
-											<div class="row">
-												<div class="col-xs-12">
-													<button id="salvar" ng-click="salvarFilha();" type="submit" class="btn btn-default">
-														<span class="glyphicon glyphicon-save"></span> Salvar
-													</button>
+												<div class="row" style="min-height: 10px !important">
+													<div class="col-md-12"></div>
 												</div>
-											</div>
-											<div class="row" style="min-height: 10px !important">
-												<div class="col-md-12"></div>
-											</div>
-											<div class="row" ng-hide="contasFilhas.length <= 0">
-												<div class="col-sm-12">
-													<div class="table-responsive" >
-														<table id="tabelaParciais" class="table table-hover table-striped table-bordered table-condensed">
-															<thead>
-																<tr>
-																	<th width="50"></th>
-																	<th>Descrição</th>
-																	<th>Valor</th>
-																	<th>Data Registro</th>
-																</tr>
-															</thead>
-															<tbody>
-																<tr ng-repeat="c in contasFilhas">
-																	<td><a ng-click="excluir(c)" href="#"> <span class="glyphicon glyphicon-trash"></span></a> <a ng-click="baixar(c)" ng-if="c.status=='A'" href="#" title="Baixar Conta"><span class="glyphicon glyphicon-folder-open"></span></a> <a ng-click="cancelarBaixa(c)" ng-if="c.status=='B'"
-																		href="#" title="Cancelar Baixa"><span class="glyphicon glyphicon-folder-close"></span></a></td>
-																	<td ng-style="cssLinhaTabela(c)">{{ c.descricao }}</td>
-																	<td ng-style="cssLinhaTabela(c)">{{ c.valor | currency:"":2 }}</td>
-																	<td ng-style="cssLinhaTabela(c)">{{ c.data_registro | date:'dd/MM/yyyy HH:mm:ss' }}</td>
-																</tr>
-															</tbody>
-														</table>
+												<div class="row" ng-hide="contasFilhas.length <= 0">
+													<div class="col-sm-12">
+														<div class="table-responsive">
+															<table id="tabelaParciais" class="table table-hover table-striped table-bordered table-condensed">
+																<thead>
+																	<tr>
+																		<th width="50"></th>
+																		<th>Descrição</th>
+																		<th>Valor</th>
+																		<th>Data Registro</th>
+																	</tr>
+																</thead>
+																<tbody>
+																	<tr ng-repeat="c in contasFilhas">
+																		<td><a ng-click="excluir(c)" href="#"> <span class="glyphicon glyphicon-trash"></span></a> <a ng-click="baixar(c)" ng-if="c.status=='A'" href="#" title="Baixar Conta"><span class="glyphicon glyphicon-folder-open"></span></a> <a ng-click="cancelarBaixa(c)" ng-if="c.status=='B'"
+																			href="#" title="Cancelar Baixa"><span class="glyphicon glyphicon-folder-close"></span></a></td>
+																		<td ng-style="cssLinhaTabela(c)">{{ c.descricao }}</td>
+																		<td ng-style="cssLinhaTabela(c)">{{ c.valor | currency:"":2 }}</td>
+																		<td ng-style="cssLinhaTabela(c)">{{ c.data_registro | date:'dd/MM/yyyy HH:mm:ss' }}</td>
+																	</tr>
+																</tbody>
+															</table>
+														</div>
 													</div>
 												</div>
 											</div>
@@ -346,17 +346,16 @@
 									</div>
 								</div>
 							</div>
+
 						</div>
+						<div class="modal-footer">
+							<!-- 									<button type="button" class="btn btn-default" data-dismiss="modal">Close</button> -->
+						</div>
+					</div>
 
-					</div>
-					<div class="modal-footer">
-						<!-- 									<button type="button" class="btn btn-default" data-dismiss="modal">Close</button> -->
-					</div>
 				</div>
-
 			</div>
 		</div>
-
 	</div>
 </body>
 </html>
