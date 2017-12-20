@@ -25,120 +25,36 @@
 	<script type="text/javascript" src="../../resources/js/jquery.min.js"></script>
 	<script type="text/javascript" src="../../resources/js/bootstrap.min.js"></script>
 
+	<div ng-class="msgClass" style="position: fixed; z-index: 99999; right: 5px; top: 5px;" ng-hide="msg == ''" ng-click="msg = ''">
+		<strong>{{msgTitulo}}</strong> {{msg}}
+	</div>
+	<div style="position: fixed; z-index: 99999; right: 50%; top: 50%;" ng-hide="isObjectEmpty(msgs)">
+		<ul>
+			<li ng-repeat="m in msgs">{{m}}</li>
+		</ul>
+	</div>
+	<div class="modal-backdrop fade in" style="z-index: 10000;" ng-hide="msg == ''" ng-click="msg = ''"></div>
+
+
 	<div class="container-fluid" style="margin-top: 5px;">
 		<div class="row">
-			<div class="col-xs-2">
-				<div class="container-fluid">
-					<div class="row">
-						<input id="usuario" type="text" class="form-control input-sm" name="usuario" placeholder="Usuário" ng-model="userform.usuario">
-					</div>
-					<div class="row">
-						<input id="senha" type="password" class="form-control input-sm" name="password" placeholder="Senha" ng-model="userform.senha">
-					</div>
-					<div class="row">
-						<div class="col-sm-12"></div>
-					</div>
-					<div class="row">
-						<button id="submit" type="submit" class="btn btn-default btn-sm" ng-click="validaLogin()" title="Entrar no Sistema">
-							<span class="glyphicon glyphicon-log-in"> </span>
-						</button>
-
-						<button id="sair" type="submit" class="btn btn-default btn-sm" ng-click="logout()" title="Sair do Sistema">
-							<span class="glyphicon glyphicon-log-out"> </span>
-						</button>
-					</div>
-				</div>
-
-				<div ng-hide="indrUsuarioLogado == false || !isObjectEmpty(msgs)">
-					<div class="container-fluid">
-						<hr>
-						<div class="row">
-							<div class="col-xs-12">
-								<label>Resumo Mês</label>
-							</div>
-						</div>
-						<div class="row">
-							<div class="col-xs-12">
-								<span style="color: red" id="despesaMes">{{totalDespesaMes | currency:'':2}}</span>
-							</div>
-						</div>
-						<div class="row">
-							<div class="col-xs-12">
-								<span style="color: green" id="ReceitaMes">{{totalReceitaMes | currency:'':2}}</span>
-							</div>
-						</div>
-						<div class="row">
-							<div class="col-xs-12">
-								<span style="color: blue" id="totalMes">{{totalReceitaMes - totalDespesaMes | currency:'':2}}</span>
-							</div>
-						</div>
-						<div class="row">
-							<div class="col-xs-12">
-								<label>Previsão Mês</label>
-							</div>
-						</div>
-						<div class="row">
-							<div class="col-xs-12">
-								<span style="color: red" id="despesaPrevistoMes">{{totalDespesaPrevistoMes | currency:'':2}}</span>
-							</div>
-						</div>
-						<div class="row">
-							<div class="col-xs-12">
-								<span style="color: green" id="despesaPrevistoMes">{{totalReceitaPrevistoMes | currency:'':2}}</span>
-							</div>
-						</div>
-						<div class="row">
-							<div class="col-xs-12">
-								<span style="color: blue" type="text" id="totalPrevisaoMes">{{usuarioLogado.saldo + (totalReceitaPrevistoMes - totalDespesaPrevistoMes) | currency:'':2}}</span>
-							</div>
-						</div>
-						<div class="row">
-							<div class="col-xs-12">
-								<label>Prev. Acumulado</label>
-							</div>
-						</div>
-						<div class="row">
-							<div class="col-xs-12">
-								<span style="color: red" id="despesaPrevistoAcumulado">{{totalDespesaPrevistoAcumulado | currency:'':2}}</span>
-							</div>
-						</div>
-						<div class="row">
-							<div class="col-xs-12">
-								<span style="color: green" id="receitaPrevistoAcumulado">{{totalReceitaPrevistoAcumulado | currency:'':2}}</span>
-							</div>
-						</div>
-						<div class="row">
-							<div class="col-xs-12">
-								<span style="color: blue" id="totalAcumulado">{{usuarioLogado.saldo + (totalReceitaPrevistoAcumulado - totalDespesaPrevistoAcumulado) | currency:'':2}}</span>
-							</div>
-						</div>
-					</div>
-					<hr>
-					<label for="valorSaldo">Saldo</label>
-					<div class="input-group">
-						<input type="text" id="valorSaldo" ng-model="usuarioLogado.saldo" size="10" money-mask class="form-control input-sm" />
-						<div class="input-group-btn">
-							<button id="alterarSaldo" type="submit" class="btn btn-default btn-sm" ng-click="alterarSaldo()">
-								<i class="glyphicon glyphicon-save"> </i>
-							</button>
-						</div>
-					</div>
-					<hr>
-
-				</div>
+			<div class="col-sm-6">
+				<table>
+					<tr>
+						<td><input id="usuario" type="text" class="form-control input-sm" name="usuario" placeholder="Usuário" ng-model="userform.usuario"></td>
+						<td><input id="senha" type="password" class="form-control input-sm" name="password" placeholder="Senha" ng-model="userform.senha"></td>
+						<td><button id="submit" type="submit" class="btn btn-default btn-sm" ng-click="validaLogin()" title="Entrar no Sistema">
+								<span class="glyphicon glyphicon-log-in"> </span> Entrar
+							</button></td>
+						<td><button id="sair" type="submit" class="btn btn-default btn-sm" ng-click="logout()" title="Sair do Sistema">
+								<span class="glyphicon glyphicon-log-out"> </span> Sair
+							</button></td>
+					</tr>
+				</table>
 			</div>
-			<div class="col-xs-10">
-
-				<div ng-class="msgClass" style="position: fixed; z-index: 99999; right: 5px; top: 5px;" ng-hide="msg == ''" ng-click="msg = ''">
-					<strong>{{msgTitulo}}</strong> {{msg}}
-				</div>
-				<div style="position: fixed; z-index: 99999; right: 50%; top: 50%;" ng-hide="isObjectEmpty(msgs)">
-					<ul>
-						<li ng-repeat="m in msgs">{{m}}</li>
-					</ul>
-				</div>
-				<div class="modal-backdrop fade in" style="z-index: 10000;" ng-hide="msg == ''" ng-click="msg = ''"></div>
-
+		</div>
+		<div class="row">
+			<div class="col-xs-12">
 				<div ng-hide="indrUsuarioLogado == false || !isObjectEmpty(msgs)">
 					<div class="container-fluid">
 						<div class="row">
@@ -168,6 +84,7 @@
 									</tr>
 								</table>
 							</div>
+
 						</div>
 						<div class="row">
 							<div class="col-sm-12">
@@ -199,11 +116,62 @@
 											<td ng-style="cssLinhaTabela(c)" ng-click="editarConta(c)">{{ c.numr_parcela }} - {{ c.qtde_parcelas }}</td>
 										</tr>
 									</tbody>
+
 								</table>
+
+							</div>
+							<div class="col-sm-12">
+								<div class="container-fluid">
+									<table>
+										<thead>
+											<tr>
+												<td></td>
+												<td align="right">Despesas</td>
+												<td align="right">Receitas</td>
+												<td align="right">Total</td>
+												<td align="right">Total+Saldo</td>
+											</tr>
+										</thead>
+
+										<tr>
+											<td align="right"><label>Total Mês:</label></td>
+											<td align="right" style="border-right: 1px solid gray; border-bottom: 1px solid gray; padding: 0px 5px 0px 15px"><span style="color: red" id="despesaMes">{{totalDespesaMes | currency:'':2}}</span></td>
+											<td align="right" style="border-right: 1px solid gray; border-bottom: 1px solid gray; padding: 0px 5px 0px 15px;"><span style="color: green" id="ReceitaMes">{{totalReceitaMes | currency:'':2}}</span></td>
+											<td align="right" style="border-right: 1px solid gray; border-bottom: 1px solid gray; padding: 0px 5px 0px 15px;"><span style="color: blue" id="totalMes">{{totalReceitaMes - totalDespesaMes | currency:'':2}}</span></td>
+											<td align="right" style="border-right: 1px solid gray; border-bottom: 1px solid gray; padding: 0px 5px 0px 15px;"><span style="color: black" id="totalMesSaldo">-</span></td>
+
+										</tr>
+										
+										<tr>
+											<td align="right"><label>A Pagar/Receber:</label></td>
+											<td align="right" style="border-right: 1px solid gray; border-bottom: 1px solid gray; padding: 0px 5px 0px 15px"><span style="color: red" id="despesaPrevistoMes">{{totalDespesaPrevistoMes | currency:'':2}}</span></td>
+											<td align="right" style="border-right: 1px solid gray; border-bottom: 1px solid gray; padding: 0px 5px 0px 15px;"><span style="color: green" id="ReceitaPrevistoMes">{{totalReceitaPrevistoMes | currency:'':2}}</span></td>
+											<td align="right" style="border-right: 1px solid gray; border-bottom: 1px solid gray; padding: 0px 5px 0px 15px;"><span style="color: blue" id="totalPrevistoMes">{{(totalReceitaPrevistoMes - totalDespesaPrevistoMes) | currency:'':2}}</span></td>
+											<td align="right" style="border-right: 1px solid gray; border-bottom: 1px solid gray; padding: 0px 5px 0px 15px;"><span style="color: black" id="totalPrevistoMes">{{usuarioLogado.saldo +  (totalReceitaPrevistoMes - totalDespesaPrevistoMes) | currency:'':2}}</span></td>
+										</tr>
+										
+										<tr>
+											<td align="right"><label>A Pagar/Receber Acumulado:</label></td>
+											<td align="right" style="border-right: 1px solid gray; border-bottom: 1px solid gray; padding: 0px 5px 0px 15px;"><span style="color: red" id="despesaPrevistoAcumulado">{{totalDespesaPrevistoAcumulado | currency:'':2}}</span></td>
+											<td align="right" style="border-right: 1px solid gray; border-bottom: 1px solid gray; padding: 0px 5px 0px 15px;"><span style="color: green" id="receitaPrevistoAcumulado">{{totalReceitaPrevistoAcumulado | currency:'':2}}</span></td>
+											<td align="right" style="border-right: 1px solid gray; border-bottom: 1px solid gray; padding: 0px 5px 0px 15px;"><span style="color: blue" id="totalAcumulado">{{(totalReceitaPrevistoAcumulado - totalDespesaPrevistoAcumulado) | currency:'':2}}</span></td>
+											<td align="right" style="border-right: 1px solid gray; border-bottom: 1px solid gray; padding: 0px 5px 0px 15px;"><span style="color: black" id="totalAcumuladoSaldo">{{usuarioLogado.saldo + (totalReceitaPrevistoAcumulado - totalDespesaPrevistoAcumulado) | currency:'':2}}</span></td>
+										</tr>
+										<tr ng-hide="indrUsuarioLogado == false || !isObjectEmpty(msgs)">
+											<td align="right"><label for="valorSaldo">Saldo Atual:</label></td>
+											<td colspan="3" style="padding-left: 5px"><div class="input-group">
+													<input type="text" id="valorSaldo" ng-model="usuarioLogado.saldo" money-mask class="form-control input-sm" />
+													<div class="input-group-btn">
+														<button id="alterarSaldo" type="submit" class="btn btn-default btn-sm" ng-click="alterarSaldo()">
+															<i class="glyphicon glyphicon-save"> </i>
+														</button>
+													</div>
+												</div></td>
+										</tr>
+									</table>
+								</div>
 							</div>
 						</div>
-
-
 					</div>
 					<hr>
 				</div>
@@ -213,7 +181,7 @@
 	<div ng-hide="indrUsuarioLogado == false || !isObjectEmpty(msgs)">
 		<!-- Modal -->
 		<div id="myModal" class="modal fade" role="dialog" tabindex="-1">
-			<div class="modal-dialog" role="document" ng-style="tamanhoModal()" style="left: 50%; transform: translateX(-50%); position: absolute; ">
+			<div class="modal-dialog" role="document" ng-style="tamanhoModal()" style="left: 50%; transform: translateX(-50%); position: absolute;">
 
 				<!-- Modal content-->
 				<div class="modal-content">
@@ -223,155 +191,153 @@
 					</div>
 					<div class="modal-body">
 						<div id="editarConta">
-							<div class="container-fluid">
-								<div class="row">
-									<div class="col-md-12">
-										<div class="panel panel-default">
-											<div class="panel-heading" ng-style="cssTitulo()">Conta</div>
-											<div class="panel-body">
-												<div class="container-fluid">
-													<div class="row">
-														<div class="col-xs-12" style="background-color: lightblue;">
-															<label style="color: red;" for="despesa"><input id="despesa" type="radio" ng-model="conta.tipo" value="D"> Despesa</label> <label style="color: green;" for="receita"><input id="receita" type="radio" ng-model="conta.tipo" value="R"> Receita</label> <label
-																style="color: black; color: yellow" for="flagComun"><input title="Conta Comun a todos os meses" type="checkbox" id="flagComun" ng-model="conta.flag_comum" size="30" ng-true-value="'S'" ng-false-value="'N'"> Comun</label>
-														</div>
+							<div class="row">
+								<div class="col-md-12">
+									<div class="panel panel-default">
+										<div class="panel-heading" ng-style="cssTitulo()">Conta</div>
+										<div class="panel-body">
+											<div class="container-fluid">
+												<div class="row">
+													<div class="col-xs-12" style="background-color: lightblue;">
+														<label style="color: red;" for="despesa"><input id="despesa" type="radio" ng-model="conta.tipo" value="D"> Despesa</label> <label style="color: green;" for="receita"><input id="receita" type="radio" ng-model="conta.tipo" value="R"> Receita</label> <label
+															style="color: black; color: yellow" for="flagComun"><input title="Conta Comun a todos os meses" type="checkbox" id="flagComun" ng-model="conta.flag_comum" size="30" ng-true-value="'S'" ng-false-value="'N'"> Comun</label>
 													</div>
-													<div class="row" style="min-height: 10px !important">
-														<div class="col-xs-12"></div>
+												</div>
+												<div class="row" style="min-height: 10px !important">
+													<div class="col-xs-12"></div>
+												</div>
+												<div class="row">
+													<div class="col-xs-2">
+														<label for="descricao">Descrição</label>
 													</div>
-													<div class="row">
-														<div class="col-xs-2">
-															<label for="descricao">Descrição</label>
-														</div>
-														<div class="col-xs-10">
-															<input type="text" id="descricao" ng-model="conta.descricao" size="30" class="form-control">
-														</div>
+													<div class="col-xs-10">
+														<input type="text" id="descricao" ng-model="conta.descricao" size="30" class="form-control">
 													</div>
-													<div class="row">
-														<div class="col-xs-2">
-															<label for="valor">Valor</label>
-														</div>
-														<div class="col-xs-10">
-															<input type="text" id="valor" ng-model="conta.valor" money-mask size="10" class="form-control">
-														</div>
+												</div>
+												<div class="row">
+													<div class="col-xs-2">
+														<label for="valor">Valor</label>
 													</div>
-													<div class="row">
-														<div class="col-xs-2">
-															<label for="Data">Data</label>
-														</div>
-														<div class="col-xs-10">
-															<input type="date" id="data" name="data" ng-model="conta.data_mes" class="form-control" />
-														</div>
+													<div class="col-xs-10">
+														<input type="text" id="valor" ng-model="conta.valor" money-mask size="10" class="form-control">
 													</div>
-													<div class="row">
-														<div class="col-xs-2" title="Vencimento" >
-															<label for="vencimento">Vcto</label>
-														</div>
-														<div class="col-xs-10">
-															<input type="number" min="1" max="31" id="vencimento" ng-model="conta.dia_vencimento" class="form-control">
-														</div>
+												</div>
+												<div class="row">
+													<div class="col-xs-2">
+														<label for="Data">Data</label>
 													</div>
-													<div class="row">
-														<div class="col-xs-2">
-															<label for="qtdeParcelas">Parcelas</label>
-														</div>
-														<div class="col-xs-10">
-															<input type="number" id="qtdeParcelas" ng-model="conta.qtde_parcelas" class="form-control">
-														</div>
+													<div class="col-xs-10">
+														<input type="date" id="data" name="data" ng-model="conta.data_mes" class="form-control" />
 													</div>
-													<div class="row">
-														<div class="col-xs-2">
-															<label for="tipoRepeticao">Repetição</label>
-														</div>
-														<div class="col-xs-10">
-															<select id="tipoRepeticao" ng-model="conta.tipoRepeticao" class="form-control">
-																<option label="Diária" value="DI"></option>
-																<option label="Semanal" value="SM"></option>
-																<option label="Mensal" value="ME"></option>
-																<option label="Trimestral" value="TR"></option>
-																<option label="Semestral" value="ST"></option>
-																<option label="Anual" value="AN"></option>
-															</select>
-														</div>
+												</div>
+												<div class="row">
+													<div class="col-xs-2" title="Vencimento">
+														<label for="vencimento">Vcto</label>
 													</div>
-													<div class="row">
-														<div class="col-xs-2">
-															<label for="parcela">Parcela</label>
-														</div>
-														<div class="col-xs-10">
-															<input disabled="disabled" type="text" id="parcela" ng-value="conta.numr_parcela + ' - ' + conta.qtde_parcelas" class="form-control">
-														</div>
+													<div class="col-xs-10">
+														<input type="number" min="1" max="31" id="vencimento" ng-model="conta.dia_vencimento" class="form-control">
 													</div>
-													<div class="row" style="min-height: 10px !important">
-														<div class="col-md-12"></div>
+												</div>
+												<div class="row">
+													<div class="col-xs-2">
+														<label for="qtdeParcelas">Parcelas</label>
 													</div>
-													<div class="row">
-														<div class="col-xs-12">
-															<button id="salvar" ng-click="salvar();" type="submit" class="btn btn-default">
-																<span class="glyphicon glyphicon-save"> </span> Salvar
-															</button>
-															<button id="salvarTodos" ng-hide="conta.qtde_parcelas == 1 || conta.id == null" ng-click="salvarTodos();" type="submit" class="btn btn-default" title="Salva todas as parcelas relacionadas não baixadas iguais a essa!">
-																<span class="glyphicon glyphicon-save"> </span> Salvar Parcelas
-															</button>
-															<button id="excluirTodos" ng-hide="conta.qtde_parcelas == 1 || conta.id == null" ng-click="excluirTodos();" type="submit" class="btn btn-default" title="Exclui tdas as parcelas relacionadas não baixadas!">
-																<span class="glyphicon glyphicon-trash"> </span> Excluir Parcelas
-															</button>
-														</div>
+													<div class="col-xs-10">
+														<input type="number" id="qtdeParcelas" ng-model="conta.qtde_parcelas" class="form-control">
+													</div>
+												</div>
+												<div class="row">
+													<div class="col-xs-2">
+														<label for="tipoRepeticao">Repetição</label>
+													</div>
+													<div class="col-xs-10">
+														<select id="tipoRepeticao" ng-model="conta.tipoRepeticao" class="form-control">
+															<option label="Diária" value="DI"></option>
+															<option label="Semanal" value="SM"></option>
+															<option label="Mensal" value="ME"></option>
+															<option label="Trimestral" value="TR"></option>
+															<option label="Semestral" value="ST"></option>
+															<option label="Anual" value="AN"></option>
+														</select>
+													</div>
+												</div>
+												<div class="row">
+													<div class="col-xs-2">
+														<label for="parcela">Parcela</label>
+													</div>
+													<div class="col-xs-10">
+														<input disabled="disabled" type="text" id="parcela" ng-value="conta.numr_parcela + ' - ' + conta.qtde_parcelas" class="form-control">
+													</div>
+												</div>
+												<div class="row" style="min-height: 10px !important">
+													<div class="col-md-12"></div>
+												</div>
+												<div class="row">
+													<div class="col-xs-12">
+														<button id="salvar" ng-click="salvar();" type="submit" class="btn btn-default">
+															<span class="glyphicon glyphicon-save"> </span> Salvar
+														</button>
+														<button id="salvarTodos" ng-hide="conta.qtde_parcelas == 1 || conta.id == null" ng-click="salvarTodos();" type="submit" class="btn btn-default" title="Salva todas as parcelas relacionadas não baixadas iguais a essa!">
+															<span class="glyphicon glyphicon-save"> </span> Salvar Parcelas
+														</button>
+														<button id="excluirTodos" ng-hide="conta.qtde_parcelas == 1 || conta.id == null" ng-click="excluirTodos();" type="submit" class="btn btn-default" title="Exclui tdas as parcelas relacionadas não baixadas!">
+															<span class="glyphicon glyphicon-trash"> </span> Excluir Parcelas
+														</button>
 													</div>
 												</div>
 											</div>
 										</div>
 									</div>
 								</div>
-								<div class="row">
-									<div class="col-md-12" ng-hide="conta.id == null">
-										<div class="panel panel-default">
-											<div class="panel-heading" ng-style="cssTitulo()">Parciais</div>
-											<div class="panel-body">
-												<div class="container-fluid">
-													<div class="row">
-														<div class="col-xs-5">
-															<label for="descricaoFilha">Descrição</label><input type="text" id="descricaoFilha" ng-model="contaFilha.descricao" size="30" class="form-control">
-														</div>
-														<div class="col-xs-2">
-															<label for="valorFilha">Valor</label><input type="text" id="valorFilha" ng-model="contaFilha.valor" size="10" money-mask class="form-control">
-														</div>
-														<div class="col-xs-4">
-															<label for="dataFilha">Data</label><input type="date" id="dataFilha" name="data" ng-model="contaFilha.data_registro" class="form-control" />
-														</div>
-														<div class="col-xs-1" style="margin-top: 25px;">
-															<button id="salvar" ng-click="salvarFilha();" type="submit" class="btn btn-default form-control">
-																<span class="glyphicon glyphicon-save"></span>
-															</button>
-														</div>
+							</div>
+							<div class="row">
+								<div class="col-md-12" ng-hide="conta.id == null">
+									<div class="panel panel-default">
+										<div class="panel-heading" ng-style="cssTitulo()">Parciais</div>
+										<div class="panel-body">
+											<div class="container-fluid">
+												<div class="row">
+													<div class="col-xs-5">
+														<label for="descricaoFilha">Descrição</label><input type="text" id="descricaoFilha" ng-model="contaFilha.descricao" size="30" class="form-control">
+													</div>
+													<div class="col-xs-2">
+														<label for="valorFilha">Valor</label><input type="text" id="valorFilha" ng-model="contaFilha.valor" size="10" money-mask class="form-control">
+													</div>
+													<div class="col-xs-4">
+														<label for="dataFilha">Data</label><input type="date" id="dataFilha" name="data" ng-model="contaFilha.data_registro" class="form-control" />
+													</div>
+													<div class="col-xs-1" style="margin-top: 25px;">
+														<button id="salvar" ng-click="salvarFilha();" type="submit" class="btn btn-default form-control">
+															<span class="glyphicon glyphicon-save"></span>
+														</button>
+													</div>
 
-													</div>
-													<div class="row" style="min-height: 10px !important">
-														<div class="col-md-12"></div>
-													</div>
-													<div class="row" ng-hide="contasFilhas.length <= 0">
-														<div class="col-sm-12">
-															<div class="table-responsive">
-																<table id="tabelaParciais" class="table table-hover table-striped table-bordered table-condensed">
-																	<thead>
-																		<tr>
-																			<th width="50"></th>
-																			<th>Descrição</th>
-																			<th>Valor</th>
-																			<th>Data Registro</th>
-																		</tr>
-																	</thead>
-																	<tbody>
-																		<tr ng-repeat="c in contasFilhas">
-																			<td><a ng-click="excluir(c)" href="#"> <span class="glyphicon glyphicon-trash"></span></a> <a ng-click="baixar(c)" ng-if="c.status=='A'" href="#" title="Baixar Conta"><span class="glyphicon glyphicon-folder-open"></span></a> <a ng-click="cancelarBaixa(c)"
-																				ng-if="c.status=='B'" href="#" title="Cancelar Baixa"><span class="glyphicon glyphicon-folder-close"></span></a></td>
-																			<td ng-style="cssLinhaTabela(c)">{{ c.descricao }}</td>
-																			<td ng-style="cssLinhaTabela(c)">{{ c.valor | currency:"":2 }}</td>
-																			<td ng-style="cssLinhaTabela(c)">{{ c.data_registro | date:'dd/MM/yyyy HH:mm:ss' }}</td>
-																		</tr>
-																	</tbody>
-																</table>
-															</div>
+												</div>
+												<div class="row" style="min-height: 10px !important">
+													<div class="col-md-12"></div>
+												</div>
+												<div class="row" ng-hide="contasFilhas.length <= 0">
+													<div class="col-sm-12">
+														<div class="table-responsive">
+															<table id="tabelaParciais" class="table table-hover table-striped table-bordered table-condensed">
+																<thead>
+																	<tr>
+																		<th width="50"></th>
+																		<th>Descrição</th>
+																		<th>Valor</th>
+																		<th>Data Registro</th>
+																	</tr>
+																</thead>
+																<tbody>
+																	<tr ng-repeat="c in contasFilhas">
+																		<td><a ng-click="excluir(c)" href="#"> <span class="glyphicon glyphicon-trash"></span></a> <a ng-click="baixar(c)" ng-if="c.status=='A'" href="#" title="Baixar Conta"><span class="glyphicon glyphicon-folder-open"></span></a> <a ng-click="cancelarBaixa(c)" ng-if="c.status=='B'"
+																			href="#" title="Cancelar Baixa"><span class="glyphicon glyphicon-folder-close"></span></a></td>
+																		<td ng-style="cssLinhaTabela(c)">{{ c.descricao }}</td>
+																		<td ng-style="cssLinhaTabela(c)">{{ c.valor | currency:"":2 }}</td>
+																		<td ng-style="cssLinhaTabela(c)">{{ c.data_registro | date:'dd/MM/yyyy HH:mm:ss' }}</td>
+																	</tr>
+																</tbody>
+															</table>
 														</div>
 													</div>
 												</div>
@@ -387,6 +353,5 @@
 			</div>
 		</div>
 	</div>
-
 </body>
 </html>
