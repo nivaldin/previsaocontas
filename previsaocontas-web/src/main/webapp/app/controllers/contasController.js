@@ -615,4 +615,12 @@ angular.module('app.controllers', []).controller('contasController', function($s
 		$scope.cancelarEdicao();
 	}
 
+	$scope.tamanhoModal = function () {
+		if (screen.width >= 768) {
+			return {'width': '35%'}
+		}else {
+			return {'width': '80%'}
+		}
+	}
+	
 });
