@@ -323,13 +323,13 @@
 																<thead>
 																	<tr>
 																		<th width="50"></th>
-																		<th>Descrição</th>
-																		<th>Valor</th>
-																		<th>Data Registro</th>
+																		<th ng-click="orderbyParciais = '+descricao'; reverse = !reverse">Descrição</th>
+																		<th ng-click="orderbyParciais = '+valor'; reverse = !reverse">Valor</th>
+																		<th ng-click="orderbyParciais = '+data_registro'; reverse = !reverse">Data Registro</th>
 																	</tr>
 																</thead>
 																<tbody>
-																	<tr ng-repeat="c in contasFilhas">
+																	<tr ng-repeat="c in contasFilhas | orderBy: orderbyParciais:reverse">
 																		<td><a ng-click="excluir(c)" href="#"> <span class="glyphicon glyphicon-trash"></span></a> <a ng-click="baixar(c)" ng-if="c.status=='A'" href="#" title="Baixar Conta"><span class="glyphicon glyphicon-folder-open"></span></a> <a ng-click="cancelarBaixa(c)" ng-if="c.status=='B'"
 																			href="#" title="Cancelar Baixa"><span class="glyphicon glyphicon-folder-close"></span></a></td>
 																		<td ng-style="cssLinhaTabela(c)">{{ c.descricao }}</td>
