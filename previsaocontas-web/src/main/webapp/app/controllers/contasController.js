@@ -70,6 +70,7 @@ angular.module('app.controllers', []).controller('contasController', function($s
 	}
 
 	function msgErro(response) {
+		console.log(response);
 		if (response.config.url != null)
 			delete $scope.msgs[response.config.url];
 
@@ -82,8 +83,12 @@ angular.module('app.controllers', []).controller('contasController', function($s
 				$scope.msgTitulo = "Erro!";
 				$scope.msgClass = "alert alert-danger alert-dismissable fade in";
 			}
-			timeoutMsg(3000);
+		} else {
+			$scope.msg = "Erro desconhecido!"
+			$scope.msgTitulo = "Erro!";
+			$scope.msgClass = "alert alert-danger alert-dismissable fade in";
 		}
+		timeoutMsg(3000);
 	}
 	function msgSucesso(response) {
 		if (response.config.url != null)
@@ -130,14 +135,7 @@ angular.module('app.controllers', []).controller('contasController', function($s
 	$scope.salvar = function() {
 
 		$scope.msgs['rest/contas/salvar/'] = "Salvando conta...";
-		$http({
-			method : 'POST',
-			url : 'rest/contas/salvar/',
-			data : angular.toJson($scope.conta),
-			headers : {
-				'Content-Type' : 'application/json'
-			}
-		}).then(function successCallback(response) {
+		contasService.salvar($scope.conta).then(function successCallback(response) {
 			msgSucesso(response);
 			$scope.listarContas();
 			if ($scope.conta.id == null) {
@@ -180,14 +178,7 @@ angular.module('app.controllers', []).controller('contasController', function($s
 		$scope.contaFilha.usuario = $scope.conta.usuario;
 		$scope.contaFilha.contaPai = $scope.conta;
 
-		$http({
-			method : 'POST',
-			url : 'rest/contas/salvar/',
-			data : angular.toJson($scope.contaFilha),
-			headers : {
-				'Content-Type' : 'application/json'
-			}
-		}).then(function successCallback(response) {
+		contasService.salvar($scope.contaFilha).then(function successCallback(response) {
 			msgSucesso(response);
 			$scope.listarContasFilhas($scope.conta.id);
 			$scope.novaContaFilha();
@@ -534,14 +525,14 @@ angular.module('app.controllers', []).controller('contasController', function($s
 		}
 		if ($scope.conta.tipo == 'D') {
 			return {
-				//'background-color' : '#f2dede'
+				// 'background-color' : '#f2dede'
 				'color' : 'red',
 				'font-weight' : 'bold',
 				'font-size' : '18px'
 			}
 		} else {
 			return {
-				//'background-color' : '#dff0d8'
+				// 'background-color' : '#dff0d8'
 				'color' : 'green',
 				'font-weight' : 'bold',
 				'font-size' : '18px'
@@ -599,15 +590,15 @@ angular.module('app.controllers', []).controller('contasController', function($s
 
 		return css;
 	}
-	
-	$scope.mesSeguinte = function () {
+
+	$scope.mesSeguinte = function() {
 		var data = new Date($scope.ano, $scope.mes, 1);
 		$scope.mes = data.getMonth() + 1;
 		$scope.ano = data.getFullYear();
 		$scope.listarContas();
 		$scope.cancelarEdicao();
 	}
-	$scope.mesAnterior = function () {
+	$scope.mesAnterior = function() {
 		var data = new Date($scope.ano, $scope.mes - 2, 1);
 		$scope.mes = data.getMonth() + 1;
 		$scope.ano = data.getFullYear();
@@ -615,12 +606,16 @@ angular.module('app.controllers', []).controller('contasController', function($s
 		$scope.cancelarEdicao();
 	}
 
-	$scope.tamanhoModal = function () {
+	$scope.tamanhoModal = function() {
 		if (screen.width >= 768) {
-			return {'width': '35%'}
-		}else {
-			return {'width': '80%'}
+			return {
+				'width' : '35%'
+			}
+		} else {
+			return {
+				'width' : '80%'
+			}
 		}
 	}
-	
+
 });

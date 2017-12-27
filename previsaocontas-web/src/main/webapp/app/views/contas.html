@@ -25,15 +25,15 @@
 	<script type="text/javascript" src="../../resources/js/jquery.min.js"></script>
 	<script type="text/javascript" src="../../resources/js/bootstrap.min.js"></script>
 
-	<div ng-class="msgClass" style="position: fixed; z-index: 99999; right: 5px; top: 5px;" ng-hide="msg == ''" ng-click="msg = ''">
+	<div ng-class="msgClass" style="position: fixed; z-index: 10000; right: 5px; top: 5px;" ng-hide="msg == ''" ng-click="msg = ''">
 		<strong>{{msgTitulo}}</strong> {{msg}}
 	</div>
-	<div style="position: fixed; z-index: 99999; right: 50%; top: 50%;" ng-hide="isObjectEmpty(msgs)">
+	<div style="position: fixed; z-index: 10000; right: 50%; top: 50%;" ng-hide="isObjectEmpty(msgs)">
 		<ul>
 			<li ng-repeat="m in msgs">{{m}}</li>
 		</ul>
 	</div>
-	<div class="modal-backdrop fade in" style="z-index: 10000;" ng-hide="msg == ''" ng-click="msg = ''"></div>
+	<div class="modal-backdrop fade in" style="z-index: 9999;" ng-hide="msg == ''" ng-click="msg = ''"></div>
 
 
 	<div class="container-fluid" style="margin-top: 5px;">
@@ -61,7 +61,7 @@
 							<div class="col-sm-12">
 								<table>
 									<tr>
-										<td style="padding: 5px; font-size: 18px; cursor: pointer;" ng-click="mesAnterior()">-</td>
+										<td style="padding: 5px; font-size: 18px; cursor: pointer;" ng-click="mesAnterior()"><<</td>
 										<td style="padding: 5px;"><select style="font-size: 18px;" id="mes" ng-model="mes" ng-change="listarContas(); cancelarEdicao();">
 												<option label="Janeiro" ng-value="1"></option>
 												<option label="Fevereiro" ng-value="2"></option>
@@ -76,8 +76,8 @@
 												<option label="Novembro" ng-value="11"></option>
 												<option label="Dezembro" ng-value="12"></option>
 										</select></td>
-										<td style="padding: 5px; font-size: 18px; cursor: pointer;" ng-click="mesSeguinte()">+</td>
 										<td style="padding: 5px;"><select style="font-size: 18px;" id="ano" ng-options="ano for ano in listaAnos" ng-model="ano" ng-change="listarContas(); cancelarEdicao();"></select></td>
+										<td style="padding: 5px; font-size: 18px; cursor: pointer;" ng-click="mesSeguinte()">>></td>
 										<td style="padding: 5px;"><button id="novaConta" ng-click="novaConta();" type="submit" class="btn btn-default btn-sm">
 												<span class="glyphicon glyphicon-plus"> </span>
 											</button></td>
@@ -160,7 +160,7 @@
 										<tr ng-hide="indrUsuarioLogado == false || !isObjectEmpty(msgs)">
 											<td align="right"><label for="valorSaldo">Saldo Atual:</label></td>
 											<td colspan="3" style="padding-left: 5px"><div class="input-group">
-													<input type="text" id="valorSaldo" ng-model="usuarioLogado.saldo" money-mask class="form-control input-sm" />
+													<input type="number" step="0.01" id="valorSaldo" ng-model="usuarioLogado.saldo" class="form-control input-sm" />
 													<div class="input-group-btn">
 														<button id="alterarSaldo" type="submit" class="btn btn-default btn-sm" ng-click="alterarSaldo()">
 															<i class="glyphicon glyphicon-save"> </i>
@@ -219,7 +219,7 @@
 														<label for="valor">Valor</label>
 													</div>
 													<div class="col-xs-10">
-														<input type="text" id="valor" ng-model="conta.valor" money-mask size="10" class="form-control">
+														<input type="number" step="0.01" id="valor" ng-model="conta.valor" size="10" class="form-control">
 													</div>
 												</div>
 												<div class="row">
@@ -301,7 +301,7 @@
 														<label for="descricaoFilha">Descrição</label><input type="text" id="descricaoFilha" ng-model="contaFilha.descricao" size="30" class="form-control">
 													</div>
 													<div class="col-xs-2">
-														<label for="valorFilha">Valor</label><input type="text" id="valorFilha" ng-model="contaFilha.valor" size="10" money-mask class="form-control">
+														<label for="valorFilha">Valor</label><input type="number" step="0.01" id="valorFilha" ng-model="contaFilha.valor" size="10" class="form-control">
 													</div>
 													<div class="col-xs-4">
 														<label for="dataFilha">Data</label><input type="date" id="dataFilha" name="data" ng-model="contaFilha.data_registro" class="form-control" />

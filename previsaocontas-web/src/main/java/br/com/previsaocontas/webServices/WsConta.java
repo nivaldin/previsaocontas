@@ -123,6 +123,9 @@ public class WsConta {
 	private Usuario getUsuarioLogado() {
 
 		Usuario usuario = (Usuario) request.getSession().getAttribute("usuario");
+		if (usuario == null) {
+			return null;
+		}
 		usuario = usuarioServiceImpl.obter(usuario.getId());
 		request.getSession().setAttribute("usuario", usuario);
 		return usuario;

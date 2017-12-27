@@ -12,6 +12,19 @@ angular.module('app.services', []).factory('contasService', function($http) {
 			}
 		});
 	}
+
+	service.salvar = function(conta) {
+		
+		return $http({
+			method : 'POST',
+			url : 'rest/contas/salvar/',
+			data : angular.toJson(conta),
+			headers : {
+				'Content-Type' : 'application/json'
+			}
+		});
+
+	}
 	return service;
 
 });

@@ -62,13 +62,13 @@ public class FiltroAutenticacao implements Filter {
 
 			if (usuario == null) {
 
-				// req.getRequestDispatcher("/login.xhtml?faces-redirect=true").forward(req,
-				// resp);
-				req.getRequestDispatcher("/contas/inicial.xhtml?faces-redirect=true").forward(req, resp);
+				//req.getRequestDispatcher("/contas/inicial.xhtml?faces-redirect=true").forward(req, resp);
+				req.getRequestDispatcher("/app/views/contas.html").forward(req, resp);
 
 			} else if (reqURI.equals("/previsaocontas-web/")) {
 
-				req.getRequestDispatcher("/contas/inicial.xhtml?faces-redirect=true").forward(req, resp);
+				//req.getRequestDispatcher("/contas/inicial.xhtml?faces-redirect=true").forward(req, resp);
+				req.getRequestDispatcher("/app/views/contas.html").forward(req, resp);
 
 			} else {
 
