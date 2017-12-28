@@ -92,18 +92,18 @@
 									<thead>
 										<tr>
 											<th width="60"></th>
-											<th width="3"></th>
-											<th width="3"></th>
-											<th width="3"></th>
-											<th>Descrição</th>
-											<th>Valor</th>
-											<th>Parciais</th>
-											<th>Vcto</th>
+											<th width="1"></th>
+											<th width="1"></th>
+											<th width="1"></th>
+											<th ng-click="orderbyContas = ['tipo', 'descricao']; reverseDescricao = !reverseDescricao; reverse = reverseDescricao">Descrição <span class="sortorder" ng-class="{reverse: reverseDescricao}"></span></th>
+											<th ng-click="orderbyContas = ['tipo', 'valor']; reverseValor = !reverseValor; reverse = reverseValor">Valor <span class="sortorder" ng-class="{reverse: reverseValor}"></span></th>
+											<th ng-click="orderbyContas = ['tipo', 'valorParciais']; reverseParciais = !reverseParciais; reverse = reverseParciais">Parciais <span class="sortorder" ng-class="{reverse: reverseParciais}"></span></th>
+											<th ng-click="orderbyContas = ['tipo', 'dia_vencimento']; reverseVenc = !reverseVenc; reverse = reverseVenc">Vcto <span class="sortorder" ng-class="{reverse: reverseVenc}"></span></th>
 											<th>Parcela</th>
 										</tr>
 									</thead>
 									<tbody>
-										<tr ng-repeat="c in contas">
+										<tr ng-repeat="c in contas | orderBy:orderbyContas:reverse">
 											<td><a ng-click="excluir(c)" href="#"><img src="../../resources/img/lixo.png"></a> <a ng-click="baixar(c)" ng-if="c.status=='A'" href="#" title="Baixar Conta"><img src="../../resources/img/aberto.png"></a> <a ng-click="cancelarBaixa(c)" ng-if="c.status=='B'" href="#"
 												title="Cancelar Baixa"><img src="../../resources/img/baixado.png"></a></td>
 											<td ng-style="cssVencimento(c)"></td>
@@ -141,15 +141,15 @@
 											<td align="right" style="border-right: 1px solid gray; border-bottom: 1px solid gray; padding: 0px 5px 0px 15px;"><span style="color: black" id="totalMesSaldo">-</span></td>
 
 										</tr>
-										
+
 										<tr>
 											<td align="right"><label>A Pagar/Receber:</label></td>
 											<td align="right" style="border-right: 1px solid gray; border-bottom: 1px solid gray; padding: 0px 5px 0px 15px"><span style="color: red" id="despesaPrevistoMes">{{totalDespesaPrevistoMes | currency:'':2}}</span></td>
 											<td align="right" style="border-right: 1px solid gray; border-bottom: 1px solid gray; padding: 0px 5px 0px 15px;"><span style="color: green" id="ReceitaPrevistoMes">{{totalReceitaPrevistoMes | currency:'':2}}</span></td>
 											<td align="right" style="border-right: 1px solid gray; border-bottom: 1px solid gray; padding: 0px 5px 0px 15px;"><span style="color: blue" id="totalPrevistoMes">{{(totalReceitaPrevistoMes - totalDespesaPrevistoMes) | currency:'':2}}</span></td>
-											<td align="right" style="border-right: 1px solid gray; border-bottom: 1px solid gray; padding: 0px 5px 0px 15px;"><span style="color: black" id="totalPrevistoMes">{{usuarioLogado.saldo +  (totalReceitaPrevistoMes - totalDespesaPrevistoMes) | currency:'':2}}</span></td>
+											<td align="right" style="border-right: 1px solid gray; border-bottom: 1px solid gray; padding: 0px 5px 0px 15px;"><span style="color: black" id="totalPrevistoMes">{{usuarioLogado.saldo + (totalReceitaPrevistoMes - totalDespesaPrevistoMes) | currency:'':2}}</span></td>
 										</tr>
-										
+
 										<tr>
 											<td align="right"><label>A Pagar/Receber Acumulado:</label></td>
 											<td align="right" style="border-right: 1px solid gray; border-bottom: 1px solid gray; padding: 0px 5px 0px 15px;"><span style="color: red" id="despesaPrevistoAcumulado">{{totalDespesaPrevistoAcumulado | currency:'':2}}</span></td>
@@ -323,13 +323,13 @@
 																<thead>
 																	<tr>
 																		<th width="50"></th>
-																		<th ng-click="orderbyParciais = '+descricao'; reverse = !reverse">Descrição</th>
-																		<th ng-click="orderbyParciais = '+valor'; reverse = !reverse">Valor</th>
-																		<th ng-click="orderbyParciais = '+data_registro'; reverse = !reverse">Data Registro</th>
+																		<th ng-click="orderbyParciais = 'descricao'; reverseDescricao = !reverseDescricao; reverseP = reverseDescricao">Descrição <span class="sortorder" ng-class="{reverse: reverseDescricao}"></span></th>
+																		<th ng-click="orderbyParciais = 'valor'; reverseValor = !reverseValor; reverseP = reverseValor">Valor <span class="sortorder" ng-class="{reverse: reverseValor}"></span></th>
+																		<th ng-click="orderbyParciais = 'data_registro'; reverseData = !reverseData; reverseP = reverseData">Data Registro <span class="sortorder" ng-class="{reverse: reverseData}"></span></th>
 																	</tr>
 																</thead>
 																<tbody>
-																	<tr ng-repeat="c in contasFilhas | orderBy: orderbyParciais:reverse">
+																	<tr ng-repeat="c in contasFilhas | orderBy:orderbyParciais:reverseP">
 																		<td><a ng-click="excluir(c)" href="#"> <span class="glyphicon glyphicon-trash"></span></a> <a ng-click="baixar(c)" ng-if="c.status=='A'" href="#" title="Baixar Conta"><span class="glyphicon glyphicon-folder-open"></span></a> <a ng-click="cancelarBaixa(c)" ng-if="c.status=='B'"
 																			href="#" title="Cancelar Baixa"><span class="glyphicon glyphicon-folder-close"></span></a></td>
 																		<td ng-style="cssLinhaTabela(c)">{{ c.descricao }}</td>
