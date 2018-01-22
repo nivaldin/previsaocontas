@@ -25,15 +25,15 @@
 	<script type="text/javascript" src="../../resources/js/jquery.min.js"></script>
 	<script type="text/javascript" src="../../resources/js/bootstrap.min.js"></script>
 
-	<div ng-class="msgClass" style="position: fixed; z-index: 10000; right: 5px; top: 5px;" ng-hide="msg == ''" ng-click="msg = ''">
-		<strong>{{msgTitulo}}</strong> {{msg}}
+	<div ng-class="msgClass" style="position: fixed; z-index: 10000; opacity: 0.9; left: 40%; top: 5px;" ng-hide="msg == ''" ng-click="msg = ''" >
+		 <strong>{{msgTitulo}}</strong> {{msg}}
 	</div>
-	<div style="position: fixed; z-index: 10000; right: 50%; top: 50%;" ng-hide="isObjectEmpty(msgs)">
+	<div style="position: fixed; z-index: 10000; left: 80%; top: 5px;" ng-hide="isObjectEmpty(msgs)">
 		<ul>
 			<li ng-repeat="m in msgs">{{m}}</li>
 		</ul>
 	</div>
-	<div class="modal-backdrop fade in" style="z-index: 9999;" ng-hide="msg == ''" ng-click="msg = ''"></div>
+<!-- 	<div class="modal-backdrop fade in" style="z-index: 9999;" ng-hide="msg == ''" ng-click="msg = ''"></div> -->
 
 
 	<div class="container-fluid" style="margin-top: 5px;">

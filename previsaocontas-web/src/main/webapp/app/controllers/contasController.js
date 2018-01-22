@@ -95,9 +95,15 @@ angular.module('app.controllers', []).controller('contasController', function($s
 			delete $scope.msgs[response.config.url];
 
 		if (response.data.mensagem != null) {
-			$scope.msg = response.data.mensagem;
-			$scope.msgTitulo = "Sucesso";
-			$scope.msgClass = "alert alert-success alert-dismissable fade in";
+			if (response.status == 202) {
+				$scope.msg = response.data.mensagem;
+				$scope.msgTitulo = "Info";
+				$scope.msgClass = "alert alert-info alert-dismissable fade in";
+			} else {
+				$scope.msg = response.data.mensagem;
+				$scope.msgTitulo = "Sucesso";
+				$scope.msgClass = "alert alert-success alert-dismissable fade in";
+			}
 			timeoutMsg(3000);
 		}
 	}

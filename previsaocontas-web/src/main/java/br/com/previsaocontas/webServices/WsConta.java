@@ -2,11 +2,14 @@ package br.com.previsaocontas.webServices;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collection;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -16,6 +19,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
+
+import com.mysql.fabric.xmlrpc.base.Array;
 
 import br.com.previsaocontas.exception.WarningException;
 import br.com.previsaocontas.model.Conta;
@@ -35,6 +40,8 @@ public class WsConta {
 	@Autowired
 	private ContaServiceImpl contaServiceImpl;
 
+	final static Logger logger = Logger.getLogger(WsConta.class);
+
 	@RequestMapping(value = "/contas/{mes}/{ano}", method = RequestMethod.GET, produces = "application/json")
 	public ResponseEntity<?> buscaContasMes(@PathVariable("mes") Integer mes, @PathVariable("ano") Integer ano) {
 		HashMap<String, Object> resultado = new HashMap<>();
@@ -43,7 +50,7 @@ public class WsConta {
 			contas = contaServiceImpl.buscaContaMes(mes, ano, this.getUsuarioLogado());
 			return new ResponseEntity<>(contas, HttpStatus.OK);
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error(e.getMessage(), e);
 			resultado.put("mensagem", "Erro ao buscar contas!");
 			return new ResponseEntity<>(resultado, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
@@ -58,7 +65,7 @@ public class WsConta {
 			contas = contaServiceImpl.buscaContasFilhas(idPai);
 			return new ResponseEntity<>(contas, HttpStatus.OK);
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error(e.getMessage(), e);
 			resultado.put("mensagem", e.getMessage());
 			return new ResponseEntity<>(resultado, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
@@ -74,7 +81,7 @@ public class WsConta {
 			listaValores = contaServiceImpl.calculaResumoMes(mes, ano, listaContas, this.getUsuarioLogado());
 			return new ResponseEntity<>(listaValores, HttpStatus.OK);
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error(e.getMessage(), e);
 			resultado.put("mensagem", e.getMessage());
 			return new ResponseEntity<>(resultado, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
@@ -92,6 +99,7 @@ public class WsConta {
 			resultado.put("mensagem", e.getMessage());
 			return new ResponseEntity<>(resultado, HttpStatus.NOT_ACCEPTABLE);
 		} catch (Exception e) {
+			logger.error(e.getMessage(), e);
 			resultado.put("mensagem", e.getMessage());
 			return new ResponseEntity<>(resultado, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
@@ -104,27 +112,31 @@ public class WsConta {
 	@RequestMapping(value = "/login/usuarioLogado", method = RequestMethod.GET, produces = "application/json")
 	public ResponseEntity<?> usuarioSessao() {
 		HashMap<String, Object> resultado = new HashMap<>();
+		Usuario usuario = null;
 		try {
-			Usuario usuario = this.getUsuarioLogado();
-			if (usuario == null) {
-				resultado.put("mensagem", "Usuário logado não encontrado!");
-				return new ResponseEntity<>(resultado, HttpStatus.NOT_ACCEPTABLE);
+			try {
+				usuario = this.getUsuarioLogado();
+			} catch (Exception e) {
+				resultado.put("mensagem", e.getMessage());
+				return new ResponseEntity<>(resultado, HttpStatus.ACCEPTED);
 			}
+			
 			resultado.put("objeto", usuario);
 			return new ResponseEntity<>(resultado, HttpStatus.OK);
-			
+
 		} catch (Exception e) {
+			logger.error(e.getMessage(), e);
 			resultado.put("mensagem", e.getMessage());
 			return new ResponseEntity<>(resultado, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 
 	}
 
-	private Usuario getUsuarioLogado() {
+	private Usuario getUsuarioLogado() throws Exception {
 
 		Usuario usuario = (Usuario) request.getSession().getAttribute("usuario");
 		if (usuario == null) {
-			return null;
+			throw new Exception("Usuário não logado");
 		}
 		usuario = usuarioServiceImpl.obter(usuario.getId());
 		request.getSession().setAttribute("usuario", usuario);
@@ -138,6 +150,7 @@ public class WsConta {
 		try {
 			contaServiceImpl.salvarTodos(conta);
 		} catch (Exception e) {
+			logger.error(e.getMessage(), e);
 			resultado.put("mensagem", e.getMessage());
 			return new ResponseEntity<>(resultado, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
@@ -156,6 +169,7 @@ public class WsConta {
 			resultado.put("mensagem", e.getMessage());
 			return new ResponseEntity<>(resultado, HttpStatus.NOT_ACCEPTABLE);
 		} catch (Exception e) {
+			logger.error(e.getMessage(), e);
 			resultado.put("mensagem", e.getMessage());
 			return new ResponseEntity<>(resultado, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
@@ -174,6 +188,7 @@ public class WsConta {
 			resultado.put("mensagem", e.getMessage());
 			return new ResponseEntity<>(resultado, HttpStatus.NOT_ACCEPTABLE);
 		} catch (Exception e) {
+			logger.error(e.getMessage(), e);
 			resultado.put("mensagem", e.getMessage());
 			return new ResponseEntity<>(resultado, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
@@ -193,6 +208,7 @@ public class WsConta {
 			resultado.put("mensagem", e.getMessage());
 			return new ResponseEntity<>(resultado, HttpStatus.NOT_ACCEPTABLE);
 		} catch (Exception e) {
+			logger.error(e.getMessage(), e);
 			resultado.put("mensagem", e.getMessage());
 			return new ResponseEntity<>(resultado, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
@@ -212,6 +228,7 @@ public class WsConta {
 			resultado.put("mensagem", e.getMessage());
 			return new ResponseEntity<>(resultado, HttpStatus.NOT_ACCEPTABLE);
 		} catch (Exception e) {
+			logger.error(e.getMessage(), e);
 			resultado.put("mensagem", e.getMessage());
 			return new ResponseEntity<>(resultado, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
@@ -232,6 +249,7 @@ public class WsConta {
 			resultado.put("mensagem", e.getMessage());
 			return new ResponseEntity<>(resultado, HttpStatus.NOT_ACCEPTABLE);
 		} catch (Exception e) {
+			logger.error(e.getMessage(), e);
 			resultado.put("mensagem", e.getMessage());
 			return new ResponseEntity<>(resultado, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
@@ -247,6 +265,7 @@ public class WsConta {
 		try {
 			usuarioServiceImpl.salvar(usuario);
 		} catch (Exception e) {
+			logger.error(e.getMessage(), e);
 			resultado.put("mensagem", e.getMessage());
 			return new ResponseEntity<>(resultado, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
