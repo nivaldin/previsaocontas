@@ -347,6 +347,7 @@ angular
 									msgSucesso(response);
 									$scope.contas = response.data.objeto;
 									resumoContas();
+									
 								}, function errorCallback(response) {
 									msgErro(response);
 									$scope.contas = [];
