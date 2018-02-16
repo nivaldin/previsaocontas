@@ -130,7 +130,7 @@ public class ContaServiceImpl {
 		List<Conta> contas = (List<Conta>) this.obterPorAgrupador(conta.getNumr_agrupador());
 
 		for (Conta conta1 : contas) {
-			if (conta1.getStatus().equals(EnumStatusConta.B) || this.somaParciais(conta) > 0) {
+			if (conta1.getStatus().equals(EnumStatusConta.B) || this.somaParciais(conta1) > 0) {
 				continue;
 			}
 			this.exluir(conta1);
@@ -421,7 +421,7 @@ public class ContaServiceImpl {
 		List<Conta> contas = (List<Conta>) contaDAOImpl.obterPorAgrupador(conta.getNumr_agrupador());
 
 		for (Conta conta2 : contas) {
-			if (conta2.getStatus().equals(EnumStatusConta.B) || somaParciais(conta) > 0) {
+			if (conta2.getStatus().equals(EnumStatusConta.B) || somaParciais(conta2) > 0) {
 				continue;
 			}
 			conta2.setDescricao(conta.getDescricao());
