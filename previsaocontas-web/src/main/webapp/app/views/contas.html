@@ -8,8 +8,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta http-equiv="Refresh" content="240;URL=contas.html" />
 
-<link rel="stylesheet" href="../../resources/css/bootstrap.min.css"/>
-<link rel="stylesheet" href="../../resources/css/angularStyle.css"/>
+<link rel="stylesheet" href="../../resources/css/bootstrap.min.css" />
+<link rel="stylesheet" href="../../resources/css/angularStyle.css" />
 
 </head>
 <body ng-app="app" ng-controller="contasController">
@@ -25,15 +25,15 @@
 	<script type="text/javascript" src="../../resources/js/jquery.min.js"></script>
 	<script type="text/javascript" src="../../resources/js/bootstrap.min.js"></script>
 
-	<div ng-class="msgClass" style="position: fixed; z-index: 10000; opacity: 0.9; left: 40%; top: 5px;" ng-hide="msg == ''" ng-click="msg = ''" >
-		 <strong>{{msgTitulo}}</strong> {{msg}}
+	<div ng-class="msgClass" style="position: fixed; z-index: 10000; opacity: 0.9; left: 40%; top: 5px;" ng-hide="msg == ''" ng-click="msg = ''">
+		<strong>{{msgTitulo}}</strong> {{msg}}
 	</div>
 	<div style="position: fixed; z-index: 10000; left: 80%; top: 5px;" ng-hide="isObjectEmpty(msgs)">
 		<ul>
 			<li ng-repeat="m in msgs">{{m}}</li>
 		</ul>
 	</div>
-<!-- 	<div class="modal-backdrop fade in" style="z-index: 9999;" ng-hide="msg == ''" ng-click="msg = ''"></div> -->
+	<!-- 	<div class="modal-backdrop fade in" style="z-index: 9999;" ng-hide="msg == ''" ng-click="msg = ''"></div> -->
 
 
 	<div class="container-fluid" style="margin-top: 5px;">
@@ -61,7 +61,7 @@
 							<div class="col-sm-12">
 								<table>
 									<tr>
-										<td style="padding: 5px; font-size: 18px; cursor: pointer;" ng-click="mesAnterior()"> <span class="glyphicon glyphicon-backward"></span> </td>
+										<td style="padding: 5px; font-size: 18px; cursor: pointer;" ng-click="mesAnterior()"><span class="glyphicon glyphicon-backward"></span></td>
 										<td style="padding: 5px;"><select style="font-size: 18px;" id="mes" ng-model="mes" ng-change="listarContas(); cancelarEdicao();">
 												<option label="Janeiro" ng-value="1"></option>
 												<option label="Fevereiro" ng-value="2"></option>
@@ -77,7 +77,7 @@
 												<option label="Dezembro" ng-value="12"></option>
 										</select></td>
 										<td style="padding: 5px;"><select style="font-size: 18px;" id="ano" ng-options="ano for ano in listaAnos" ng-model="ano" ng-change="listarContas(); cancelarEdicao();"></select></td>
-										<td style="padding: 5px; font-size: 18px; cursor: pointer;" ng-click="mesSeguinte()"> <span class="glyphicon glyphicon-forward"></span> </td>
+										<td style="padding: 5px; font-size: 18px; cursor: pointer;" ng-click="mesSeguinte()"><span class="glyphicon glyphicon-forward"></span></td>
 										<td style="padding: 5px;"><button id="novaConta" ng-click="novaConta();" type="submit" class="btn btn-default btn-sm">
 												<span class="glyphicon glyphicon-plus"> </span>
 											</button></td>
@@ -105,7 +105,8 @@
 									<tbody>
 										<tr ng-repeat="c in contas | orderBy:orderbyContas:reverse">
 											<td><a ng-click="excluir(c)" href="#"><img src="../../resources/img/lixo.png"></a> <a ng-click="baixar(c)" ng-if="c.status=='A'" href="#" title="Baixar Conta"><img src="../../resources/img/aberto.png"></a> <a ng-click="cancelarBaixa(c)" ng-if="c.status=='B'" href="#"
-												title="Cancelar Baixa"><img src="../../resources/img/baixado.png"></a></td>
+												title="Cancelar Baixa"
+											><img src="../../resources/img/baixado.png"></a></td>
 											<td ng-style="cssVencimento(c)"></td>
 											<td ng-style="{'background-color': c.tipo== 'D'? 'red':'green'}"></td>
 											<td ng-style="{'background-color': c.flag_comum== 'S'? 'yellow': 'inherit'}"></td>
@@ -200,7 +201,8 @@
 												<div class="row">
 													<div class="col-xs-12" style="background-color: lightblue;">
 														<label style="color: red;" for="despesa"><input id="despesa" type="radio" ng-model="conta.tipo" value="D"> Despesa</label> <label style="color: green;" for="receita"><input id="receita" type="radio" ng-model="conta.tipo" value="R"> Receita</label> <label
-															style="color: black; color: yellow" for="flagComun"><input title="Conta Comun a todos os meses" type="checkbox" id="flagComun" ng-model="conta.flag_comum" size="30" ng-true-value="'S'" ng-false-value="'N'"> Comun</label>
+															style="color: black; color: yellow" for="flagComun"
+														><input title="Conta Comun a todos os meses" type="checkbox" id="flagComun" ng-model="conta.flag_comum" size="30" ng-true-value="'S'" ng-false-value="'N'"> Comun</label>
 													</div>
 												</div>
 												<div class="row" style="min-height: 10px !important">
@@ -208,18 +210,18 @@
 												</div>
 												<div class="row">
 													<div class="col-xs-2">
-														<label for="descricao">Descrição</label>
-													</div>
-													<div class="col-xs-10">
-														<input type="text" id="descricao" ng-model="conta.descricao" size="30" class="form-control">
-													</div>
-												</div>
-												<div class="row">
-													<div class="col-xs-2">
 														<label for="valor">Valor</label>
 													</div>
 													<div class="col-xs-10">
 														<input type="number" step="0.01" id="valor" ng-model="conta.valor" size="10" class="form-control">
+													</div>
+												</div>
+												<div class="row">
+													<div class="col-xs-2">
+														<label for="descricao">Descrição</label>
+													</div>
+													<div class="col-xs-10">
+														<input type="text" id="descricao" ng-model="conta.descricao" size="30" class="form-control">
 													</div>
 												</div>
 												<div class="row">
@@ -274,13 +276,13 @@
 												</div>
 												<div class="row">
 													<div class="col-xs-12">
-														<button id="salvar" ng-click="salvar();" type="submit" class="btn btn-default">
+														<button id="salvar" ng-click="salvar();" type="submit" class="btn btn-default" style="background-color: lightgreen;">
 															<span class="glyphicon glyphicon-save"> </span> Salvar
 														</button>
-														<button id="salvarTodos" ng-hide="conta.qtde_parcelas == 1 || conta.id == null" ng-click="salvarTodos();" type="submit" class="btn btn-default" title="Salva todas as parcelas relacionadas não baixadas iguais a essa!">
+														<button id="salvarTodos" ng-hide="conta.qtde_parcelas == 1 || conta.id == null" ng-click="salvarTodos();" type="submit" class="btn btn-default" title="Salva todas as parcelas relacionadas não baixadas iguais a essa!" style="background-color: lightgreen;"">
 															<span class="glyphicon glyphicon-save"> </span> Salvar Parcelas
 														</button>
-														<button id="excluirTodos" ng-hide="conta.qtde_parcelas == 1 || conta.id == null" ng-click="excluirTodos();" type="submit" class="btn btn-default" title="Exclui tdas as parcelas relacionadas não baixadas!">
+														<button id="excluirTodos" ng-hide="conta.qtde_parcelas == 1 || conta.id == null" ng-click="excluirTodos();" type="submit" class="btn btn-default" title="Exclui tdas as parcelas relacionadas não baixadas!" style="background-color: tomato;>
 															<span class="glyphicon glyphicon-trash"> </span> Excluir Parcelas
 														</button>
 													</div>
@@ -297,11 +299,11 @@
 										<div class="panel-body">
 											<div class="container-fluid">
 												<div class="row">
-													<div class="col-xs-5">
-														<label for="descricaoFilha">Descrição</label><input type="text" id="descricaoFilha" ng-model="contaFilha.descricao" size="30" class="form-control">
-													</div>
 													<div class="col-xs-2">
 														<label for="valorFilha">Valor</label><input type="number" step="0.01" id="valorFilha" ng-model="contaFilha.valor" size="10" class="form-control">
+													</div>
+													<div class="col-xs-5">
+														<label for="descricaoFilha">Descrição</label><input type="text" id="descricaoFilha" ng-model="contaFilha.descricao" size="30" class="form-control">
 													</div>
 													<div class="col-xs-4">
 														<label for="dataFilha">Data</label><input type="date" id="dataFilha" name="data" ng-model="contaFilha.data_registro" class="form-control" />
@@ -311,7 +313,6 @@
 															<span class="glyphicon glyphicon-save"></span>
 														</button>
 													</div>
-
 												</div>
 												<div class="row" style="min-height: 10px !important">
 													<div class="col-md-12"></div>
@@ -331,7 +332,8 @@
 																<tbody>
 																	<tr ng-repeat="c in contasFilhas | orderBy:orderbyParciais:reverseP">
 																		<td><a ng-click="excluir(c)" href="#"> <span class="glyphicon glyphicon-trash"></span></a> <a ng-click="baixar(c)" ng-if="c.status=='A'" href="#" title="Baixar Conta"><span class="glyphicon glyphicon-folder-open"></span></a> <a ng-click="cancelarBaixa(c)" ng-if="c.status=='B'"
-																			href="#" title="Cancelar Baixa"><span class="glyphicon glyphicon-folder-close"></span></a></td>
+																			href="#" title="Cancelar Baixa"
+																		><span class="glyphicon glyphicon-folder-close"></span></a></td>
 																		<td ng-style="cssLinhaTabela(c)">{{ c.descricao }}</td>
 																		<td ng-style="cssLinhaTabela(c)">{{ c.valor | currency:"":2 }}</td>
 																		<td ng-style="cssLinhaTabela(c)">{{ c.data_registro | date:'dd/MM/yyyy HH:mm:ss' }}</td>
