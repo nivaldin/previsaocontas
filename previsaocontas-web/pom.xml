@@ -58,30 +58,8 @@
 		</dependency>
 
 		<dependency>
-			<groupId>org.primefaces</groupId>
-			<artifactId>primefaces</artifactId>
-			<version>6.0</version>
-		</dependency>
-
-		<!-- <dependency> -->
-		<!-- <groupId>org.primefaces.themes</groupId> -->
-		<!-- <artifactId>all-themes</artifactId> -->
-		<!-- <version>1.0.10</version> -->
-		<!-- </dependency> -->
-
-		<dependency>
 			<groupId>br.com.previsaocontas</groupId>
 			<artifactId>previsaocontas-services</artifactId>
-		</dependency>
-
-		<dependency>
-			<groupId>com.sun.faces</groupId>
-			<artifactId>jsf-api</artifactId>
-		</dependency>
-
-		<dependency>
-			<groupId>com.sun.faces</groupId>
-			<artifactId>jsf-impl</artifactId>
 		</dependency>
 
 		<dependency>
