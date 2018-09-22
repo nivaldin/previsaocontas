@@ -189,7 +189,7 @@ angular
 						$scope.msgs['rest/contas/salvar/'] = "Salvando conta filha...";
 
 						$scope.contaFilha.data_registro = new Date();
-						$scope.contaFilha.data_mes = $scope.conta.data_mes;
+						$scope.contaFilha.data_mes = $scope.contaFilha.data_mes;
 						$scope.contaFilha.flag_comum = $scope.conta.flag_comum;
 						$scope.contaFilha.tipo = $scope.conta.tipo;
 						$scope.contaFilha.status = "A";
