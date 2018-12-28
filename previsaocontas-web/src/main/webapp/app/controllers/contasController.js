@@ -655,11 +655,11 @@ angular
 					$scope.tamanhoModal = function() {
 						if (screen.width >= 768) {
 							return {
-								'width' : '35%'
+								'width' : '90%'
 							}
 						} else {
 							return {
-								'width' : '80%'
+								'width' : '90%'
 							}
 						}
 					}

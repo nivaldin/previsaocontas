@@ -193,7 +193,7 @@
 					<div class="modal-body">
 						<div id="editarConta">
 							<div class="row">
-								<div class="col-md-12">
+								<div class="col-md-5">
 									<div class="panel panel-default">
 										<div class="panel-heading" ng-style="cssTitulo()">Conta</div>
 										<div class="panel-body">
@@ -209,50 +209,50 @@
 													<div class="col-xs-12"></div>
 												</div>
 												<div class="row">
-													<div class="col-xs-2">
+													<div class="col-xs-4">
 														<label for="valor">Valor</label>
 													</div>
-													<div class="col-xs-10">
+													<div class="col-xs-8">
 														<input type="number" step="0.01" id="valor" ng-model="conta.valor" size="10" class="form-control">
 													</div>
 												</div>
 												<div class="row">
-													<div class="col-xs-2">
+													<div class="col-xs-4">
 														<label for="descricao">Descrição</label>
 													</div>
-													<div class="col-xs-10">
+													<div class="col-xs-8">
 														<input type="text" id="descricao" ng-model="conta.descricao" size="30" class="form-control">
 													</div>
 												</div>
 												<div class="row">
-													<div class="col-xs-2">
+													<div class="col-xs-4">
 														<label for="Data">Data</label>
 													</div>
-													<div class="col-xs-10">
+													<div class="col-xs-8">
 														<input type="date" id="data" name="data" ng-model="conta.data_mes" class="form-control" />
 													</div>
 												</div>
 												<div class="row">
-													<div class="col-xs-2" title="Vencimento">
+													<div class="col-xs-4" title="Vencimento">
 														<label for="vencimento">Vcto</label>
 													</div>
-													<div class="col-xs-10">
+													<div class="col-xs-8">
 														<input type="number" min="1" max="31" id="vencimento" ng-model="conta.dia_vencimento" class="form-control">
 													</div>
 												</div>
 												<div class="row">
-													<div class="col-xs-2">
+													<div class="col-xs-4">
 														<label for="qtdeParcelas">Parcelas</label>
 													</div>
-													<div class="col-xs-10">
+													<div class="col-xs-8">
 														<input type="number" id="qtdeParcelas" ng-model="conta.qtde_parcelas" class="form-control">
 													</div>
 												</div>
 												<div class="row">
-													<div class="col-xs-2">
+													<div class="col-xs-4">
 														<label for="tipoRepeticao">Repetição</label>
 													</div>
-													<div class="col-xs-10">
+													<div class="col-xs-8">
 														<select id="tipoRepeticao" ng-model="conta.tipoRepeticao" class="form-control">
 															<option label="Diária" value="DI"></option>
 															<option label="Semanal" value="SM"></option>
@@ -264,10 +264,10 @@
 													</div>
 												</div>
 												<div class="row">
-													<div class="col-xs-2">
+													<div class="col-xs-4">
 														<label for="parcela">Parcela</label>
 													</div>
-													<div class="col-xs-10">
+													<div class="col-xs-8">
 														<input disabled="disabled" type="text" id="parcela" ng-value="conta.numr_parcela + ' - ' + conta.qtde_parcelas" class="form-control">
 													</div>
 												</div>
@@ -291,9 +291,7 @@
 										</div>
 									</div>
 								</div>
-							</div>
-							<div class="row">
-								<div class="col-md-12" ng-hide="conta.id == null">
+								<div class="col-md-7" ng-hide="conta.id == null">
 									<div class="panel panel-default">
 										<div class="panel-heading" ng-style="cssTitulo()">Parciais</div>
 										<div class="panel-body">
