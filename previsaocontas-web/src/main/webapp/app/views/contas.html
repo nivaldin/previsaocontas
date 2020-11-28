@@ -87,7 +87,7 @@
 
 						</div>
 						<div class="row">
-							<div class="col-sm-12">
+							<div class="col-sm-6">
 								<table id="tabelaContas" class="table table-hover table-striped table-bordered table-condensed">
 									<thead>
 										<tr>
@@ -96,9 +96,9 @@
 											<th width="1"></th>
 											<th width="1"></th>
 											<th ng-click="orderbyContas = ['tipo', 'descricao']; reverseDescricao = !reverseDescricao; reverse = reverseDescricao">Descrição <span class="sortorder" ng-class="{reverse: reverseDescricao}"></span></th>
-											<th ng-click="orderbyContas = ['tipo', 'valor']; reverseValor = !reverseValor; reverse = reverseValor">Valor <span class="sortorder" ng-class="{reverse: reverseValor}"></span></th>
-											<th ng-click="orderbyContas = ['tipo', 'valorParciais']; reverseParciais = !reverseParciais; reverse = reverseParciais">Parciais <span class="sortorder" ng-class="{reverse: reverseParciais}"></span></th>
-											<th ng-click="orderbyContas = ['tipo', 'dia_vencimento']; reverseVenc = !reverseVenc; reverse = reverseVenc">Vcto <span class="sortorder" ng-class="{reverse: reverseVenc}"></span></th>
+											<th style="text-align: right" ng-click="orderbyContas = ['tipo', 'valor']; reverseValor = !reverseValor; reverse = reverseValor">Valor <span class="sortorder" ng-class="{reverse: reverseValor}"></span></th>
+											<th style="text-align: right" ng-click="orderbyContas = ['tipo', 'valorParciais']; reverseParciais = !reverseParciais; reverse = reverseParciais">Parciais <span class="sortorder" ng-class="{reverse: reverseParciais}"></span></th>
+											<th style="text-align: center" ng-click="orderbyContas = ['tipo', 'dia_vencimento']; reverseVenc = !reverseVenc; reverse = reverseVenc">Vcto <span class="sortorder" ng-class="{reverse: reverseVenc}"></span></th>
 											<th>Parcela</th>
 										</tr>
 									</thead>
@@ -111,9 +111,9 @@
 											<td ng-style="{'background-color': c.tipo== 'D'? 'red':'green'}"></td>
 											<td ng-style="{'background-color': c.flag_comum== 'S'? 'yellow': 'inherit'}"></td>
 											<td ng-style="cssLinhaTabela(c)" ng-click="editarConta(c)">{{ c.descricao }}</td>
-											<td ng-style="cssLinhaTabela(c)" ng-click="editarConta(c)">{{ c.valor | currency:"":2 }}</td>
-											<td ng-style="cssLinhaTabela(c)" ng-click="editarConta(c)">{{ c.valorParciais | currency:"":2 }}</td>
-											<td ng-style="cssLinhaTabela(c)" ng-click="editarConta(c)">{{ c.dia_vencimento }}</td>
+											<td ng-style="cssLinhaTabela(c)" style="text-align: right" ng-click="editarConta(c)">{{ c.valor | currency:"":2 }}</td>
+											<td ng-style="cssLinhaTabela(c)" style="text-align: right" ng-click="editarConta(c)">{{ c.valorParciais | currency:"":2 }}</td>
+											<td ng-style="cssLinhaTabela(c)" style="text-align: center" ng-click="editarConta(c)">{{ c.dia_vencimento }}</td>
 											<td ng-style="cssLinhaTabela(c)" ng-click="editarConta(c)">{{ c.numr_parcela }} - {{ c.qtde_parcelas }}</td>
 										</tr>
 									</tbody>
