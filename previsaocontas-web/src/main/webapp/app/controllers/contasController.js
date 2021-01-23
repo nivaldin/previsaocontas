@@ -33,6 +33,7 @@ angular
 					$scope.contaFilha = JSON
 							.parse(JSON.stringify($scope.conta))
 					$scope.contaFilha.data_registro = new Date();
+					$scope.contaFilha.data_mes = new Date();
 
 					$scope.contas = []
 					$scope.contasFilhas = []
@@ -402,6 +403,7 @@ angular
 											deferred.resolve(response);
 											msgSucesso(response);
 											$scope.usuarioLogado = response.data.objeto;
+											//$scope.usuarioLogado.saldo = $scope.usuarioLogado.saldo.toLocaleString('pt-br', {style: 'decimal'});
 											$scope.userform.usuario = $scope.usuarioLogado.login;
 											$scope.userform.senha = '';
 											disableLogin();

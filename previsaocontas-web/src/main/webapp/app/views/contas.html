@@ -36,7 +36,7 @@
 	<!-- 	<div class="modal-backdrop fade in" style="z-index: 9999;" ng-hide="msg == ''" ng-click="msg = ''"></div> -->
 
 
-	<div class="container-fluid" style="margin-top: 5px;">
+	<div class="container-fluid centered" style="margin-top: 5px;">
 		<div class="row">
 			<div class="col-sm-6">
 				<table>
@@ -148,7 +148,7 @@
 											<td align="right" style="border-right: 1px solid gray; border-bottom: 1px solid gray; padding: 0px 5px 0px 15px"><span style="color: red" id="despesaPrevistoMes">{{totalDespesaPrevistoMes | currency:'':2}}</span></td>
 											<td align="right" style="border-right: 1px solid gray; border-bottom: 1px solid gray; padding: 0px 5px 0px 15px;"><span style="color: green" id="ReceitaPrevistoMes">{{totalReceitaPrevistoMes | currency:'':2}}</span></td>
 											<td align="right" style="border-right: 1px solid gray; border-bottom: 1px solid gray; padding: 0px 5px 0px 15px;"><span style="color: blue" id="totalPrevistoMes">{{(totalReceitaPrevistoMes - totalDespesaPrevistoMes) | currency:'':2}}</span></td>
-											<td align="right" style="border-right: 1px solid gray; border-bottom: 1px solid gray; padding: 0px 5px 0px 15px;"><span style="color: black" id="totalPrevistoMes">{{usuarioLogado.saldo + (totalReceitaPrevistoMes - totalDespesaPrevistoMes) | currency:'':2}}</span></td>
+											<td align="right" style="border-right: 1px solid gray; border-bottom: 1px solid gray; padding: 0px 5px 0px 15px;"><span style="color: black" id="totalPrevistoAcumulado">{{usuarioLogado.saldo + (totalReceitaPrevistoMes - totalDespesaPrevistoMes) | currency:'':2}}</span></td>
 										</tr>
 
 										<tr>
@@ -279,10 +279,10 @@
 														<button id="salvar" ng-click="salvar();" type="submit" class="btn btn-default" style="background-color: lightgreen;">
 															<span class="glyphicon glyphicon-save"> </span> Salvar
 														</button>
-														<button id="salvarTodos" ng-hide="conta.qtde_parcelas == 1 || conta.id == null" ng-click="salvarTodos();" type="submit" class="btn btn-default" title="Salva todas as parcelas relacionadas não baixadas iguais a essa!" style="background-color: lightgreen;"">
+														<button id="salvarTodos" ng-hide="conta.qtde_parcelas == 1 || conta.id == null" ng-click="salvarTodos();" type="submit" class="btn btn-default" title="Salva todas as parcelas relacionadas não baixadas iguais a essa!" style="background-color: lightgreen;">
 															<span class="glyphicon glyphicon-save"> </span> Salvar Parcelas
 														</button>
-														<button id="excluirTodos" ng-hide="conta.qtde_parcelas == 1 || conta.id == null" ng-click="excluirTodos();" type="submit" class="btn btn-default" title="Exclui tdas as parcelas relacionadas não baixadas!" style="background-color: tomato;>
+														<button id="excluirTodos" ng-hide="conta.qtde_parcelas == 1 || conta.id == null" ng-click="excluirTodos();" type="submit" class="btn btn-default" title="Exclui tdas as parcelas relacionadas não baixadas!" style="background-color: tomato;">
 															<span class="glyphicon glyphicon-trash"> </span> Excluir Parcelas
 														</button>
 													</div>
@@ -307,7 +307,7 @@
 														<label for="dataFilha">Data</label><input type="date" id="dataFilha" name="data" ng-model="contaFilha.data_mes" class="form-control" />
 													</div>
 													<div class="col-xs-1" style="margin-top: 25px;">
-														<button id="salvar" ng-click="salvarFilha();" type="submit" class="btn btn-default form-control">
+														<button id="salvarFilha" ng-click="salvarFilha();" type="submit" class="btn btn-default form-control">
 															<span class="glyphicon glyphicon-save"></span>
 														</button>
 													</div>
